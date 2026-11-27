@@ -44,17 +44,25 @@ Key directional signals:
   - **04 My Applications:** Existing categories (`Applies on Naukri`, `Recruiter Actions`, `Applies via Neo`, `External Applications`) + lightweight status filters, hiring availability, last active info, archive/restore, and explicit external ATS limited-visibility notices.
   - **05–09 Enhanced Application Details & Edge States:** Preserved timeline with plain-language explanations, configurable `7 / 14 / 30`-day non-punitive inactivity callouts, separate `Hiring On Hold` (with resume alert opt-in) and `Role Closed` states, and clear separation between automated `Profile Match Insights` and `Recruiter Decision Notes`.
   - **10 Notifications:** Outcome-focused categories (`All`, `Application Updates`, `Job Recommendations`, `Recruiter Activity`) deep-linking to each application + Notification Preferences.
-- **11 Recruiter Panel Supporting Workflow (Light Theme):** Preserves `Manage Jobs and Responses` and `Job Responses` (`Shortlist` / `Maybe` / `Reject`, `Select All`) while adding an `On Hold` availability toggle, optional structured rejection reasons, and a live candidate-facing update preview that syncs directly to the candidate views.
-- **12 Desktop Web Application Tracker (Light Theme):** Adapts the improvements to Naukri's split-pane list + horizontal timeline layout.
-- **Before vs. After Comparisons & Design Rationale:** Built-in portfolio tabs alongside [DESIGN_RATIONALE.md](./DESIGN_RATIONALE.md).
+- **11 Recruiter Panel Supporting Workflow (Light Theme · Conceptual):** Conceptual recruiter workflow, subject to feasibility validation. Preserves `Manage Jobs and Responses` and `Job Responses` (`Shortlist` / `Maybe` / `Reject`, `Select All`) while adding an `On Hold` availability toggle, optional structured rejection reasons, and a live candidate-facing update preview that syncs directly to the candidate views without overwriting existing candidate decisions on role pause/close/reopen.
+- **12 Desktop Web Experience & Tracker (Light Theme):** Matches Naukri's 3-column `My home` layout (`My Applications` summary, `Recommended jobs`, `Early access`, `MINIs`), `Jobs` filters, `Companies`, `Naukri 360 / Services`, Profile Drawer, and split-pane `Job Application Status` tracker.
+- **Visual Before vs. After Comparisons & Design Rationale:** Side-by-side comparisons using PII-redacted original Naukri audit screenshots and live prototype captures, plus P0/P1/P2 MVP prioritisation, a 2-minute hiring-manager demo journey, redacted Google Play Store research evidence, and [DESIGN_RATIONALE.md](./DESIGN_RATIONALE.md).
 
 ---
 
-## 4. Technology Stack
+## 4. Technology Stack & Repository Structure
 
-- **Frontend:** Vanilla HTML5, CSS3 (custom properties for Naukri Dark Mobile, Light Desktop, and Recruiter themes), and modular JavaScript (`ES5/ES6` zero-build static architecture for maximum portability).
-- **Data & State:** Local fictional dataset ([data.js](./data.js)) and central client-side state store ([app.js](./app.js)) enabling live recruiter-to-candidate synchronization without a backend.
+- **Frontend:** Vanilla HTML5, CSS3, and modular JavaScript (`ES5/ES6` zero-build static architecture).
+- **Data & State:** Local fictional dataset ([data.js](./data.js)) and central client-side state store ([app.js](./app.js)) enforcing decoupled individual application status, hiring availability, timestamps, recruiter activity, inactivity duration, and preference-aware notification delivery.
+- **Audit & Evidence Assets:** `assets/comparisons/` (PII-redacted Before & captured After screenshots) and `assets/evidence/` (PII-redacted Google Play Store research evidence).
 - **Deployment:** Static GitHub Pages hosting via GitHub Actions ([.github/workflows/pages.yml](./.github/workflows/pages.yml)).
+
+---
+
+## 5. Verification & Known Limitations
+
+- **Verified End-to-End:** Apply → Track Application flow, status filters, Archive/Restore, recruiter Shortlist/Reject live sync, independent hiring pause/closure/reopening without overwriting candidate decisions, notification preferences & resume-alert subscriptions, Before vs. After images/annotations, and Desktop (`1280x800`) & Mobile (`390x844`) responsiveness with zero console errors.
+- **Known Limitations:** In-memory client state resets on reload; secondary portal links (`Resdex`, `Reports`, `Blogs`, `Pro` checkout) are demo stubs; conceptual recruiter workflow and P0/P1/P2 effort estimates are assumptions pending engineering feasibility validation; research insights are directional from a small sample.
 
 ---
 

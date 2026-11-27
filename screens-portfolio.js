@@ -2,7 +2,7 @@
    - Visual Before vs. After Comparisons using actual Naukri reference screenshots (Before)
      and actual captured prototype screenshots (After), with numbered annotations,
      click-to-enlarge lightbox, PM rationale, and View Interactive Screen navigation.
-   - Design Rationale & Product Case Study
+   - Design Rationale, MVP Prioritisation (P0/P1/P2), Hiring-Manager Journey & 2-Min Demo Guide
 */
 
 window.NaukriPortfolio = (function () {
@@ -27,8 +27,8 @@ window.NaukriPortfolio = (function () {
         { n: 3, x: "45%", y: "81%", text: "Confirmed hiring status pills (Hiring Active, Hiring On Hold, Closed) on recommended jobs." }
       ],
       pm: {
-        problem: "Candidates had no immediate visibility into application updates from the homepage feed and had to navigate into separate menus.",
-        evidence: "Validated observation (small sample): 3 of 6 recent Naukri applicants struggled to understand what was happening to their applications.",
+        problem: "In the audited homepage screens, no compact application status summary was observed; candidates navigated into separate menus to inspect updates.",
+        evidence: "Directional small-sample finding: 3 of 6 recent Naukri applicants struggled to understand what was happening to their applications.",
         whatChanged: "Added a compact 4-metric My Applications summary card and sidebar entry inside the existing homepage layout.",
         whyChanged: "Surfaces application progress and items needing attention where candidates already start their session without building a separate dashboard.",
         userValue: "Faster status awareness and fewer missed updates from a single glance.",
@@ -57,7 +57,7 @@ window.NaukriPortfolio = (function () {
         { n: 3, x: "50%", y: "74%", text: "Naukri Pro retained below essential confirmation and tracking actions (free tracking stated clearly)." }
       ],
       pm: {
-        problem: "The existing post-apply screen foregrounded a paid Naukri Pro upsell immediately after applying, leaving candidates unsure how to track their application.",
+        problem: "The audited post-apply screen foregrounded a paid Naukri Pro upsell immediately after applying, leaving candidates unsure how to track their application.",
         evidence: "Product audit + 4 Play Store reviews highlighting frustration with paid upsells overshadowing basic post-apply clarity.",
         whatChanged: "Added submission timestamp, next-step copy, Track Application & Explore Similar Jobs CTAs above Naukri Pro.",
         whyChanged: "Sets clear expectations at peak candidate intent while keeping monetization intact contextually.",
@@ -87,7 +87,7 @@ window.NaukriPortfolio = (function () {
         { n: 3, x: "50%", y: "74%", text: "Adds Archive / Restore actions and keeps Interview Prep / Pro non-intrusive below the status list." }
       ],
       pm: {
-        problem: "Application lists mixed status tracking with promotional banners, lacked status filters, and offered no way to separate active vs. stale or external applications.",
+        problem: "In the audited mobile My Applications list, status tracking sat alongside promotional banners, and lightweight status filters or archive controls were not observed in the audited screens.",
         evidence: "Audit of mobile My Applications + 11–12 week unchanged timelines observed during product audit.",
         whatChanged: "Added lightweight status filters, confirmed hiring availability, inactivity indicators, archive/restore, and external-apply visibility notices.",
         whyChanged: "Lets candidates triage active vs. stalled applications quickly without removing existing categories or Interview Prep.",
@@ -118,7 +118,7 @@ window.NaukriPortfolio = (function () {
       ],
       pm: {
         problem: "Timelines stayed frozen between 'Application Sent' and 'Awaiting recruiter action' with promotional cards embedded inside the progress rail.",
-        evidence: "3 of 6 job seekers struggled to understand application progress; 2 of 6 had applications viewed without reply; audit showed promo cards inside timeline.",
+        evidence: "Directional sample: 3 of 6 job seekers struggled to understand progress; 2 of 6 had applications viewed without reply; audit showed promo cards inside timeline.",
         whatChanged: "Removed promotional card from inside the timeline rail and added plain-language status explanations and activity disclaimers.",
         whyChanged: "Candidates need factual clarity on what the current stage actually means before seeing upsells.",
         userValue: "Eliminates guesswork about whether 'viewed' or 'awaiting action' means shortlisted.",
@@ -132,10 +132,13 @@ window.NaukriPortfolio = (function () {
     {
       id: "comp-inactivity",
       title: "05 · Prolonged Application Inactivity",
-      category: "Proposed New State",
+      category: "Inactivity Clarity",
       isDesktop: false,
-      isNewState: true,
-      newStateNote: "Existing Naukri does not distinguish an inactive application from an active review — timelines simply remain unchanged for 11–12 weeks. No original Before screenshot exists for this state.",
+      isNewState: false,
+      inactivityBridgeNote: "The inactivity indicator is a proposed new feature, while the underlying prolonged inactive application experience (timelines remaining unchanged at Application Sent / Viewed) is an observed existing problem.",
+      beforeImg: "./assets/comparisons/before-timeline-mobile.jpg",
+      beforeAlt: "Original Naukri mobile Application Status timeline showing an application stalled at Application Sent with a Neo auto-apply banner inside the timeline and no inactivity context (candidate name redacted)",
+      beforeCaption: "Original Naukri Mobile Timeline (Observed Stalled State · PII redacted)",
       afterImg: "./assets/comparisons/after-inactive-mobile.jpg",
       afterAlt: "Proposed Naukri mobile Inactive Application state displaying No new application update for 14 days reassurance and Explore Similar Jobs CTA",
       afterCaption: "Prototype Screen 06: 14-Day Inactivity Clarity",
@@ -146,9 +149,9 @@ window.NaukriPortfolio = (function () {
       ],
       pm: {
         problem: "Applications with zero recruiter updates for weeks looked identical to active evaluations, causing prolonged uncertainty.",
-        evidence: "3 of 6 eligible applicants received no response within 14 days; observed timelines remained unchanged for 11–12 weeks.",
-        whatChanged: "Introduced a configurable (7 / 14 / 30-day) non-punitive inactivity callout with pivot actions.",
-        whyChanged: "Replaces silent waiting with honest factual state while ensuring Naukri never auto-rejects candidates without recruiter action.",
+        evidence: "Directional sample: 3 of 6 eligible applicants received no response within 14 days; observed timelines remained unchanged for 11–12 weeks.",
+        whatChanged: "Introduced a configurable (7 / 14 / 30-day) non-punitive inactivity callout with pivot actions on top of the existing timeline.",
+        whyChanged: "Replaces silent waiting with factual state visibility while ensuring Naukri never auto-rejects candidates without recruiter action.",
         userValue: "Clear signal to focus energy on active roles without false rejection anxiety.",
         bizValue: "Hypothesis: Higher relevant repeat applications to active jobs.",
         metric: "Similar-job click-through and archive rate after 14d+ inactivity; zero false rejections.",
@@ -175,14 +178,14 @@ window.NaukriPortfolio = (function () {
         { n: 3, x: "50%", y: "47%", text: "Next actions (Explore Similar Jobs, Improve Profile, Archive) + JD Match Insights clearly labeled as separate." }
       ],
       pm: {
-        problem: "Candidates saw 'Not Shortlisted' next to algorithmic JD match scores ('4 out of 6') and mistook automated match criteria for confirmed recruiter rejection reasons.",
-        evidence: "5 of 7 hiring professionals cited profile mismatch as a reason for not replying; existing UI blurred match insights and decision reasons.",
+        problem: "Candidates saw 'Not Shortlisted' next to algorithmic JD match scores ('4 out of 6') and risked mistaking automated match criteria for confirmed recruiter rejection reasons.",
+        evidence: "5 of 7 hiring professionals cited profile mismatch as a reason for not replying; audited UI placed match insights without a distinct recruiter-reason block.",
         whatChanged: "Separated the confirmed Recruiter Decision Note (with honest fallback when unshared) from automated Profile Match Insights.",
         whyChanged: "Prevents false attribution while allowing recruiters to optionally share structured reasons.",
         userValue: "Actionable next steps (Improve Profile / Explore Similar Jobs) without misleading or fabricated explanations.",
         bizValue: "Hypothesis: Higher profile-improvement engagement and candidate trust.",
         metric: "Share of Not Shortlisted events with structured reasons; Improve Profile & Similar Jobs CTR.",
-        deps: "Optional structured rejection reason field from Recruiter Panel."
+        deps: "Optional structured rejection reason field from Recruiter Panel (subject to feasibility validation)."
       },
       navLabel: "View Interactive Screen",
       navAttrs: `data-action="nav-prototype" data-mode="mobile" data-screen="details" data-app="app-06"`
@@ -193,7 +196,7 @@ window.NaukriPortfolio = (function () {
       category: "Proposed New State",
       isDesktop: false,
       isNewState: true,
-      newStateNote: "Candidate-facing screens in existing Naukri do not surface a 'Hiring On Hold' state or clearly separate role closure from individual rejection. Below are the two proposed new states side by side.",
+      newStateNote: "Candidate-side 'Hiring On Hold' and neutral 'Role Closed' outcome separation were not observed in the audited candidate screens. Below are the two proposed new states side by side.",
       afterImg: "./assets/comparisons/after-on-hold-mobile.jpg",
       afterAlt: "Proposed Naukri mobile Hiring On Hold state with Notify me if hiring resumes option",
       afterCaption: "Prototype Screen 08: Hiring On Hold",
@@ -205,10 +208,10 @@ window.NaukriPortfolio = (function () {
         { n: 2, x: "50%", y: "44%", text: "Role Closed separates requisition closure from individual candidate decision (never auto-labels applicants as rejected)." }
       ],
       pm: {
-        problem: "When companies paused hiring or closed a requisition without screening all applicants, candidates remained indefinitely in limbo or assumed rejection.",
-        evidence: "Recruiter panel analysis showed 'Close' job actions exist without a candidate-facing 'On Hold' or neutral 'Role Closed' explanation.",
+        problem: "When companies paused hiring or closed a requisition without screening all applicants, candidates could remain indefinitely in limbo or assume rejection.",
+        evidence: "Recruiter panel audit showed 'Close' job actions exist; candidate-side 'On Hold' or neutral 'Role Closed' states were not observed in the audited screens.",
         whatChanged: "Added distinct Hiring On Hold (with resume alert opt-in) and Role Closed states decoupled from individual rejection.",
-        whyChanged: "Reflects real hiring lifecycle events honestly without forcing recruiters to manually reject every unscreened applicant.",
+        whyChanged: "Reflects real hiring lifecycle events honestly without requiring recruiters to manually reject every unscreened applicant.",
         userValue: "Immediate closure when a role stops hiring, and easy re-engagement if a paused role reopens.",
         bizValue: "Hypothesis: Improved marketplace credibility and candidate re-engagement on resumed roles.",
         metric: "Resume-alert opt-ins and candidate satisfaction on closed/paused requisitions.",
@@ -237,7 +240,7 @@ window.NaukriPortfolio = (function () {
         { n: 3, x: "86%", y: "14%", text: "Granular Notification Preferences to pause promo noise and prevent repetitive inactivity spam." }
       ],
       pm: {
-        problem: "Notifications were dominated by generic job recommendations, Naukri Minis, and vague profile interest instead of actual application status updates.",
+        problem: "Captured notifications were dominated by generic job recommendations, Naukri Minis, and vague profile interest rather than individual application status updates.",
         evidence: "Captured notifications audit + Play Store reviews complaining of irrelevant notifications instead of recruiter updates.",
         whatChanged: "Added Application Updates / Recruiter Activity categories, deep-links to Application Details, and preference controls.",
         whyChanged: "Makes high-signal application outcome alerts effortless to find without breaking recommendation discovery.",
@@ -267,8 +270,8 @@ window.NaukriPortfolio = (function () {
         { n: 3, x: "64%", y: "64%", text: "Plain-language explanation, non-punitive inactivity notice, and separated Profile Match Insights." }
       ],
       pm: {
-        problem: "Desktop application history showed applications stuck '11 weeks ago' with no status filters, hiring availability, or status explanation.",
-        evidence: "Desktop product audit (`myapply/historypage`) showing 11-week stalled cards and no separation of job availability vs. candidate outcome.",
+        problem: "Desktop application history showed applications stuck '11 weeks ago'; status filters, hiring availability, and status explanations were not observed in the audited screen.",
+        evidence: "Desktop product audit (`myapply/historypage`) showing 11-week stalled cards without separation of job availability vs. candidate outcome.",
         whatChanged: "Applied all mobile clarity improvements inside Naukri's existing split-pane list + horizontal timeline desktop layout.",
         whyChanged: "Ensures consistent mental models and transparency across desktop web and mobile app.",
         userValue: "Consistent, scannable clarity when managing applications on desktop.",
@@ -297,14 +300,14 @@ window.NaukriPortfolio = (function () {
         { n: 3, x: "70%", y: "52%", text: "Preserves existing Shortlist / Maybe / Reject candidate card workflow while syncing live to candidate views." }
       ],
       pm: {
-        problem: "Recruiters already triage candidates using Shortlist/Maybe/Reject, but lacked a low-effort way to mark roles On Hold or share optional structured rejection reasons.",
-        evidence: "Recruiter panel training analysis + 5 of 7 hiring pros already replying to >60% of applicants; solution must not add manual writing workload.",
-        whatChanged: "Reused existing recruiter actions and added Job Availability toggle, optional skippable rejection reasons, and candidate preview.",
-        whyChanged: "Candidate transparency only scales if recruiter effort per decision remains near zero.",
+        problem: "Recruiters already triage candidates using Shortlist/Maybe/Reject, while low-effort 'On Hold' availability updates or optional structured rejection reasons were not observed in the audited screens.",
+        evidence: "Recruiter panel training analysis + 5 of 7 hiring pros already replying to >60% of applicants; solution must avoid adding manual writing workload.",
+        whatChanged: "Conceptual recruiter workflow (subject to feasibility validation): reuses existing recruiter actions and adds Job Availability toggle, optional skippable rejection reasons, and candidate preview.",
+        whyChanged: "Candidate transparency scales only with a hypothesised reduction in recruiter effort per decision compared to manual messaging.",
         userValue: "Faster, clearer candidate updates triggered directly by normal recruiter triage.",
-        bizValue: "Hypothesis: Higher candidate update coverage without increasing recruiter workload.",
+        bizValue: "Hypothesis: Higher candidate update coverage with minimal added recruiter workload.",
         metric: "Recruiter time per response triage (guardrail) and % eligible applications updated.",
-        deps: "Conceptual until verified with Naukri recruiter ATS/backend capabilities."
+        deps: "Conceptual recruiter workflow, subject to feasibility validation against Naukri recruiter ATS/backend capabilities."
       },
       navLabel: "View Interactive Screen",
       navAttrs: `data-action="nav-prototype" data-mode="recruiter"`
@@ -314,7 +317,7 @@ window.NaukriPortfolio = (function () {
   function renderComparisons(state) {
     const showPins = state && state.showComparisonPins !== false;
     const catFilter = (state && state.compCategoryFilter) || "All";
-    const cats = ["All", "Discovery & Home", "Post-Apply", "Application List", "Application Details", "Proposed New State", "Outcome Clarity", "Notifications", "Cross-Platform", "Recruiter Sync"];
+    const cats = ["All", "Discovery & Home", "Post-Apply", "Application List", "Application Details", "Inactivity Clarity", "Outcome Clarity", "Proposed New State", "Notifications", "Cross-Platform", "Recruiter Sync"];
     const visible = catFilter === "All" ? comparisonSections : comparisonSections.filter(s => s.category === catFilter);
 
     return `
@@ -330,14 +333,16 @@ window.NaukriPortfolio = (function () {
                   Every <strong>Before</strong> image is an actual Naukri screenshot from the product audit (with personal info redacted). Every <strong>After</strong> image is captured directly from the interactive prototype. Click any screenshot to enlarge.
                 </p>
               </div>
-              <div style="display:flex;gap:8px;align-items:center;">
+              <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
                 <button class="desk-btn-outline" data-action="toggle-comp-pins">
                   ${showPins ? "Hide Annotations" : "Show Annotations"}
+                </button>
+                <button class="mob-btn-primary" style="width:auto;padding:7px 14px;font-size:12px;" data-action="switch-mode" data-mode="rationale">
+                  Full Case Study &amp; Roadmap →
                 </button>
               </div>
             </div>
 
-            <!-- Category Filter Pills -->
             <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:14px;padding-top:12px;border-top:1px solid #eef0f6;">
               ${cats.map(c => `
                 <button class="ctrl-pill ${catFilter === c ? 'active' : ''}" style="border-radius:999px;padding:4px 10px;" data-action="set-comp-cat" data-cat="${esc(c)}">
@@ -367,6 +372,12 @@ window.NaukriPortfolio = (function () {
                 </div>
               </div>
 
+              ${sec.inactivityBridgeNote ? `
+                <div style="margin-bottom:12px;background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:9px 12px;font-size:12.5px;color:#78350f;">
+                  ${esc(sec.inactivityBridgeNote)}
+                </div>
+              ` : ""}
+
               <div class="comp-visual-grid">
                 <!-- BEFORE PANEL -->
                 <div class="comp-frame-box">
@@ -375,7 +386,7 @@ window.NaukriPortfolio = (function () {
                       ${sec.isNewState ? "PROPOSED NEW STATE" : "BEFORE · EXISTING NAUKRI"}
                     </span>
                     <span style="font-size:11.5px;color:#64748b;">
-                      ${sec.isNewState ? "No existing Naukri screen" : "Original audit screenshot"}
+                      ${sec.isNewState ? "Not observed in audited screens" : esc(sec.beforeCaption)}
                     </span>
                   </div>
 
@@ -455,6 +466,12 @@ window.NaukriPortfolio = (function () {
                 </div>
               </div>
 
+              ${!sec.isNewState ? `
+                <div style="margin-top:10px;font-size:11.5px;color:#64748b;font-style:italic;">
+                  Original Naukri screenshot compared with the proposed prototype using illustrative application data.
+                </div>
+              ` : ""}
+
               <!-- Structured PM Rationale Below Each Comparison -->
               <div class="pm-rationale-grid">
                 <div class="pm-rat-cell">
@@ -498,6 +515,104 @@ window.NaukriPortfolio = (function () {
   }
 
   function renderRationale() {
+    const roadmap = [
+      {
+        tier: "P0 — Core MVP",
+        badgeClass: "dpill-green",
+        items: [
+          {
+            feature: "Track Application CTA (Post-Apply)",
+            userImpact: "Gives immediate clarity right after applying without searching menus.",
+            bizImpact: "Hypothesis: Higher tracker adoption & lower immediate drop-off.",
+            effort: "Low (Assumption — pending engineering validation)",
+            deps: "Pass created applicationId to confirmation screen."
+          },
+          {
+            feature: "Enhanced Application Timeline & Plain-Language Explanation",
+            userImpact: "Eliminates guesswork at 'Application Sent' / 'Viewed' and clarifies views ≠ shortlisting.",
+            bizImpact: "Hypothesis: Higher candidate trust & fewer unnecessary follow-ups.",
+            effort: "Low (Assumption — pending engineering validation)",
+            deps: "Copy mapping over existing application status events."
+          },
+          {
+            feature: "Last Confirmed Update Date",
+            userImpact: "Separates actual application updates from general job-level timestamps.",
+            bizImpact: "Hypothesis: Clearer expectations & reduced perceived staleness.",
+            effort: "Low (Assumption — pending engineering validation)",
+            deps: "Expose last confirmed candidate-level event timestamp."
+          },
+          {
+            feature: "Inactivity Indicator (7/14/30d) & Next Actions",
+            userImpact: "Reassures candidates inactivity ≠ rejection and offers Explore Similar Jobs / Archive pivots.",
+            bizImpact: "Hypothesis: Higher relevant repeat applications to active openings.",
+            effort: "Medium (Assumption — pending engineering validation)",
+            deps: "Threshold calculation from last recorded update + user threshold preference."
+          }
+        ]
+      },
+      {
+        tier: "P1 — Application Management",
+        badgeClass: "dpill-blue",
+        items: [
+          {
+            feature: "Lightweight Status Filters (Awaiting Action, Viewed, Shortlisted, etc.)",
+            userImpact: "Fast triage across large application histories.",
+            bizImpact: "Hypothesis: Higher tracker repeat utility & retention.",
+            effort: "Low–Medium (Assumption — pending engineering validation)",
+            deps: "Query/filter parameters on My Applications endpoint."
+          },
+          {
+            feature: "Application-Specific Notifications & Preferences",
+            userImpact: "Separates confirmed outcomes from generic job recommendations & promo alerts.",
+            bizImpact: "Hypothesis: Improved notification engagement & lower opt-outs.",
+            effort: "Medium (Assumption — pending engineering validation)",
+            deps: "Notification categorization + preference flags + deep links."
+          },
+          {
+            feature: "Homepage Application Summary Card",
+            userImpact: "Surfaces total, recent updates, and awaiting items directly on home.",
+            bizImpact: "Hypothesis: Higher tracker discovery without displacing existing widgets.",
+            effort: "Low (Assumption — pending engineering validation)",
+            deps: "Summary aggregation query over 90-day application history."
+          },
+          {
+            feature: "Archive & Restore Applications",
+            userImpact: "Lets users declutter stale or closed items without losing records.",
+            bizImpact: "Hypothesis: Cleaner active list driving focused repeat applies.",
+            effort: "Low (Assumption — pending engineering validation)",
+            deps: "Boolean archive flag on candidate application record."
+          }
+        ]
+      },
+      {
+        tier: "P2 — Recruiter & Marketplace Enhancements",
+        badgeClass: "dpill-amber",
+        items: [
+          {
+            feature: "Confirmed Hiring Availability (Active / On Hold / Closed) & Employer Verification",
+            userImpact: "Prevents wasted applies on paused/closed jobs; avoids implying verification without evidence.",
+            bizImpact: "Hypothesis: Higher application relevance & improved marketplace credibility.",
+            effort: "Medium–High (Assumption — pending engineering validation)",
+            deps: "Employer KYC/domain verification + requisition availability events."
+          },
+          {
+            feature: "Optional Structured Rejection Reasons",
+            userImpact: "Allows recruiters to share lightweight reason codes without inventing AI reasons.",
+            bizImpact: "Hypothesis: Better candidate feedback loop & profile improvement engagement.",
+            effort: "Medium (Assumption — pending engineering validation)",
+            deps: "Conceptual recruiter workflow, subject to feasibility validation."
+          },
+          {
+            feature: "Recruiter-Side Status Automation & Bulk Updates",
+            userImpact: "Propagates On Hold / Closed / Shortlist updates with a hypothesised reduction in recruiter effort.",
+            bizImpact: "Hypothesis: Higher % of eligible applications receiving timely updates.",
+            effort: "High (Assumption — pending engineering validation)",
+            deps: "Conceptual recruiter workflow, subject to feasibility validation across ATS integrations."
+          }
+        ]
+      }
+    ];
+
     const rows = [
       {
         screen: "01 Homepage Summary",
@@ -510,7 +625,7 @@ window.NaukriPortfolio = (function () {
       {
         screen: "02 Job Details Availability",
         change: "Verified Hiring Status (Active / On Hold / Closed), last updated date, and verified employer badge only when confirmed",
-        evidence: "Avg confidence in job/recruiter genuineness was 2.67/5; Play Store reviews cited stale/unverified postings",
+        evidence: "Avg confidence in job/recruiter genuineness was 2.67/5; Play Store reviews cited unverified/unresponsive postings",
         userValue: "Prevents wasted effort on closed/paused postings and avoids false trust signals on unverified listings",
         bizValue: "Hypothesis: More relevant applications per requisition & improved marketplace credibility",
         deps: "Employer KYC/GST verification flag + requisition status event timestamps"
@@ -518,7 +633,7 @@ window.NaukriPortfolio = (function () {
       {
         screen: "03 Apply Success Flow",
         change: "Submission timestamp, next-step copy, Track & Similar Jobs CTAs above Naukri Pro",
-        evidence: "Existing screens prioritize immediate upsells over tracking clarity (Play Store reviews)",
+        evidence: "Audited screens placed immediate paid upsells above tracking clarity (Play Store reviews)",
         userValue: "Clear confirmation that basic tracking is free and immediately accessible",
         bizValue: "Hypothesis: Contextual Naukri Pro discovery without eroding candidate trust",
         deps: "Deep-link route from post-apply state to Application Details ID"
@@ -534,35 +649,124 @@ window.NaukriPortfolio = (function () {
       {
         screen: "07–09 Outcome Separation",
         change: "Distinct 'Not Shortlisted' (with separate Match Insights vs Recruiter Reason), 'Hiring On Hold', and 'Role Closed' states",
-        evidence: "5/7 hiring pros cited profile mismatch; candidates lacked clear distinction between role closure and personal rejection",
+        evidence: "5/7 hiring pros cited profile mismatch; separate On Hold/Role Closed states were not observed in audited candidate screens",
         userValue: "Actionable clarity without AI-hallucinated rejection reasons or unfair auto-reject labels",
         bizValue: "Hypothesis: Higher candidate satisfaction and re-engagement when paused roles resume",
         deps: "Requisition pause/close webhook decoupled from candidate-level decision state"
       },
       {
         screen: "10–11 Notifications & Recruiter Sync",
-        change: "Categorized application alerts + Recruiter bulk Reject optional reason & On Hold toggle with candidate preview",
-        evidence: "Captured notifications were mostly promos/recommendations; 5/7 hiring pros already reply to >60% and need zero extra friction",
+        change: "Categorized application alerts + conceptual recruiter bulk Reject optional reason & On Hold toggle with candidate preview",
+        evidence: "Captured notifications were mostly promos/recommendations; 5/7 hiring pros already reply to >60% and need minimal friction",
         userValue: "Timely, non-spammy outcome alerts linking directly to the right application",
-        bizValue: "Hypothesis: Higher notification engagement, lower opt-outs, minimal recruiter workload",
-        deps: "Recruiter Dashboard bulk action API extension + notification preference service"
+        bizValue: "Hypothesis: Higher notification engagement, lower opt-outs, hypothesised reduction in recruiter effort",
+        deps: "Conceptual recruiter workflow, subject to feasibility validation + notification preference service"
       }
     ];
 
     return `
       <div class="light-surface">
         <div class="desk-container">
-          <div class="desk-card" style="margin-bottom:18px;">
-            <span class="desk-pill dpill-blue" style="margin-bottom:8px;">Deliverable 07 · PM Case Study &amp; Design Rationale</span>
-            <h1 style="margin:0;font-size:24px;color:#121224;">Naukri Application Clarity — Product Rationale</h1>
-            <p style="margin:8px 0 0;font-size:13.5px;color:#474d6a;line-height:1.55;">
+          <!-- Hiring Manager Portfolio Journey Banner (Item 7) -->
+          <div class="desk-card" style="margin-bottom:18px;border-left:4px solid #275df5;">
+            <span class="desk-pill dpill-blue" style="margin-bottom:8px;">Hiring Manager Guided Tour · Portfolio Case Study</span>
+            <h1 style="margin:0;font-size:23px;color:#121224;">Naukri Application Clarity — End-to-End Case Study</h1>
+            <p style="margin:6px 0 12px;font-size:13.5px;color:#474d6a;line-height:1.5;">
               <strong>Core Design Philosophy:</strong> Improve the post-application experience without reinventing Naukri's interface, visual system, monetization model, or recruiter workflow.
             </p>
-            <div style="margin-top:12px;background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:10px 14px;font-size:12.5px;color:#78350f;">
-              <strong>Research Scope Caveat:</strong> Insights come from a directional small-sample discovery set (10 job seeker surveys incl. 6 recent Naukri applicants, 7 hiring professional responses, 4 Google Play Store reviews, desktop/mobile audits, and recruiter panel training analysis) — not representative statistics for all Naukri users.
+
+            <!-- Structured Flow Strip -->
+            <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:10px 12px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;margin-bottom:14px;font-size:12px;font-weight:600;color:#1e293b;">
+              <a href="#sec-research" style="color:#275df5;text-decoration:none;">1. Research</a>
+              <span style="color:#94a3b8;">→</span>
+              <a href="#sec-problem" style="color:#275df5;text-decoration:none;">2. Problem</a>
+              <span style="color:#94a3b8;">→</span>
+              <a href="#sec-prioritisation" style="color:#275df5;text-decoration:none;">3. Prioritisation (P0–P2)</a>
+              <span style="color:#94a3b8;">→</span>
+              <button class="mob-link" style="font-size:12px;" data-action="switch-mode" data-mode="comparisons">4. Before vs After</button>
+              <span style="color:#94a3b8;">→</span>
+              <button class="mob-link" style="font-size:12px;" data-action="switch-mode" data-mode="mobile">5. Interactive Prototype</button>
+              <span style="color:#94a3b8;">→</span>
+              <a href="#sec-metrics" style="color:#275df5;text-decoration:none;">6. Success Metrics</a>
+            </div>
+
+            <!-- 2-Minute Recommended Demo Journey -->
+            <div style="background:#f5f8ff;border:1px solid #dbe5ff;border-radius:10px;padding:12px 14px;">
+              <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px;">
+                <div style="font-size:13.5px;font-weight:700;color:#121224;">Recommended 2-Minute Demo Journey</div>
+                <button class="mob-btn-primary" style="width:auto;padding:6px 13px;font-size:12px;" data-action="nav-prototype" data-mode="mobile" data-screen="home">
+                  Start 2-Min Demo →
+                </button>
+              </div>
+              <ol style="margin:0;padding-left:18px;font-size:12.5px;color:#334155;line-height:1.6;">
+                <li><strong>Mobile Apply &amp; Track (30s):</strong> Open <em>Senior Product Analyst — Growth (ZenithPay India)</em> → tap <strong>Apply</strong> → tap <strong>Track Application</strong> on Screen 03.</li>
+                <li><strong>Inactivity &amp; Outcome Clarity (30s):</strong> Inspect <em>05/06 14d Viewed</em> (switch 7d/14d/30d threshold), <em>07 Not Shortlisted</em>, and <em>08 Hiring On Hold</em>.</li>
+                <li><strong>Recruiter Live Sync (30s):</strong> Switch to <strong>Recruiter Panel (11)</strong> → shortlist or reject <em>Aarav Mehta</em> with an optional structured reason, or mark a job <em>On Hold</em> / <em>Closed</em> without overwriting existing decisions.</li>
+                <li><strong>Before vs. After (30s):</strong> Open <strong>Before vs. After</strong> to compare audited Naukri screenshots side-by-side with the prototype.</li>
+              </ol>
             </div>
           </div>
 
+          <!-- 1 & 2: Research & Problem -->
+          <div id="sec-research" class="desk-card" style="margin-bottom:18px;">
+            <span class="desk-pill dpill-slate" style="margin-bottom:6px;">1. Research &amp; 2. Problem Statement</span>
+            <h2 style="margin:0 0 8px;font-size:18px;color:#121224;">Directional Research Findings &amp; Core Problem</h2>
+            <div id="sec-problem" style="font-size:13px;color:#334155;line-height:1.55;margin-bottom:10px;">
+              <strong>Problem:</strong> Although Naukri already provides application tracking, candidates remain uncertain about progress, hiring availability, and final outcomes when applications stay at <em>Application Sent</em>, <em>Application Viewed</em>, or <em>Awaiting Recruiter Action</em> for weeks.
+            </div>
+            <div style="background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:10px 14px;font-size:12.5px;color:#78350f;margin-bottom:10px;">
+              <strong>Small-Sample Research Caveat:</strong> Insights come from a directional small-sample discovery set (10 job seeker surveys incl. 6 recent Naukri applicants, 7 hiring professional responses, 4 Google Play Store reviews, desktop/mobile audits, and recruiter training analysis) — not statistically representative metrics for all Naukri users. No baseline metrics or measured post-launch improvements are claimed.
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(210px, 1fr));gap:10px;font-size:12.5px;">
+              <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:10px;"><strong>3 / 6</strong> eligible job seekers received no response within 14 days.</div>
+              <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:10px;"><strong>3 / 6</strong> struggled to understand what was happening to their applications.</div>
+              <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:10px;"><strong>2.67 / 5</strong> average confidence in job &amp; recruiter genuineness.</div>
+              <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:10px;"><strong>11–12 weeks</strong> observed timelines remained unchanged in audited history screens.</div>
+            </div>
+          </div>
+
+          <!-- 3: MVP Prioritisation (Item 6) -->
+          <div id="sec-prioritisation" class="desk-card" style="margin-bottom:18px;">
+            <span class="desk-pill dpill-blue" style="margin-bottom:6px;">3. Initial Proposed Roadmap &amp; MVP Prioritisation</span>
+            <h2 style="margin:0 0 4px;font-size:18px;color:#121224;">Phased Rollout: P0 → P1 → P2</h2>
+            <p style="margin:0 0 14px;font-size:12.5px;color:#64748b;">
+              Note: All relative effort estimates below are <strong>initial PM assumptions pending engineering feasibility validation</strong>.
+            </p>
+
+            ${roadmap.map(group => `
+              <div style="margin-bottom:16px;border:1px solid #e2e8f0;border-radius:10px;overflow:hidden;">
+                <div style="background:#f8fafc;padding:9px 14px;border-bottom:1px solid #e2e8f0;display:flex;align-items:center;justify-content:space-between;">
+                  <span class="desk-pill ${group.badgeClass}" style="font-size:12px;">${group.tier}</span>
+                </div>
+                <div style="overflow-x:auto;">
+                  <table style="width:100%;border-collapse:collapse;font-size:12.5px;text-align:left;">
+                    <thead>
+                      <tr style="border-bottom:1px solid #e2e8f0;color:#474d6a;background:#ffffff;">
+                        <th style="padding:9px 10px;">Initiative</th>
+                        <th style="padding:9px 10px;">User Impact</th>
+                        <th style="padding:9px 10px;">Potential Business Impact</th>
+                        <th style="padding:9px 10px;">Estimated Relative Effort</th>
+                        <th style="padding:9px 10px;">Dependencies</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      ${group.items.map(it => `
+                        <tr style="border-bottom:1px solid #f1f5f9;vertical-align:top;">
+                          <td style="padding:9px 10px;font-weight:700;color:#121224;">${it.feature}</td>
+                          <td style="padding:9px 10px;color:#15803d;">${it.userImpact}</td>
+                          <td style="padding:9px 10px;color:#1d4ed8;">${it.bizImpact}</td>
+                          <td style="padding:9px 10px;color:#474d6a;">${it.effort}</td>
+                          <td style="padding:9px 10px;color:#64748b;">${it.deps}</td>
+                        </tr>
+                      `).join("")}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            `).join("")}
+          </div>
+
+          <!-- Change Matrix -->
           <div class="desk-card" style="margin-bottom:18px;overflow-x:auto;">
             <h2 style="margin:0 0 12px;font-size:17px;color:#121224;">Change-by-Change Rationale &amp; Implementation Matrix</h2>
             <table style="width:100%;border-collapse:collapse;font-size:12.5px;text-align:left;">
@@ -591,9 +795,10 @@ window.NaukriPortfolio = (function () {
             </table>
           </div>
 
-          <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(300px, 1fr));gap:16px;margin-bottom:18px;">
+          <!-- 6: Success Metrics -->
+          <div id="sec-metrics" style="display:grid;grid-template-columns:repeat(auto-fit, minmax(300px, 1fr));gap:16px;margin-bottom:18px;">
             <div class="desk-card">
-              <h3 style="margin:0 0 10px;font-size:15px;color:#121224;">Primary &amp; Secondary Success Metrics</h3>
+              <h3 style="margin:0 0 10px;font-size:15px;color:#121224;">6. Primary &amp; Secondary Success Metrics</h3>
               <div style="font-size:12.5px;color:#334155;line-height:1.6;">
                 <strong>Primary Metrics:</strong>
                 <ul style="margin:4px 0 10px;padding-left:18px;">

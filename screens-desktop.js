@@ -721,13 +721,15 @@ window.NaukriDesktop = (function () {
     const availableStatuses = ["All Applications"];
     ["Awaiting Action", "Viewed", "Shortlisted", "Not Shortlisted", "Closed", "Archived"].forEach(st => {
       if (st === "Archived" && baseList.some(a => a.archived)) availableStatuses.push("Archived");
-      else if (st !== "Archived" && baseList.some(a => !a.archived && a.status === st)) availableStatuses.push(st);
+      else if (st === "Closed" && baseList.some(a => !a.archived && a.hiringStatus === "Closed")) availableStatuses.push("Closed");
+      else if (st !== "Archived" && st !== "Closed" && baseList.some(a => !a.archived && a.status === st)) availableStatuses.push(st);
     });
 
     const list = baseList.filter(a => {
       if (state.appFilter === "Archived") return a.archived;
       if (a.archived) return false;
       if (state.appFilter === "All Applications") return true;
+      if (state.appFilter === "Closed") return a.hiringStatus === "Closed";
       return a.status === state.appFilter;
     });
 
@@ -830,6 +832,10 @@ window.NaukriDesktop = (function () {
                         ${!unavailable && selected.employerVerified && selected.verificationLabel ? `<span class="desk-pill dpill-blue">${esc(selected.verificationLabel)}</span>` : ""}
                         ${selected.isExternal ? `<span class="desk-pill dpill-slate">External application · Limited visibility</span>` : ""}
                       </div>
+                      <div style="font-size:11.5px;color:#717b9e;margin-top:6px;">
+                        Last application update: ${esc(selected.lastUpdatedDate)}
+                        ${!unavailable && selected.hiringStatusConfirmed && selected.hiringStatusUpdated ? ` · Hiring status updated: ${esc(selected.hiringStatusUpdated)}` : ""}
+                      </div>
                     </div>
                   </div>
                   <div style="display:flex;gap:8px;">
@@ -882,8 +888,8 @@ window.NaukriDesktop = (function () {
                   <div style="margin-top:12px;background:#f1f5f9;border:1px solid #cbd5e1;border-radius:8px;padding:12px;">
                     <div style="font-size:13.5px;font-weight:700;color:#1e293b;">This position is no longer accepting applications.</div>
                     <div style="font-size:12.5px;color:#475569;margin-top:3px;">
-                      ${selected.individualDecisionAvailable && selected.individualDecisionText
-                        ? `Individual decision: <strong>${esc(selected.individualDecisionText)}</strong>`
+                      ${(selected.status === "Shortlisted" || selected.status === "Not Shortlisted")
+                        ? `Confirmed individual decision: <strong>${esc(selected.statusLabel)}</strong> (preserved independently of role closure).`
                         : "The role has closed, but your individual application outcome has not been shared."}
                     </div>
                   </div>

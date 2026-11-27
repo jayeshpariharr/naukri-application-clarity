@@ -377,6 +377,8 @@ window.NaukriMobile = (function () {
     ["Awaiting Action", "Viewed", "Shortlisted", "Not Shortlisted", "Closed", "Archived"].forEach(st => {
       if (st === "Archived") {
         if (baseList.some(a => a.archived)) availableStatuses.push("Archived");
+      } else if (st === "Closed") {
+        if (baseList.some(a => !a.archived && a.hiringStatus === "Closed")) availableStatuses.push("Closed");
       } else if (baseList.some(a => !a.archived && a.status === st)) {
         availableStatuses.push(st);
       }
@@ -386,6 +388,7 @@ window.NaukriMobile = (function () {
       if (state.appFilter === "Archived") return app.archived;
       if (app.archived) return false;
       if (state.appFilter === "All Applications") return true;
+      if (state.appFilter === "Closed") return app.hiringStatus === "Closed";
       return app.status === state.appFilter;
     });
 
@@ -498,8 +501,9 @@ window.NaukriMobile = (function () {
           ${unavailable ? `<span class="mob-pill pill-slate">Hiring status not confirmed</span>` : getHiringBadge(app.hiringStatus, app.hiringStatusConfirmed, true)}
         </div>
 
-        <div style="font-size:11px;color:var(--mob-text-muted);margin-top:8px;">
-          Applied ${esc(app.appliedDate)} · Last update ${esc(app.lastUpdatedDate)}
+        <div style="font-size:11px;color:var(--mob-text-muted);margin-top:8px;display:flex;flex-direction:column;gap:2px;">
+          <div>Applied ${esc(app.appliedDate)} · Last application update: ${esc(app.lastUpdatedDate)}</div>
+          ${!unavailable && app.hiringStatusConfirmed && app.hiringStatusUpdated ? `<div>Hiring status updated: ${esc(app.hiringStatusUpdated)}</div>` : ""}
         </div>
       </div>
 
@@ -547,8 +551,8 @@ window.NaukriMobile = (function () {
         <div class="state-callout state-callout-slate">
           <div style="font-size:12.5px;font-weight:700;color:var(--mob-text);">This position is no longer accepting applications.</div>
           <div style="font-size:11.5px;color:var(--mob-text-secondary);margin-top:3px;line-height:1.45;">
-            ${app.individualDecisionAvailable && app.individualDecisionText
-              ? `Confirmed individual decision: <strong>${esc(app.individualDecisionText)}</strong>`
+            ${(app.status === "Shortlisted" || app.status === "Not Shortlisted")
+              ? `Confirmed individual decision: <strong>${esc(app.statusLabel)}</strong> (preserved independently of role closure).`
               : "The role has closed, but your individual application outcome has not been shared."}
           </div>
           <div style="display:flex;gap:8px;margin-top:9px;">

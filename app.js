@@ -139,16 +139,15 @@
     state.lastAppliedAppId = newAppId;
     state.selectedAppId = newAppId;
 
-    state.notifications.unshift({
-      id: "notif-" + Date.now(),
-      category: "Application Updates",
-      title: `Application sent · ${job.company}`,
-      body: `Your application for ${job.title} was submitted on 27 Nov 2026.`,
-      time: "Just now",
-      unread: true,
-      appId: newAppId,
-      eventType: "Application sent"
-    });
+    if (state.notificationPrefs.applicationUpdates) {
+      pushNotification(
+        "Application Updates",
+        `Application sent · ${job.company}`,
+        `Your application for ${job.title} was submitted on 27 Nov 2026.`,
+        newAppId,
+        "Application sent"
+      );
+    }
 
     if (state.mode === "mobile") {
       navigateMobile("success");
@@ -159,7 +158,26 @@
     render();
   }
 
-  function pushNotification(category, title, body, appId, eventType) {
+  function pushNotification(category, title, body, appId, eventType, opts = {}) {
+    const prefs = state.notificationPrefs;
+    if (category === "Recruiter Activity" && !prefs.recruiterActivity) return false;
+    if (category === "Job Recommendations" && !prefs.jobRecommendations) return false;
+    if (category === "Application Updates") {
+      if (eventType === "Hiring paused" || eventType === "Role closed") {
+        if (!prefs.hiringStatusChanges) return false;
+      } else if (eventType === "Hiring resumed") {
+        if (!prefs.hiringStatusChanges || !opts.notifyOnResume) return false;
+      } else if (!prefs.applicationUpdates) {
+        return false;
+      }
+    }
+
+    // Deduplicate identical consecutive/active event for the same application
+    const latestForApp = state.notifications.find(n => n.appId === appId && n.eventType === eventType);
+    if (latestForApp && latestForApp.body === body) {
+      return false;
+    }
+
     state.notifications.unshift({
       id: "notif-" + Date.now() + "-" + Math.floor(Math.random() * 999),
       category,
@@ -170,21 +188,44 @@
       appId,
       eventType
     });
+    return true;
+  }
+
+  function appendConfirmedTimelineEvent(app, stageName, dateStr, stageState) {
+    // Keep historical confirmed events untouched; remove only non-confirmed placeholders
+    const preserved = app.timeline.filter(s => s.state !== "current" && s.state !== "pending");
+    const existingIdx = preserved.findIndex(s => s.stage === stageName);
+    if (existingIdx !== -1) {
+      // Preserve historical timestamp if already confirmed unless upgrading state
+      if (preserved[existingIdx].state === stageState) return;
+      preserved[existingIdx] = { stage: stageName, date: dateStr, state: stageState };
+    } else {
+      preserved.push({ stage: stageName, date: dateStr, state: stageState });
+    }
+    app.timeline = preserved;
   }
 
   function syncRecruiterCandidateStatus(recJobId, candId, newStatus, reasonText) {
     const recJob = state.recruiterJobs.find(j => j.id === recJobId);
-    if (!recJob) return;
+    if (!recJob) return { changed: false, notified: false };
     const cand = recJob.candidates.find(c => c.id === candId);
-    if (!cand) return;
+    if (!cand) return { changed: false, notified: false };
 
     const prevStatus = cand.recruiterStatus;
+    const prevReason = cand.decisionReason || null;
+    const nextReason = newStatus === "Not Shortlisted" ? (reasonText || null) : null;
+
+    if (prevStatus === newStatus && prevReason === nextReason) {
+      return { changed: false, notified: false };
+    }
+
     cand.recruiterStatus = newStatus;
-    cand.decisionReason = newStatus === "Not Shortlisted" ? (reasonText || null) : null;
+    cand.decisionReason = nextReason;
 
     if (prevStatus !== "Shortlisted" && newStatus === "Shortlisted") recJob.shortlistedCount += 1;
     if (prevStatus === "Shortlisted" && newStatus !== "Shortlisted") recJob.shortlistedCount = Math.max(0, recJob.shortlistedCount - 1);
 
+    let notified = false;
     if (cand.isPrototypeUser && cand.linkedAppId) {
       const app = state.applications.find(a => a.id === cand.linkedAppId);
       if (app) {
@@ -200,33 +241,29 @@
           app.individualDecisionAvailable = true;
           app.individualDecisionText = "Shortlisted";
           app.recruiterActivityNote = `Shortlisted by ${recJob.postedBy.replace(" (Me)", "")} on 27 Nov 2026.`;
-          app.timeline = [
-            { stage: "Applied", date: app.appliedDate, state: "done" },
-            { stage: "Application Sent", date: app.appliedDate, state: "done" },
-            { stage: "Application Viewed", date: "27 Nov 2026", state: "done" },
-            { stage: "Shortlisted", date: "27 Nov 2026, Just now", state: "done" }
-          ];
-          pushNotification("Application Updates", `Shortlisted · ${app.company}`, `Your application for ${app.jobTitle} was shortlisted.`, app.id, "Shortlisted");
+          appendConfirmedTimelineEvent(app, "Shortlisted", "27 Nov 2026, Just now", "done");
+          notified = pushNotification(
+            "Application Updates",
+            `Shortlisted · ${app.company}`,
+            `Your application for ${app.jobTitle} was shortlisted.`,
+            app.id,
+            "Shortlisted"
+          );
         } else if (newStatus === "Not Shortlisted") {
           app.status = "Not Shortlisted";
           app.statusLabel = "Not Shortlisted";
           app.statusExplanation = "You have not been shortlisted for this position.";
           app.recruiterDecisionDate = "27 Nov 2026";
-          app.recruiterDecisionReason = reasonText || null;
+          app.recruiterDecisionReason = nextReason;
           app.individualDecisionAvailable = true;
           app.individualDecisionText = "Not Shortlisted";
           app.recruiterActivityNote = "Recruiter updated candidate status to Not Shortlisted on 27 Nov 2026.";
-          app.timeline = [
-            { stage: "Applied", date: app.appliedDate, state: "done" },
-            { stage: "Application Sent", date: app.appliedDate, state: "done" },
-            { stage: "Application Viewed", date: "27 Nov 2026", state: "done" },
-            { stage: "Not Shortlisted", date: "27 Nov 2026, Just now", state: "rejected" }
-          ];
-          pushNotification(
+          appendConfirmedTimelineEvent(app, "Not Shortlisted", "27 Nov 2026, Just now", "rejected");
+          notified = pushNotification(
             "Application Updates",
             `Status updated · ${app.company}`,
-            reasonText
-              ? `Not shortlisted for ${app.jobTitle}. Note: ${reasonText}`
+            nextReason
+              ? `Not shortlisted for ${app.jobTitle}. Note: ${nextReason}`
               : `You have not been shortlisted for ${app.jobTitle}.`,
             app.id,
             "Not shortlisted"
@@ -236,59 +273,84 @@
           app.statusLabel = "Application Viewed";
           app.statusExplanation = "The recruiter has viewed your application. No further decision has been shared yet.";
           app.recruiterActivityNote = "Application viewed by recruiter on 27 Nov 2026.";
-          app.timeline = [
-            { stage: "Applied", date: app.appliedDate, state: "done" },
-            { stage: "Application Sent", date: app.appliedDate, state: "done" },
-            { stage: "Application Viewed", date: "27 Nov 2026, Just now", state: "done" },
-            { stage: "Awaiting Recruiter Action", date: "Current stage", state: "current" }
-          ];
-          pushNotification("Recruiter Activity", `Application viewed · ${app.company}`, `Recruiter opened your application for ${app.jobTitle}.`, app.id, "Application viewed");
+          appendConfirmedTimelineEvent(app, "Application Viewed", "27 Nov 2026, Just now", "done");
+          app.timeline.push({ stage: "Awaiting Recruiter Action", date: "Current stage", state: "current" });
+          notified = pushNotification(
+            "Recruiter Activity",
+            `Application viewed · ${app.company}`,
+            `Recruiter opened your application for ${app.jobTitle}.`,
+            app.id,
+            "Application viewed"
+          );
         } else if (newStatus === "Maybe") {
           app.status = "Viewed";
           app.statusLabel = "Application Viewed";
           app.statusExplanation = "The recruiter has reviewed your application and kept it under consideration. No final decision has been shared yet.";
           app.recruiterActivityNote = "Application reviewed by recruiter (under consideration) on 27 Nov 2026.";
+          appendConfirmedTimelineEvent(app, "Application Viewed", "27 Nov 2026, Just now", "done");
+          app.timeline.push({ stage: "Awaiting Recruiter Action", date: "Under review", state: "current" });
         }
         state.selectedAppId = app.id;
       }
     }
+    return { changed: true, notified };
   }
 
   function syncRecruiterJobStatus(recJobId, newJobStatus) {
     const recJob = state.recruiterJobs.find(j => j.id === recJobId);
     if (!recJob) return;
     const prev = recJob.jobStatus;
+    if (prev === newJobStatus) return;
     recJob.jobStatus = newJobStatus;
 
+    let notifStatusMsg = "Candidate hiring status updated.";
     if (recJob.linkedAppId) {
       const app = state.applications.find(a => a.id === recJob.linkedAppId);
       if (app) {
+        // Keep individual application status & historical timeline untouched
         app.hiringStatus = newJobStatus;
         app.hiringStatusConfirmed = true;
-        app.hiringStatusUpdated = "27 Nov 2026";
-        app.lastUpdatedDate = "27 Nov 2026";
+        app.hiringStatusUpdated = "27 Nov 2026 (Just now)";
 
         if (newJobStatus === "On Hold") {
-          app.statusExplanation = "The employer has temporarily paused hiring. Your individual application outcome has not been confirmed.";
-          app.statusLabel = "Application Viewed · Hiring On Hold";
-          pushNotification("Application Updates", `Hiring paused · ${app.company}`, `Hiring for ${app.jobTitle} is currently on hold.`, app.id, "Hiring paused");
+          const sent = pushNotification(
+            "Application Updates",
+            `Hiring paused · ${app.company}`,
+            `Hiring for ${app.jobTitle} is currently on hold.`,
+            app.id,
+            "Hiring paused"
+          );
+          notifStatusMsg = sent
+            ? "Job marked On Hold — individual decision preserved & candidate notified."
+            : "Job marked On Hold — individual decision preserved (alert suppressed by preferences).";
         } else if (newJobStatus === "Closed") {
-          app.status = "Closed";
-          app.statusLabel = "Role Closed";
-          app.statusExplanation = app.individualDecisionAvailable
-            ? "This position is no longer accepting applications."
-            : "The role has closed, but your individual application outcome has not been shared.";
-          pushNotification("Application Updates", `Role closed · ${app.company}`, `${app.jobTitle} is no longer accepting applications.`, app.id, "Role closed");
-        } else if (newJobStatus === "Active" && prev === "On Hold") {
-          app.status = "Viewed";
-          app.statusLabel = "Application Viewed";
-          app.statusExplanation = "Hiring has resumed for this position. Your application remains active in the recruiter's queue.";
-          pushNotification("Application Updates", `Hiring resumed · ${app.company}`, `${app.jobTitle} is actively hiring again.`, app.id, "Hiring resumed");
+          const sent = pushNotification(
+            "Application Updates",
+            `Role closed · ${app.company}`,
+            `${app.jobTitle} is no longer accepting applications.`,
+            app.id,
+            "Role closed"
+          );
+          notifStatusMsg = sent
+            ? "Job marked Closed — existing candidate decision preserved & candidate notified."
+            : "Job marked Closed — existing candidate decision preserved (alert suppressed by preferences).";
+        } else if (newJobStatus === "Active" && (prev === "On Hold" || prev === "Closed")) {
+          const sent = pushNotification(
+            "Application Updates",
+            `Hiring resumed · ${app.company}`,
+            `${app.jobTitle} is actively hiring again.`,
+            app.id,
+            "Hiring resumed",
+            { notifyOnResume: app.notifyOnResume }
+          );
+          notifStatusMsg = sent
+            ? "Job reopened (Active) — candidate notified via resume alert subscription."
+            : "Job reopened (Active) — individual decision preserved (no resume alert sent: opt-in or preference off).";
         }
         state.selectedAppId = app.id;
       }
     }
-    showToast(`Job status updated to "${newJobStatus}" — Candidate view & notifications synced.`);
+    showToast(notifStatusMsg);
     render();
   }
 
@@ -752,8 +814,14 @@
       const recJobId = target.getAttribute("data-rec-job-id");
       const candId = target.getAttribute("data-cand-id");
       const status = target.getAttribute("data-status");
-      syncRecruiterCandidateStatus(recJobId, candId, status, null);
-      showToast(`Candidate marked "${status}" — Candidate view & notifications updated.`);
+      const res = syncRecruiterCandidateStatus(recJobId, candId, status, null);
+      if (!res.changed) {
+        showToast(`Status is already "${status}" — no duplicate notification sent.`);
+      } else if (res.notified) {
+        showToast(`Candidate marked "${status}" — Candidate view & notification synced.`);
+      } else {
+        showToast(`Candidate marked "${status}" — View synced (notification off in preferences).`);
+      }
       render();
       return;
     }
@@ -764,8 +832,12 @@
         return;
       }
       const status = target.getAttribute("data-status");
-      state.recSelectedCandIds.forEach(cid => syncRecruiterCandidateStatus(state.selectedRecJobId, cid, status, null));
-      showToast(`Updated ${state.recSelectedCandIds.length} candidate(s) to "${status}".`);
+      let changedCount = 0;
+      state.recSelectedCandIds.forEach(cid => {
+        const res = syncRecruiterCandidateStatus(state.selectedRecJobId, cid, status, null);
+        if (res.changed) changedCount += 1;
+      });
+      showToast(changedCount > 0 ? `Updated ${changedCount} candidate(s) to "${status}".` : `Selected candidate(s) already at "${status}".`);
       state.recSelectedCandIds = [];
       render();
       return;
@@ -801,12 +873,18 @@
       const idx = checked ? Number(checked.value) : 4;
       const chosen = idx === 4 ? null : state.structuredRejectionReasons[idx];
       if (state.modal.bulk) {
-        state.recSelectedCandIds.forEach(cid => syncRecruiterCandidateStatus(state.modal.recJobId, cid, "Not Shortlisted", chosen));
-        showToast(`Bulk updated ${state.recSelectedCandIds.length} candidate(s) to Not Shortlisted.`);
+        let changedCount = 0;
+        state.recSelectedCandIds.forEach(cid => {
+          const res = syncRecruiterCandidateStatus(state.modal.recJobId, cid, "Not Shortlisted", chosen);
+          if (res.changed) changedCount += 1;
+        });
+        showToast(changedCount > 0 ? `Bulk updated ${changedCount} candidate(s) to Not Shortlisted.` : "Selected candidate(s) already at Not Shortlisted.");
         state.recSelectedCandIds = [];
       } else {
-        syncRecruiterCandidateStatus(state.modal.recJobId, state.modal.candId, "Not Shortlisted", chosen);
-        showToast("Candidate marked Not Shortlisted — Candidate view & notification synced.");
+        const res = syncRecruiterCandidateStatus(state.modal.recJobId, state.modal.candId, "Not Shortlisted", chosen);
+        showToast(res.changed
+          ? (res.notified ? "Candidate marked Not Shortlisted — Candidate view & notification synced." : "Candidate marked Not Shortlisted — View synced (notification off in preferences).")
+          : "Candidate is already Not Shortlisted with this reason — no duplicate update sent.");
       }
       state.modal = null;
       render();

@@ -80,7 +80,7 @@ window.NaukriRecruiter = (function () {
             <div>
               <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
                 <h1 style="margin:0;font-size:24px;font-weight:700;color:#121224;">Manage Jobs and Responses</h1>
-                <span class="desk-pill dpill-slate">Conceptual Supporting Workflow</span>
+                <span class="desk-pill dpill-slate">Conceptual workflow (subject to feasibility validation)</span>
               </div>
               <div style="font-size:12.5px;color:#717b9e;margin-top:3px;">
                 Responses to your jobs and NVites will appear here
@@ -186,7 +186,7 @@ window.NaukriRecruiter = (function () {
               <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
                 <h2 style="margin:0;font-size:19px;color:#121224;">${esc(job.title)}</h2>
                 <span class="desk-pill ${job.jobStatus === 'Active' ? 'dpill-green' : job.jobStatus === 'On Hold' ? 'dpill-amber' : 'dpill-red'}">${esc(job.jobStatus)}</span>
-                <span class="desk-pill dpill-slate">Conceptual Supporting Workflow</span>
+                <span class="desk-pill dpill-slate">Conceptual workflow (subject to feasibility validation)</span>
               </div>
               <div style="font-size:12px;color:#717b9e;margin-top:2px;">
                 ${esc(job.location)} · Actions on <strong>Aarav Mehta</strong> sync directly to candidate Mobile &amp; Desktop views.
@@ -286,7 +286,9 @@ window.NaukriRecruiter = (function () {
               let previewBody = "The recruiter has viewed your application. No further decision has been shared yet.";
               if (job.jobStatus === "On Hold") {
                 previewTitle = "Hiring paused · " + job.title;
-                previewBody = "The employer has temporarily paused hiring. Your individual application outcome has not been confirmed.";
+                previewBody = target.recruiterStatus === "Shortlisted" || target.recruiterStatus === "Not Shortlisted"
+                  ? `The employer has temporarily paused hiring. Your existing individual status (${target.recruiterStatus}) remains preserved.`
+                  : "The employer has temporarily paused hiring. Your individual application outcome has not been confirmed.";
               } else if (job.jobStatus === "Closed") {
                 previewTitle = "Role closed · " + job.title;
                 previewBody = target.recruiterStatus === "Shortlisted" || target.recruiterStatus === "Not Shortlisted"

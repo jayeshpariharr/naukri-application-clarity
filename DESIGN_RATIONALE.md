@@ -76,12 +76,12 @@ This proposal is grounded in a multi-source discovery study:
 - **Business Value:** Improves notification engagement while lowering opt-out rates.
 - **Implementation Dependencies:** Event-driven notification router + user preference flags.
 
-### Screen 11: Recruiter-Side Supporting Workflow (Conceptual)
+### Screen 11: Recruiter-Side Supporting Workflow (Conceptual — Subject to Feasibility Validation)
 - **What Changed:** Reuses Naukri Recruiter Panel's existing `Shortlist` / `Maybe` / `Reject` buttons, `Select All` bulk toolbar, and `Manage Jobs` status filters. Adds a 1-click **Optional Structured Rejection Reason** selector (skippable), an **On Hold** job availability toggle, and a **Candidate-Facing Notification Preview**.
 - **Research Evidence:** Recruiter panel training analysis showed bulk selection and Shortlist/Maybe/Reject already exist; 5/7 hiring pros already reply to >60% of applicants and should not be burdened with manual messaging.
 - **User Value:** Candidates receive timely, honest status updates without waiting months.
-- **Business Value:** Improves candidate communication at near-zero marginal recruiter effort.
-- **Implementation Dependencies:** Verification of recruiter ATS/webhook integration for bulk status reason payloads and requisition pause events.
+- **Business Value:** Hypothesised improvement in candidate communication with a hypothesised reduction in recruiter effort compared to manual messaging.
+- **Implementation Dependencies:** Conceptual recruiter workflow, subject to feasibility validation against recruiter ATS/webhook capabilities for bulk status reason payloads and requisition pause events.
 
 ### Screen 12: Desktop Web Application Tracker
 - **What Changed:** Adapts all mobile clarity improvements onto Naukri's existing desktop light-theme split-pane layout (left application list + right horizontal timeline, job activity stats, and profile-match insights).
@@ -89,7 +89,30 @@ This proposal is grounded in a multi-source discovery study:
 
 ---
 
-## 3. Measurement Framework
+## 3. Initial Proposed MVP Prioritisation (P0 → P1 → P2)
+
+> *Relative effort estimates below are initial PM assumptions pending engineering feasibility validation.*
+
+### P0 — Core MVP
+- **Track Application CTA (Post-Apply):** Immediate navigation from Apply Success to free status tracking (`Low` assumed effort; depends on passing `applicationId`).
+- **Enhanced Application Timeline & Plain-Language Explanation:** Clarifies current stage and distinguishes views/CV downloads from shortlisting (`Low` assumed effort; depends on copy mapping over existing events).
+- **Last Confirmed Update Date:** Separates application-level timestamps from job-level timestamps (`Low` assumed effort; depends on exposing confirmed event date).
+- **Inactivity Indicator (7/14/30d) & Next Actions:** Non-punitive callout (never auto-rejects) with `Explore Similar Jobs` and `Archive` pivots (`Medium` assumed effort; depends on threshold calculation & preference storage).
+
+### P1 — Application Management
+- **Status Filters:** Lightweight triage (`Awaiting Action`, `Viewed`, `Shortlisted`, `Not Shortlisted`, `Closed`, `Archived`) (`Low–Medium` assumed effort).
+- **Application-Specific Notifications & Preferences:** Separates confirmed outcomes and recruiter views from promo noise (`Medium` assumed effort).
+- **Homepage Application Summary:** Compact summary card inside existing home feed (`Low` assumed effort).
+- **Archive & Restore:** Declutters stale items without deleting history (`Low` assumed effort).
+
+### P2 — Recruiter & Marketplace Enhancements
+- **Confirmed Hiring Availability (`Active` / `On Hold` / `Closed`) & Employer Verification:** Prevents wasted applications without implying unverified trust (`Medium–High` assumed effort).
+- **Optional Structured Rejection Reasons:** Skippable reason codes (`Medium` assumed effort; conceptual, subject to feasibility validation).
+- **Recruiter-Side Status Automation:** Bulk status updates & On Hold/Closed propagation with a hypothesised reduction in recruiter effort (`High` assumed effort; conceptual, subject to feasibility validation).
+
+---
+
+## 4. Measurement Framework
 
 *(No baseline metrics or measured improvements are claimed prior to live experimentation.)*
 
