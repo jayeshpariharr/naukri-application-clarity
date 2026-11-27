@@ -7,11 +7,17 @@
 
   function createInitialState() {
     const base = deepClone(window.NAUKRI_DATA);
+    const params = new URLSearchParams(window.location.search);
+    const qMode = params.get("mode");
+    const qScreen = params.get("screen");
+    const qApp = params.get("app");
+    const qJob = params.get("job");
+    const qSub = params.get("sub");
     return {
-      mode: "mobile", // "mobile" | "desktop" | "recruiter" | "comparisons" | "rationale"
-      mobileScreen: "home", // "home" | "job" | "success" | "applies" | "details" | "notifications" | "similar"
+      mode: qMode || "mobile", // "mobile" | "desktop" | "recruiter" | "comparisons" | "rationale"
+      mobileScreen: qScreen || "home", // "home" | "job" | "success" | "applies" | "details" | "notifications" | "similar"
       mobileHistory: [],
-      desktopSubView: "home", // "home" | "tracker" | "jobs" | "jobDetail" | "applySuccess" | "companies" | "services"
+      desktopSubView: qSub || "home", // "home" | "tracker" | "jobs" | "jobDetail" | "applySuccess" | "companies" | "services"
       deskDropdown: null, // null | "companies" | "services"
       deskProfileDrawer: false,
       deskRecTab: "handpicked",
@@ -20,8 +26,8 @@
       selectedRecJobId: "rec-job-01",
       recJobFilter: "All",
       recSelectedCandIds: [],
-      selectedJobId: "job-101",
-      selectedAppId: "app-03",
+      selectedJobId: qJob || "job-101",
+      selectedAppId: qApp || "app-03",
       lastAppliedAppId: "app-01",
       appCategory: "All",
       appFilter: "All Applications",
@@ -29,7 +35,9 @@
       inactivityThreshold: 14,
       loadingMode: false,
       unavailableDataMode: false,
-      modal: null, // null | { type: "notifPrefs" } | { type: "rejectModal", recJobId, candId, bulk }
+      showComparisonPins: true,
+      compCategoryFilter: "All",
+      modal: null, // null | { type: "notifPrefs" } | { type: "rejectModal", ... } | { type: "lightbox", src, alt, caption, tag }
       toast: null,
       candidate: base.candidate,
       jobs: base.jobs,
@@ -353,6 +361,23 @@
       `;
     }
 
+    if (state.modal.type === "lightbox") {
+      return `
+        <div class="modal-backdrop" data-backdrop-close="true">
+          <div class="lightbox-modal">
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;">
+              <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                <span class="desk-pill dpill-blue">${window.NaukriMobile.esc(state.modal.tag)}</span>
+                <span style="font-size:13px;font-weight:600;color:#f8fafc;">${window.NaukriMobile.esc(state.modal.caption)}</span>
+              </div>
+              <button class="proto-reset" data-action="close-modal">✕ Close</button>
+            </div>
+            <img src="${window.NaukriMobile.esc(state.modal.src)}" alt="${window.NaukriMobile.esc(state.modal.alt)}" />
+          </div>
+        </div>
+      `;
+    }
+
     return "";
   }
 
@@ -397,7 +422,7 @@
     if (state.mode === "mobile") body = window.NaukriMobile.render(state);
     else if (state.mode === "desktop") body = window.NaukriDesktop.render(state);
     else if (state.mode === "recruiter") body = window.NaukriRecruiter.render(state);
-    else if (state.mode === "comparisons") body = window.NaukriPortfolio.renderComparisons();
+    else if (state.mode === "comparisons") body = window.NaukriPortfolio.renderComparisons(state);
     else body = window.NaukriPortfolio.renderRationale();
 
     const toastHtml = state.toast ? `<div class="toast-banner">✓ ${window.NaukriMobile.esc(state.toast)}</div>` : "";
@@ -425,6 +450,43 @@
       state.mode = target.getAttribute("data-mode");
       const targetScreen = target.getAttribute("data-screen");
       if (targetScreen) state.mobileScreen = targetScreen;
+      render();
+      return;
+    }
+
+    if (action === "nav-prototype") {
+      state.mode = target.getAttribute("data-mode");
+      const scr = target.getAttribute("data-screen");
+      const appId = target.getAttribute("data-app");
+      const sub = target.getAttribute("data-sub");
+      if (scr) state.mobileScreen = scr;
+      if (appId) state.selectedAppId = appId;
+      if (sub) state.desktopSubView = sub;
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      render();
+      return;
+    }
+
+    if (action === "open-lightbox") {
+      state.modal = {
+        type: "lightbox",
+        src: target.getAttribute("data-src"),
+        alt: target.getAttribute("data-alt"),
+        caption: target.getAttribute("data-caption"),
+        tag: target.getAttribute("data-tag")
+      };
+      render();
+      return;
+    }
+
+    if (action === "toggle-comp-pins") {
+      state.showComparisonPins = !state.showComparisonPins;
+      render();
+      return;
+    }
+
+    if (action === "set-comp-cat") {
+      state.compCategoryFilter = target.getAttribute("data-cat");
       render();
       return;
     }
@@ -772,6 +834,13 @@
     }
     if (action === "rec-filter-jobs") {
       state.recJobFilter = target.getAttribute("data-status");
+      render();
+    }
+  });
+
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape" && state.modal) {
+      state.modal = null;
       render();
     }
   });
