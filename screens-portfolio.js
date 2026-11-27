@@ -591,7 +591,7 @@ window.NaukriPortfolio = (function () {
             </table>
           </div>
 
-          <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(300px, 1fr));gap:16px;">
+          <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(300px, 1fr));gap:16px;margin-bottom:18px;">
             <div class="desk-card">
               <h3 style="margin:0 0 10px;font-size:15px;color:#121224;">Primary &amp; Secondary Success Metrics</h3>
               <div style="font-size:12.5px;color:#334155;line-height:1.6;">
@@ -626,6 +626,67 @@ window.NaukriPortfolio = (function () {
                   <li>Never imply employer verification without reliable evidence</li>
                 </ul>
               </div>
+            </div>
+          </div>
+
+          <!-- Google Play Store Reviews (Research Evidence Only — Reviewer PII Redacted) -->
+          <div class="desk-card">
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px;">
+              <div>
+                <span class="desk-pill dpill-slate" style="margin-bottom:6px;">Supporting Research Evidence · Google Play Store Audit</span>
+                <h2 style="margin:0;font-size:17px;color:#121224;">Directional User Pain Points from Play Store Reviews</h2>
+                <p style="margin:4px 0 0;font-size:12.5px;color:#474d6a;">
+                  Used strictly as qualitative research evidence (reviewer names and photos redacted). Click any review screenshot to enlarge.
+                </p>
+              </div>
+            </div>
+
+            <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(260px, 1fr));gap:14px;">
+              ${[
+                {
+                  src: "./assets/evidence/review-1-notifications.jpg",
+                  title: "Irrelevant Notification Noise",
+                  theme: "Supports Screen 10 (Application Updates tab & Preferences)",
+                  note: "User reports receiving no recruiter calls while notifications are dominated by irrelevant alerts.",
+                  alt: "Redacted Google Play Store review describing irrelevant notifications instead of recruiter responses"
+                },
+                {
+                  src: "./assets/evidence/review-2-upsells.jpg",
+                  title: "Paid Upsell Frustration",
+                  theme: "Supports Screen 03 & 05 (Contextual Pro below tracking)",
+                  note: "User criticizes aggressive paid upsells targeting frustrated job seekers without clarity.",
+                  alt: "Redacted Google Play Store review describing frustration with paid fast-forward upsells"
+                },
+                {
+                  src: "./assets/evidence/review-3-unviewed.jpg",
+                  title: "Unviewed Applications & Match Gaps",
+                  theme: "Supports Screen 05 (Job Activity) & Screen 07 (Match Criteria)",
+                  note: "User notes recruiters had not viewed applications and flags confusing location-match warnings.",
+                  alt: "Redacted Google Play Store review describing unviewed applications and location mismatch confusion"
+                },
+                {
+                  src: "./assets/evidence/review-4-verification.jpg",
+                  title: "Consultancy & Verification Trust Gap",
+                  theme: "Supports Screen 02 (Verified Employer badge only when confirmed)",
+                  note: "User highlights inability to verify consultancy/recruiter legitimacy on job listings.",
+                  alt: "Redacted Google Play Store review describing difficulty verifying consultancy and recruiter legitimacy"
+                }
+              ].map(ev => `
+                <div style="border:1px solid #e2e8f0;border-radius:10px;padding:12px;background:#f8fafc;display:flex;flex-direction:column;gap:8px;">
+                  <div style="font-size:13.5px;font-weight:700;color:#121224;">${ev.title}</div>
+                  <div class="comp-img-stage light-stage" style="min-height:200px;max-height:240px;"
+                    data-action="open-lightbox"
+                    data-src="${ev.src}"
+                    data-alt="${ev.alt}"
+                    data-caption="${ev.title} (Research Evidence · PII Redacted)"
+                    data-tag="RESEARCH EVIDENCE">
+                    <img src="${ev.src}" alt="${ev.alt}" loading="lazy" />
+                    <span class="comp-zoom-hint">Click to enlarge</span>
+                  </div>
+                  <div style="font-size:11.5px;font-weight:600;color:#1d4ed8;">${ev.theme}</div>
+                  <div style="font-size:12px;color:#474d6a;line-height:1.45;">${ev.note}</div>
+                </div>
+              `).join("")}
             </div>
           </div>
         </div>
