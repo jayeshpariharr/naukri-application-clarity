@@ -1,0 +1,714 @@
+/* Central State Store, Interaction Engine & Live Recruiter-Candidate Sync */
+
+(function () {
+  function deepClone(obj) {
+    return JSON.parse(JSON.stringify(obj));
+  }
+
+  function createInitialState() {
+    const base = deepClone(window.NAUKRI_DATA);
+    return {
+      mode: "mobile", // "mobile" | "desktop" | "recruiter" | "comparisons" | "rationale"
+      mobileScreen: "home", // "home" | "job" | "success" | "applies" | "details" | "notifications" | "similar"
+      mobileHistory: [],
+      desktopSubView: "tracker", // "tracker" | "jobs"
+      recruiterSubView: "responses", // "jobs" | "responses"
+      selectedRecJobId: "rec-job-01",
+      recJobFilter: "All",
+      recSelectedCandIds: [],
+      selectedJobId: "job-101",
+      selectedAppId: "app-03",
+      lastAppliedAppId: "app-01",
+      appCategory: "All",
+      appFilter: "All Applications",
+      notifCategory: "All",
+      inactivityThreshold: 14,
+      loadingMode: false,
+      unavailableDataMode: false,
+      modal: null, // null | { type: "notifPrefs" } | { type: "rejectModal", recJobId, candId, bulk }
+      toast: null,
+      candidate: base.candidate,
+      jobs: base.jobs,
+      applications: base.applications,
+      notifications: base.notifications,
+      notificationPrefs: base.notificationPrefs,
+      recruiterJobs: base.recruiterJobs,
+      structuredRejectionReasons: base.structuredRejectionReasons
+    };
+  }
+
+  let state = createInitialState();
+  let toastTimer = null;
+
+  function showToast(msg) {
+    state.toast = msg;
+    render();
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => {
+      state.toast = null;
+      render();
+    }, 3400);
+  }
+
+  function navigateMobile(nextScreen, opts = {}) {
+    if (state.mobileScreen !== nextScreen) {
+      state.mobileHistory.push(state.mobileScreen);
+    }
+    state.mobileScreen = nextScreen;
+    if (opts.appId) state.selectedAppId = opts.appId;
+    if (opts.jobId) state.selectedJobId = opts.jobId;
+  }
+
+  function applyToJob(jobId) {
+    const job = state.jobs.find(j => j.id === jobId);
+    if (!job) return;
+    if (job.hiringStatusConfirmed && job.hiringStatus === "Closed") {
+      showToast("This position is closed and no longer accepting applications.");
+      return;
+    }
+
+    const existing = state.applications.find(a => a.jobId === job.id && !a.archived);
+    if (existing) {
+      state.selectedAppId = existing.id;
+      if (state.mode === "mobile") navigateMobile("details", { appId: existing.id });
+      else state.desktopSubView = "tracker";
+      showToast("You already applied for this job — opened tracker.");
+      render();
+      return;
+    }
+
+    const newAppId = "app-new-" + Date.now();
+    const newApp = {
+      id: newAppId,
+      jobId: job.id,
+      jobTitle: job.title,
+      company: job.company,
+      companyRating: job.rating,
+      location: job.location,
+      salary: job.salary,
+      experienceReq: job.experience,
+      category: "Applies on Naukri",
+      appliedDate: "27 Nov 2026 (Today)",
+      lastUpdatedDate: "27 Nov 2026",
+      inactivityDays: 0,
+      status: "Awaiting Action",
+      statusLabel: "Application Sent",
+      statusExplanation: "Your application has been sent successfully. You can track recorded recruiter actions and application updates from My Applications.",
+      hiringStatus: job.hiringStatus,
+      hiringStatusConfirmed: job.hiringStatusConfirmed,
+      hiringStatusUpdated: job.hiringStatusUpdated,
+      employerVerified: job.employerVerified,
+      verificationLabel: job.verificationLabel,
+      recruiterName: job.recruiterName,
+      recruiterLastActive: job.recruiterLastActive,
+      totalApplicants: job.applicantsCount + 1,
+      viewedByRecruiter: job.viewedCount,
+      isExternal: false,
+      archived: false,
+      notifyOnResume: false,
+      recruiterDecisionReason: null,
+      recruiterActivityNote: "Submitted today. Recruiter has not reviewed your application yet.",
+      timeline: [
+        { stage: "Applied", date: "27 Nov 2026, Just now", state: "done" },
+        { stage: "Application Sent", date: "27 Nov 2026, Just now", state: "done" },
+        { stage: "Application Viewed", date: "Pending", state: "pending" },
+        { stage: "Awaiting Recruiter Action", date: "Current stage", state: "current" }
+      ],
+      matchInsights: {
+        score: job.matchPercentage,
+        criteria: Object.values(job.matchCriteria)
+      }
+    };
+
+    state.applications.unshift(newApp);
+    state.lastAppliedAppId = newAppId;
+    state.selectedAppId = newAppId;
+
+    state.notifications.unshift({
+      id: "notif-" + Date.now(),
+      category: "Application Updates",
+      title: `Application sent · ${job.company}`,
+      body: `Your application for ${job.title} was submitted on 27 Nov 2026.`,
+      time: "Just now",
+      unread: true,
+      appId: newAppId,
+      eventType: "Application sent"
+    });
+
+    if (state.mode === "mobile") {
+      navigateMobile("success");
+    } else {
+      state.desktopSubView = "tracker";
+      showToast(`Applied successfully to ${job.title} at ${job.company}!`);
+    }
+    render();
+  }
+
+  function pushNotification(category, title, body, appId, eventType) {
+    state.notifications.unshift({
+      id: "notif-" + Date.now() + "-" + Math.floor(Math.random() * 999),
+      category,
+      title,
+      body,
+      time: "Just now",
+      unread: true,
+      appId,
+      eventType
+    });
+  }
+
+  function syncRecruiterCandidateStatus(recJobId, candId, newStatus, reasonText) {
+    const recJob = state.recruiterJobs.find(j => j.id === recJobId);
+    if (!recJob) return;
+    const cand = recJob.candidates.find(c => c.id === candId);
+    if (!cand) return;
+
+    const prevStatus = cand.recruiterStatus;
+    cand.recruiterStatus = newStatus;
+    cand.decisionReason = newStatus === "Not Shortlisted" ? (reasonText || null) : null;
+
+    if (prevStatus !== "Shortlisted" && newStatus === "Shortlisted") recJob.shortlistedCount += 1;
+    if (prevStatus === "Shortlisted" && newStatus !== "Shortlisted") recJob.shortlistedCount = Math.max(0, recJob.shortlistedCount - 1);
+
+    if (cand.isPrototypeUser && cand.linkedAppId) {
+      const app = state.applications.find(a => a.id === cand.linkedAppId);
+      if (app) {
+        app.lastUpdatedDate = "27 Nov 2026 (Just now)";
+        app.inactivityDays = 0;
+        app.recruiterLastActive = "Active just now";
+
+        if (newStatus === "Shortlisted") {
+          app.status = "Shortlisted";
+          app.statusLabel = "Shortlisted";
+          app.statusExplanation = "The recruiter has shortlisted your profile. Watch your registered email and NVites inbox for interview scheduling.";
+          app.recruiterDecisionReason = null;
+          app.individualDecisionAvailable = true;
+          app.individualDecisionText = "Shortlisted";
+          app.recruiterActivityNote = `Shortlisted by ${recJob.postedBy.replace(" (Me)", "")} on 27 Nov 2026.`;
+          app.timeline = [
+            { stage: "Applied", date: app.appliedDate, state: "done" },
+            { stage: "Application Sent", date: app.appliedDate, state: "done" },
+            { stage: "Application Viewed", date: "27 Nov 2026", state: "done" },
+            { stage: "Shortlisted", date: "27 Nov 2026, Just now", state: "done" }
+          ];
+          pushNotification("Application Updates", `Shortlisted · ${app.company}`, `Your application for ${app.jobTitle} was shortlisted.`, app.id, "Shortlisted");
+        } else if (newStatus === "Not Shortlisted") {
+          app.status = "Not Shortlisted";
+          app.statusLabel = "Not Shortlisted";
+          app.statusExplanation = "You have not been shortlisted for this position.";
+          app.recruiterDecisionDate = "27 Nov 2026";
+          app.recruiterDecisionReason = reasonText || null;
+          app.individualDecisionAvailable = true;
+          app.individualDecisionText = "Not Shortlisted";
+          app.recruiterActivityNote = "Recruiter updated candidate status to Not Shortlisted on 27 Nov 2026.";
+          app.timeline = [
+            { stage: "Applied", date: app.appliedDate, state: "done" },
+            { stage: "Application Sent", date: app.appliedDate, state: "done" },
+            { stage: "Application Viewed", date: "27 Nov 2026", state: "done" },
+            { stage: "Not Shortlisted", date: "27 Nov 2026, Just now", state: "rejected" }
+          ];
+          pushNotification(
+            "Application Updates",
+            `Status updated · ${app.company}`,
+            reasonText
+              ? `Not shortlisted for ${app.jobTitle}. Note: ${reasonText}`
+              : `You have not been shortlisted for ${app.jobTitle}.`,
+            app.id,
+            "Not shortlisted"
+          );
+        } else if (newStatus === "Viewed") {
+          app.status = "Viewed";
+          app.statusLabel = "Application Viewed";
+          app.statusExplanation = "The recruiter has viewed your application. No further decision has been shared yet.";
+          app.recruiterActivityNote = "Application viewed by recruiter on 27 Nov 2026.";
+          app.timeline = [
+            { stage: "Applied", date: app.appliedDate, state: "done" },
+            { stage: "Application Sent", date: app.appliedDate, state: "done" },
+            { stage: "Application Viewed", date: "27 Nov 2026, Just now", state: "done" },
+            { stage: "Awaiting Recruiter Action", date: "Current stage", state: "current" }
+          ];
+          pushNotification("Recruiter Activity", `Application viewed · ${app.company}`, `Recruiter opened your application for ${app.jobTitle}.`, app.id, "Application viewed");
+        } else if (newStatus === "Maybe") {
+          app.status = "Viewed";
+          app.statusLabel = "Application Viewed";
+          app.statusExplanation = "The recruiter has reviewed your application and kept it under consideration. No final decision has been shared yet.";
+          app.recruiterActivityNote = "Application reviewed by recruiter (under consideration) on 27 Nov 2026.";
+        }
+        state.selectedAppId = app.id;
+      }
+    }
+  }
+
+  function syncRecruiterJobStatus(recJobId, newJobStatus) {
+    const recJob = state.recruiterJobs.find(j => j.id === recJobId);
+    if (!recJob) return;
+    const prev = recJob.jobStatus;
+    recJob.jobStatus = newJobStatus;
+
+    if (recJob.linkedAppId) {
+      const app = state.applications.find(a => a.id === recJob.linkedAppId);
+      if (app) {
+        app.hiringStatus = newJobStatus;
+        app.hiringStatusConfirmed = true;
+        app.hiringStatusUpdated = "27 Nov 2026";
+        app.lastUpdatedDate = "27 Nov 2026";
+
+        if (newJobStatus === "On Hold") {
+          app.statusExplanation = "The employer has temporarily paused hiring. Your individual application outcome has not been confirmed.";
+          app.statusLabel = "Application Viewed · Hiring On Hold";
+          pushNotification("Application Updates", `Hiring paused · ${app.company}`, `Hiring for ${app.jobTitle} is currently on hold.`, app.id, "Hiring paused");
+        } else if (newJobStatus === "Closed") {
+          app.status = "Closed";
+          app.statusLabel = "Role Closed";
+          app.statusExplanation = app.individualDecisionAvailable
+            ? "This position is no longer accepting applications."
+            : "The role has closed, but your individual application outcome has not been shared.";
+          pushNotification("Application Updates", `Role closed · ${app.company}`, `${app.jobTitle} is no longer accepting applications.`, app.id, "Role closed");
+        } else if (newJobStatus === "Active" && prev === "On Hold") {
+          app.status = "Viewed";
+          app.statusLabel = "Application Viewed";
+          app.statusExplanation = "Hiring has resumed for this position. Your application remains active in the recruiter's queue.";
+          pushNotification("Application Updates", `Hiring resumed · ${app.company}`, `${app.jobTitle} is actively hiring again.`, app.id, "Hiring resumed");
+        }
+        state.selectedAppId = app.id;
+      }
+    }
+    showToast(`Job status updated to "${newJobStatus}" — Candidate view & notifications synced.`);
+    render();
+  }
+
+  function renderModals() {
+    if (!state.modal) return "";
+
+    if (state.modal.type === "notifPrefs") {
+      const p = state.notificationPrefs;
+      const items = [
+        { key: "applicationUpdates", label: "Application status updates", desc: "Shortlisted, Interview scheduled, Not shortlisted" },
+        { key: "hiringStatusChanges", label: "Hiring status changes", desc: "Role paused (On Hold), hiring resumed, or role closed" },
+        { key: "inactivityDigest", label: "Inactivity summary alerts", desc: `Optional reminder after ${state.inactivityThreshold} days with no update` },
+        { key: "recruiterActivity", label: "Recruiter activity", desc: "When your application is viewed" },
+        { key: "jobRecommendations", label: "Job recommendations", desc: "Matched roles from verified employers" },
+        { key: "promotional", label: "Naukri Pro & promotional offers", desc: "Paid add-ons and career services" }
+      ];
+      return `
+        <div class="modal-backdrop" data-backdrop-close="true">
+          <div class="modal-panel modal-panel-dark">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+              <h3 style="margin:0;font-size:16px;">Notification Preferences</h3>
+              <button class="mob-btn-secondary" style="padding:4px 10px;" data-action="close-modal">✕</button>
+            </div>
+            <p style="font-size:12px;color:#9ca3af;margin:0 0 12px;">Control which updates you receive. Essential application updates stay clean and non-promotional.</p>
+            <div style="display:flex;flex-direction:column;gap:10px;">
+              ${items.map(it => `
+                <label style="display:flex;justify-content:space-between;align-items:center;gap:12px;background:#222838;padding:10px 12px;border-radius:10px;cursor:pointer;">
+                  <div>
+                    <div style="font-size:13px;font-weight:600;color:#f3f4f8;">${it.label}</div>
+                    <div style="font-size:11.5px;color:#9ca3af;">${it.desc}</div>
+                  </div>
+                  <input type="checkbox" ${p[it.key] ? "checked" : ""} data-action="toggle-pref" data-pref-key="${it.key}" style="width:18px;height:18px;">
+                </label>
+              `).join("")}
+            </div>
+            <button class="mob-btn-primary" style="margin-top:14px;" data-action="close-modal">Save Preferences</button>
+          </div>
+        </div>
+      `;
+    }
+
+    if (state.modal.type === "rejectModal") {
+      const isBulk = state.modal.bulk;
+      return `
+        <div class="modal-backdrop" data-backdrop-close="true">
+          <div class="modal-panel">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+              <h3 style="margin:0;font-size:17px;color:#121224;">
+                ${isBulk ? `Update ${state.recSelectedCandIds.length} Selected Candidate(s) to Not Shortlisted` : "Mark Candidate as Not Shortlisted"}
+              </h3>
+              <button class="mob-btn-secondary" style="background:#fff;color:#121224;border-color:#d5dce9;padding:4px 10px;" data-action="close-modal">✕</button>
+            </div>
+            <p style="font-size:12.5px;color:#474d6a;margin:0 0 12px;">
+              Optional: select a structured reason to help candidates understand the outcome without writing manual messages.
+            </p>
+            <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px;">
+              ${state.structuredRejectionReasons.map((reason, idx) => `
+                <label style="display:flex;align-items:center;gap:10px;padding:9px 11px;border:1px solid #e2e8f0;border-radius:10px;font-size:13px;cursor:pointer;">
+                  <input type="radio" name="rejectReasonRadio" value="${idx}" ${idx === 0 ? "checked" : ""}>
+                  <span>${window.NaukriMobile.esc(reason)}</span>
+                </label>
+              `).join("")}
+            </div>
+            <div style="display:flex;justify-content:flex-end;gap:10px;">
+              <button class="mob-btn-secondary" style="background:#fff;color:#121224;border-color:#cbd5e1;" data-action="close-modal">Cancel</button>
+              <button class="mob-btn-primary" style="width:auto;background:#dc2626;border-radius:8px;" data-action="confirm-reject">Confirm &amp; Notify Candidate</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    return "";
+  }
+
+  function render() {
+    const appEl = document.getElementById("app");
+    if (!appEl) return;
+
+    const unread = state.notifications.filter(n => n.unread).length;
+    const header = `
+      <header class="proto-bar">
+        <div class="proto-bar-title">
+          <span>Naukri Application Clarity</span>
+          <span class="proto-tag">Incremental Feature Prototype</span>
+        </div>
+
+        <nav class="proto-tabs" aria-label="Prototype Views">
+          <button class="proto-tab ${state.mode === 'mobile' ? 'active' : ''}" data-action="switch-mode" data-mode="mobile">
+            Mobile (Dark · 01–10)
+            ${unread > 0 ? `<span class="notif-dot-count">${unread}</span>` : ""}
+          </button>
+          <button class="proto-tab ${state.mode === 'desktop' ? 'active' : ''}" data-action="switch-mode" data-mode="desktop">
+            Desktop Tracker (Light · 12)
+          </button>
+          <button class="proto-tab ${state.mode === 'recruiter' ? 'active' : ''}" data-action="switch-mode" data-mode="recruiter">
+            Recruiter Panel (11)
+          </button>
+          <button class="proto-tab ${state.mode === 'comparisons' ? 'active' : ''}" data-action="switch-mode" data-mode="comparisons">
+            Before vs. After
+          </button>
+          <button class="proto-tab ${state.mode === 'rationale' ? 'active' : ''}" data-action="switch-mode" data-mode="rationale">
+            Design Rationale
+          </button>
+        </nav>
+
+        <div>
+          <button class="proto-reset" data-action="reset-demo">Reset Demo</button>
+        </div>
+      </header>
+    `;
+
+    let body = "";
+    if (state.mode === "mobile") body = window.NaukriMobile.render(state);
+    else if (state.mode === "desktop") body = window.NaukriDesktop.render(state);
+    else if (state.mode === "recruiter") body = window.NaukriRecruiter.render(state);
+    else if (state.mode === "comparisons") body = window.NaukriPortfolio.renderComparisons();
+    else body = window.NaukriPortfolio.renderRationale();
+
+    const toastHtml = state.toast ? `<div class="toast-banner">✓ ${window.NaukriMobile.esc(state.toast)}</div>` : "";
+    appEl.innerHTML = header + body + renderModals() + toastHtml;
+  }
+
+  /* Event Delegation */
+  document.addEventListener("click", function (e) {
+    if (e.target && e.target.getAttribute && e.target.getAttribute("data-backdrop-close") === "true") {
+      state.modal = null;
+      render();
+      return;
+    }
+    const target = e.target.closest("[data-action]");
+    if (!target) return;
+    const action = target.getAttribute("data-action");
+
+    if (action === "switch-mode") {
+      state.mode = target.getAttribute("data-mode");
+      const targetScreen = target.getAttribute("data-screen");
+      if (targetScreen) state.mobileScreen = targetScreen;
+      render();
+      return;
+    }
+
+    if (action === "reset-demo") {
+      state = createInitialState();
+      showToast("Prototype data reset to initial 10 scenarios.");
+      return;
+    }
+
+    if (action === "jump-mobile") {
+      const scr = target.getAttribute("data-screen");
+      const appId = target.getAttribute("data-app-id");
+      const jobId = target.getAttribute("data-job-id");
+      state.loadingMode = false;
+      navigateMobile(scr, { appId: appId || undefined, jobId: jobId || undefined });
+      render();
+      return;
+    }
+
+    if (action === "go-home") { navigateMobile("home"); render(); return; }
+    if (action === "go-applies") { navigateMobile("applies"); render(); return; }
+    if (action === "go-notifs") { navigateMobile("notifications"); render(); return; }
+    if (action === "open-similar") { navigateMobile("similar"); render(); return; }
+
+    if (action === "mob-back") {
+      const prev = state.mobileHistory.pop() || "home";
+      state.mobileScreen = prev;
+      render();
+      return;
+    }
+
+    if (action === "open-job") {
+      const jobId = target.getAttribute("data-job-id");
+      navigateMobile("job", { jobId });
+      render();
+      return;
+    }
+
+    if (action === "open-app") {
+      e.stopPropagation();
+      const appId = target.getAttribute("data-app-id");
+      navigateMobile("details", { appId });
+      render();
+      return;
+    }
+
+    if (action === "apply-job") {
+      const jobId = target.getAttribute("data-job-id");
+      applyToJob(jobId);
+      return;
+    }
+
+    if (action === "set-app-category") {
+      state.appCategory = target.getAttribute("data-cat");
+      state.appFilter = "All Applications";
+      render();
+      return;
+    }
+
+    if (action === "set-app-filter") {
+      state.appFilter = target.getAttribute("data-filter");
+      render();
+      return;
+    }
+
+    if (action === "reset-app-filters") {
+      state.appCategory = "All";
+      state.appFilter = "All Applications";
+      render();
+      return;
+    }
+
+    if (action === "archive-app") {
+      e.stopPropagation();
+      const appId = target.getAttribute("data-app-id");
+      const app = state.applications.find(a => a.id === appId);
+      if (app) {
+        app.archived = true;
+        showToast(`Archived "${app.jobTitle}". Filter by "Archived" to restore.`);
+        render();
+      }
+      return;
+    }
+
+    if (action === "restore-app") {
+      e.stopPropagation();
+      const appId = target.getAttribute("data-app-id");
+      const app = state.applications.find(a => a.id === appId);
+      if (app) {
+        app.archived = false;
+        showToast(`Restored "${app.jobTitle}" to active list.`);
+        render();
+      }
+      return;
+    }
+
+    if (action === "toggle-resume-notify") {
+      const appId = target.getAttribute("data-app-id");
+      const app = state.applications.find(a => a.id === appId);
+      if (app) {
+        app.notifyOnResume = !app.notifyOnResume;
+        showToast(app.notifyOnResume ? "Subscribed: we'll notify you if hiring resumes." : "Resume alert turned off.");
+        render();
+      }
+      return;
+    }
+
+    if (action === "set-threshold") {
+      state.inactivityThreshold = Number(target.getAttribute("data-days"));
+      showToast(`Inactivity alert threshold updated to ${state.inactivityThreshold} days.`);
+      render();
+      return;
+    }
+
+    if (action === "toggle-loading") {
+      state.loadingMode = !state.loadingMode;
+      render();
+      return;
+    }
+
+    if (action === "toggle-unavailable") {
+      state.unavailableDataMode = !state.unavailableDataMode;
+      showToast(state.unavailableDataMode ? "Simulating unavailable employer data fallback." : "Restored confirmed employer data.");
+      render();
+      return;
+    }
+
+    if (action === "set-notif-cat") {
+      state.notifCategory = target.getAttribute("data-cat");
+      render();
+      return;
+    }
+
+    if (action === "click-notif") {
+      const nid = target.getAttribute("data-notif-id");
+      const n = state.notifications.find(item => item.id === nid);
+      if (n) {
+        n.unread = false;
+        if (n.appId) navigateMobile("details", { appId: n.appId });
+        else if (n.jobId) navigateMobile("job", { jobId: n.jobId });
+        render();
+      }
+      return;
+    }
+
+    if (action === "open-notif-prefs") {
+      state.modal = { type: "notifPrefs" };
+      render();
+      return;
+    }
+
+    if (action === "close-modal") {
+      state.modal = null;
+      render();
+      return;
+    }
+
+    if (action === "toggle-pref") {
+      const key = target.getAttribute("data-pref-key");
+      state.notificationPrefs[key] = target.checked;
+      return;
+    }
+
+    /* Desktop actions */
+    if (action === "desk-subview") {
+      state.desktopSubView = target.getAttribute("data-view");
+      render();
+      return;
+    }
+
+    if (action === "desk-select-app" || action === "desk-open-app") {
+      state.selectedAppId = target.getAttribute("data-app-id");
+      state.desktopSubView = "tracker";
+      render();
+      return;
+    }
+
+    /* Recruiter actions */
+    if (action === "rec-open-job") {
+      state.selectedRecJobId = target.getAttribute("data-rec-job-id");
+      state.recruiterSubView = "responses";
+      state.recSelectedCandIds = [];
+      render();
+      return;
+    }
+
+    if (action === "rec-back-jobs") {
+      state.recruiterSubView = "jobs";
+      render();
+      return;
+    }
+
+    if (action === "rec-toggle-cand") {
+      const cid = target.getAttribute("data-cand-id");
+      if (state.recSelectedCandIds.includes(cid)) {
+        state.recSelectedCandIds = state.recSelectedCandIds.filter(id => id !== cid);
+      } else {
+        state.recSelectedCandIds.push(cid);
+      }
+      render();
+      return;
+    }
+
+    if (action === "rec-select-all") {
+      const recJob = state.recruiterJobs.find(j => j.id === target.getAttribute("data-rec-job-id"));
+      if (recJob) {
+        if (state.recSelectedCandIds.length === recJob.candidates.length) state.recSelectedCandIds = [];
+        else state.recSelectedCandIds = recJob.candidates.map(c => c.id);
+        render();
+      }
+      return;
+    }
+
+    if (action === "rec-cand-status") {
+      const recJobId = target.getAttribute("data-rec-job-id");
+      const candId = target.getAttribute("data-cand-id");
+      const status = target.getAttribute("data-status");
+      syncRecruiterCandidateStatus(recJobId, candId, status, null);
+      showToast(`Candidate marked "${status}" — Candidate view & notifications updated.`);
+      render();
+      return;
+    }
+
+    if (action === "rec-bulk-status") {
+      if (state.recSelectedCandIds.length === 0) {
+        showToast("Select at least one candidate first.");
+        return;
+      }
+      const status = target.getAttribute("data-status");
+      state.recSelectedCandIds.forEach(cid => syncRecruiterCandidateStatus(state.selectedRecJobId, cid, status, null));
+      showToast(`Updated ${state.recSelectedCandIds.length} candidate(s) to "${status}".`);
+      state.recSelectedCandIds = [];
+      render();
+      return;
+    }
+
+    if (action === "rec-open-reject") {
+      state.modal = {
+        type: "rejectModal",
+        recJobId: target.getAttribute("data-rec-job-id"),
+        candId: target.getAttribute("data-cand-id"),
+        bulk: false
+      };
+      render();
+      return;
+    }
+
+    if (action === "rec-open-bulk-reject") {
+      if (state.recSelectedCandIds.length === 0) {
+        showToast("Select at least one candidate first.");
+        return;
+      }
+      state.modal = {
+        type: "rejectModal",
+        recJobId: state.selectedRecJobId,
+        bulk: true
+      };
+      render();
+      return;
+    }
+
+    if (action === "confirm-reject") {
+      const checked = document.querySelector('input[name="rejectReasonRadio"]:checked');
+      const idx = checked ? Number(checked.value) : 4;
+      const chosen = idx === 4 ? null : state.structuredRejectionReasons[idx];
+      if (state.modal.bulk) {
+        state.recSelectedCandIds.forEach(cid => syncRecruiterCandidateStatus(state.modal.recJobId, cid, "Not Shortlisted", chosen));
+        showToast(`Bulk updated ${state.recSelectedCandIds.length} candidate(s) to Not Shortlisted.`);
+        state.recSelectedCandIds = [];
+      } else {
+        syncRecruiterCandidateStatus(state.modal.recJobId, state.modal.candId, "Not Shortlisted", chosen);
+        showToast("Candidate marked Not Shortlisted — Candidate view & notification synced.");
+      }
+      state.modal = null;
+      render();
+      return;
+    }
+
+    if (action === "toast-pro") { showToast("Naukri Pro: Optional paid boosts — basic tracking remains 100% free."); return; }
+    if (action === "toast-neo") { showToast("Neo AI: Contextual career assistant retained inside existing header."); return; }
+    if (action === "toast-improve") { showToast("Profile checklist: Add measurable SQL & A/B testing outcomes."); return; }
+    if (action === "toast-recruiter-note") { showToast("Preserved existing Naukri Recruiter Panel action."); return; }
+  });
+
+  document.addEventListener("change", function (e) {
+    const target = e.target.closest("[data-action]");
+    if (!target) return;
+    const action = target.getAttribute("data-action");
+    if (action === "rec-change-job-status") {
+      syncRecruiterJobStatus(target.getAttribute("data-rec-job-id"), target.value);
+    }
+    if (action === "rec-filter-jobs") {
+      state.recJobFilter = target.getAttribute("data-status");
+      render();
+    }
+  });
+
+  render();
+})();
