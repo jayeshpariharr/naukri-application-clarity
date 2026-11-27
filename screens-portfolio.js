@@ -393,7 +393,7 @@ window.NaukriPortfolio = (function () {
                       data-alt="${esc(sec.beforeAlt)}"
                       data-caption="${esc(sec.beforeCaption)}"
                       data-tag="BEFORE · EXISTING NAUKRI">
-                      <img src="${esc(sec.beforeImg)}" alt="${esc(sec.beforeAlt)}" loading="lazy" />
+                      <img src="${esc(sec.beforeImg)}" alt="${esc(sec.beforeAlt)}" />
                       <span class="comp-zoom-hint">Click to enlarge</span>
                     </div>
                   `}
@@ -414,7 +414,7 @@ window.NaukriPortfolio = (function () {
                         data-alt="${esc(sec.afterAlt)}"
                         data-caption="${esc(sec.afterCaption)}"
                         data-tag="AFTER · PROPOSED PROTOTYPE">
-                        <img src="${esc(sec.afterImg)}" alt="${esc(sec.afterAlt)}" loading="lazy" />
+                        <img src="${esc(sec.afterImg)}" alt="${esc(sec.afterAlt)}" />
                         ${showPins && sec.annotations[0] ? `<span class="comp-pin" style="left:${sec.annotations[0].x};top:${sec.annotations[0].y};">1</span>` : ""}
                         <span class="comp-zoom-hint">Enlarge</span>
                       </div>
@@ -424,7 +424,7 @@ window.NaukriPortfolio = (function () {
                         data-alt="${esc(sec.secondaryAfterAlt)}"
                         data-caption="${esc(sec.secondaryAfterCaption)}"
                         data-tag="AFTER · PROPOSED PROTOTYPE">
-                        <img src="${esc(sec.secondaryAfterImg)}" alt="${esc(sec.secondaryAfterAlt)}" loading="lazy" />
+                        <img src="${esc(sec.secondaryAfterImg)}" alt="${esc(sec.secondaryAfterAlt)}" />
                         ${showPins && sec.annotations[1] ? `<span class="comp-pin" style="left:${sec.annotations[1].x};top:${sec.annotations[1].y};">2</span>` : ""}
                         <span class="comp-zoom-hint">Enlarge</span>
                       </div>
@@ -436,7 +436,7 @@ window.NaukriPortfolio = (function () {
                       data-alt="${esc(sec.afterAlt)}"
                       data-caption="${esc(sec.afterCaption)}"
                       data-tag="AFTER · PROPOSED PROTOTYPE">
-                      <img src="${esc(sec.afterImg)}" alt="${esc(sec.afterAlt)}" loading="lazy" />
+                      <img src="${esc(sec.afterImg)}" alt="${esc(sec.afterAlt)}" />
                       ${showPins ? sec.annotations.map(a => `
                         <span class="comp-pin" style="left:${a.x};top:${a.y};" title="${esc(a.text)}">${a.n}</span>
                       `).join("") : ""}
@@ -680,7 +680,7 @@ window.NaukriPortfolio = (function () {
                     data-alt="${ev.alt}"
                     data-caption="${ev.title} (Research Evidence · PII Redacted)"
                     data-tag="RESEARCH EVIDENCE">
-                    <img src="${ev.src}" alt="${ev.alt}" loading="lazy" />
+                    <img src="${ev.src}" alt="${ev.alt}" />
                     <span class="comp-zoom-hint">Click to enlarge</span>
                   </div>
                   <div style="font-size:11.5px;font-weight:600;color:#1d4ed8;">${ev.theme}</div>
