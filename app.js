@@ -11,7 +11,11 @@
       mode: "mobile", // "mobile" | "desktop" | "recruiter" | "comparisons" | "rationale"
       mobileScreen: "home", // "home" | "job" | "success" | "applies" | "details" | "notifications" | "similar"
       mobileHistory: [],
-      desktopSubView: "tracker", // "tracker" | "jobs"
+      desktopSubView: "home", // "home" | "tracker" | "jobs" | "jobDetail" | "applySuccess" | "companies" | "services"
+      deskDropdown: null, // null | "companies" | "services"
+      deskProfileDrawer: false,
+      deskRecTab: "handpicked",
+      savedJobIds: [],
       recruiterSubView: "responses", // "jobs" | "responses"
       selectedRecJobId: "rec-job-01",
       recJobFilter: "All",
@@ -33,7 +37,10 @@
       notifications: base.notifications,
       notificationPrefs: base.notificationPrefs,
       recruiterJobs: base.recruiterJobs,
-      structuredRejectionReasons: base.structuredRejectionReasons
+      structuredRejectionReasons: base.structuredRejectionReasons,
+      companiesList: base.companiesList,
+      earlyAccessRoles: base.earlyAccessRoles,
+      careerBlogs: base.careerBlogs
     };
   }
 
@@ -138,7 +145,7 @@
     if (state.mode === "mobile") {
       navigateMobile("success");
     } else {
-      state.desktopSubView = "tracker";
+      state.desktopSubView = "applySuccess";
       showToast(`Applied successfully to ${job.title} at ${job.company}!`);
     }
     render();
@@ -367,7 +374,7 @@
             ${unread > 0 ? `<span class="notif-dot-count">${unread}</span>` : ""}
           </button>
           <button class="proto-tab ${state.mode === 'desktop' ? 'active' : ''}" data-action="switch-mode" data-mode="desktop">
-            Desktop Tracker (Light · 12)
+            Desktop Web (Light · 12)
           </button>
           <button class="proto-tab ${state.mode === 'recruiter' ? 'active' : ''}" data-action="switch-mode" data-mode="recruiter">
             Recruiter Panel (11)
@@ -405,7 +412,13 @@
       return;
     }
     const target = e.target.closest("[data-action]");
-    if (!target) return;
+    if (!target) {
+      if (state.deskDropdown && !e.target.closest("[data-stop-close]")) {
+        state.deskDropdown = null;
+        render();
+      }
+      return;
+    }
     const action = target.getAttribute("data-action");
 
     if (action === "switch-mode") {
@@ -579,6 +592,51 @@
     /* Desktop actions */
     if (action === "desk-subview") {
       state.desktopSubView = target.getAttribute("data-view");
+      state.deskDropdown = null;
+      state.deskProfileDrawer = false;
+      render();
+      return;
+    }
+
+    if (action === "desk-toggle-dropdown") {
+      e.stopPropagation();
+      const menu = target.getAttribute("data-menu");
+      state.deskDropdown = state.deskDropdown === menu ? null : menu;
+      render();
+      return;
+    }
+
+    if (action === "desk-toggle-drawer") {
+      state.deskProfileDrawer = !state.deskProfileDrawer;
+      state.deskDropdown = null;
+      render();
+      return;
+    }
+
+    if (action === "desk-close-drawer") {
+      state.deskProfileDrawer = false;
+      render();
+      return;
+    }
+
+    if (action === "desk-rec-tab") {
+      state.deskRecTab = target.getAttribute("data-tab");
+      render();
+      return;
+    }
+
+    if (action === "desk-open-job") {
+      state.selectedJobId = target.getAttribute("data-job-id");
+      state.desktopSubView = "jobDetail";
+      render();
+      return;
+    }
+
+    if (action === "desk-save-job") {
+      e.stopPropagation();
+      const jid = target.getAttribute("data-job-id");
+      if (state.savedJobIds.includes(jid)) state.savedJobIds = state.savedJobIds.filter(id => id !== jid);
+      else state.savedJobIds.push(jid);
       render();
       return;
     }
@@ -586,6 +644,8 @@
     if (action === "desk-select-app" || action === "desk-open-app") {
       state.selectedAppId = target.getAttribute("data-app-id");
       state.desktopSubView = "tracker";
+      state.deskDropdown = null;
+      state.deskProfileDrawer = false;
       render();
       return;
     }
@@ -699,7 +759,13 @@
 
   document.addEventListener("change", function (e) {
     const target = e.target.closest("[data-action]");
-    if (!target) return;
+    if (!target) {
+      if (state.deskDropdown && !e.target.closest("[data-stop-close]")) {
+        state.deskDropdown = null;
+        render();
+      }
+      return;
+    }
     const action = target.getAttribute("data-action");
     if (action === "rec-change-job-status") {
       syncRecruiterJobStatus(target.getAttribute("data-rec-job-id"), target.value);

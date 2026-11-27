@@ -955,5 +955,48 @@ window.NAUKRI_DATA = {
     "Location or notice period mismatch",
     "Role requirements updated or position filled internally",
     "Skip reason — send standard 'Not Shortlisted' update"
+  ],
+
+  /* Fictional Companies Directory & Desktop Home Feed Data (Images 3, 5, 6) */
+  companiesList: [
+    { id: "comp-1", name: "ZenithPay India", rating: 4.3, reviews: "412 reviews", tags: ["Fintech", "Product based"], location: "Bengaluru", openJobs: 18 },
+    { id: "comp-2", name: "CloudPulse SaaS", rating: 4.5, reviews: "290 reviews", tags: ["B2B SaaS", "Startup"], location: "Bengaluru", openJobs: 11 },
+    { id: "comp-3", name: "FinStack Technologies", rating: 4.4, reviews: "510 reviews", tags: ["Fintech", "Indian MNC"], location: "Bengaluru", openJobs: 24 },
+    { id: "comp-4", name: "Cartly Commerce", rating: 4.4, reviews: "520 reviews", tags: ["E-Commerce", "Unicorn"], location: "Bengaluru", openJobs: 32 },
+    { id: "comp-5", name: "PayBridge India", rating: 4.2, reviews: "340 reviews", tags: ["Payments", "Corporate"], location: "Mumbai", openJobs: 14 },
+    { id: "comp-6", name: "BrightLeaf EdTech", rating: 4.1, reviews: "198 reviews", tags: ["Edtech", "Product based"], location: "Bengaluru", openJobs: 9 },
+    { id: "comp-7", name: "CrediFlow Financial", rating: 4.1, reviews: "189 reviews", tags: ["Fintech", "Corporate"], location: "Bengaluru", openJobs: 6 },
+    { id: "comp-8", name: "GlobalScale Systems", rating: 4.3, reviews: "780 reviews", tags: ["Foreign MNC", "Enterprise"], location: "Bengaluru", openJobs: 41 }
+  ],
+
+  earlyAccessRoles: [
+    {
+      id: "early-1",
+      title: "Product Manager — Merchant Growth",
+      domain: "Verified FinTech Domain",
+      rating: "4.2+",
+      type: "Corporate",
+      exp: "3–5 Yrs",
+      salary: "₹ 16–22 Lacs P.A.",
+      location: "Bengaluru, Hybrid",
+      posted: "2d ago"
+    },
+    {
+      id: "early-2",
+      title: "Lead Product Analyst — Retention",
+      domain: "Consumer Internet Domain",
+      rating: "4.0+",
+      type: "Product based",
+      exp: "3–6 Yrs",
+      salary: "₹ 15–20 Lacs P.A.",
+      location: "Bengaluru, Pune",
+      posted: "1d ago"
+    }
+  ],
+
+  careerBlogs: [
+    { title: "How Recruiters Screen Product Analyst Resumes in 2026", tag: "Naukri blog", date: "18 Nov 2026" },
+    { title: "50+ Product & SQL Interview Questions with Answers", tag: "Naukri blog", date: "12 Nov 2026" },
+    { title: "Handling Hiring Pauses & Long Recruiter Wait Times", tag: "Naukri blog", date: "05 Nov 2026" }
   ]
 };
