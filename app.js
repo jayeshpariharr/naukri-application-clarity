@@ -172,9 +172,12 @@
       }
     }
 
-    // Deduplicate identical consecutive/active event for the same application
-    const latestForApp = state.notifications.find(n => n.appId === appId && n.eventType === eventType);
-    if (latestForApp && latestForApp.body === body) {
+    // Deduplicate identical consecutive/active event for the same application:
+    // If the latest notification recorded for this app already has this eventType and body, suppress it.
+    // However, if other events happened since then (e.g. On Hold -> Active -> On Hold), state.notifications[0]
+    // for this appId won't match, allowing legitimate recurring transitions to notify.
+    const latestForApp = state.notifications.find(n => n.appId === appId);
+    if (latestForApp && latestForApp.eventType === eventType && latestForApp.body === body) {
       return false;
     }
 
@@ -273,6 +276,10 @@
           app.statusLabel = "Application Viewed";
           app.statusExplanation = "The recruiter has viewed your application. No further decision has been shared yet.";
           app.recruiterActivityNote = "Application viewed by recruiter on 27 Nov 2026.";
+          app.recruiterDecisionReason = null;
+          app.recruiterDecisionDate = null;
+          app.individualDecisionAvailable = false;
+          app.individualDecisionText = null;
           appendConfirmedTimelineEvent(app, "Application Viewed", "27 Nov 2026, Just now", "done");
           app.timeline.push({ stage: "Awaiting Recruiter Action", date: "Current stage", state: "current" });
           notified = pushNotification(
@@ -287,6 +294,10 @@
           app.statusLabel = "Application Viewed";
           app.statusExplanation = "The recruiter has reviewed your application and kept it under consideration. No final decision has been shared yet.";
           app.recruiterActivityNote = "Application reviewed by recruiter (under consideration) on 27 Nov 2026.";
+          app.recruiterDecisionReason = null;
+          app.recruiterDecisionDate = null;
+          app.individualDecisionAvailable = false;
+          app.individualDecisionText = null;
           appendConfirmedTimelineEvent(app, "Application Viewed", "27 Nov 2026, Just now", "done");
           app.timeline.push({ stage: "Awaiting Recruiter Action", date: "Under review", state: "current" });
         }
