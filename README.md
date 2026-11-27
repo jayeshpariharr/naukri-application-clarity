@@ -47,6 +47,12 @@ Key directional signals:
 - **11 Recruiter Panel Supporting Workflow (Light Theme · Conceptual):** Conceptual recruiter workflow, subject to feasibility validation. Preserves `Manage Jobs and Responses` and `Job Responses` (`Shortlist` / `Maybe` / `Reject`, `Select All`) while adding an `On Hold` availability toggle, optional structured rejection reasons, and a live candidate-facing update preview that syncs directly to the candidate views without overwriting existing candidate decisions on role pause/close/reopen.
 - **12 Desktop Web Experience & Tracker (Light Theme):** Matches Naukri's 3-column `My home` layout (`My Applications` summary, `Recommended jobs`, `Early access`, `MINIs`), `Jobs` filters, `Companies`, `Naukri 360 / Services`, Profile Drawer, and split-pane `Job Application Status` tracker.
 - **Visual Before vs. After Comparisons & Design Rationale:** Side-by-side comparisons using PII-redacted original Naukri audit screenshots and live prototype captures, plus P0/P1/P2 MVP prioritisation, a 2-minute hiring-manager demo journey, redacted Google Play Store research evidence, and [DESIGN_RATIONALE.md](./DESIGN_RATIONALE.md).
+- **Usability Testing Lab & Researcher Dashboard (`?mode=testing`):**
+  - **Participant Testing Mode:** Guided consent, 5-question participant background intake, 6 realistic post-application task scenarios (Application Tracking, Prolonged Inactivity, Not Shortlisted, Hiring On Hold, Application Notifications, Application Management), and a 7-metric post-test questionnaire with open-ended feedback.
+  - **Researcher Dashboard:** Real-time calculation of total participants (target 3–5), independent/assisted/failed completion rates, median completion times, Single Ease Question (SEQ 1–7) averages, and validation targets vs. observed results. Shows an explicit empty state until real sessions are conducted (no synthetic data).
+  - **Usability Issue Prioritisation:** Log and classify observed friction points by severity (`Critical`, `Major`, `Minor`, `Suggestion`) with evidence and recommended PM actions.
+  - **Consolidated Exports:** Export anonymised session data as CSV and JSON, or download the full synthesis report in Markdown.
+  - **Storage Model:** Uses browser `localStorage` with explicit guidance explaining local storage limits and cross-device consolidation instructions.
 
 ---
 
@@ -81,6 +87,7 @@ naukri-application-clarity/
 ├── screens-desktop.js            # Desktop Web Tracker (Screen 12)
 ├── screens-recruiter.js          # Recruiter Supporting Workflow (Screen 11)
 ├── screens-portfolio.js          # Before vs. After & Design Rationale views
+├── screens-testing.js            # Structured Usability Testing & Researcher Hub
 └── app.js                        # State store, routing & live recruiter sync
 ```
 

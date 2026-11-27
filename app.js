@@ -14,7 +14,13 @@
     const qJob = params.get("job");
     const qSub = params.get("sub");
     return {
-      mode: qMode || "mobile", // "mobile" | "desktop" | "recruiter" | "comparisons" | "rationale"
+      mode: qMode || "mobile", // "mobile" | "desktop" | "recruiter" | "comparisons" | "rationale" | "testing"
+      testing: {
+        subView: params.get("testsub") || "participant", // "participant" | "dashboard" | "report"
+        participantStage: "consent", // "consent" | "background" | "tasks" | "postTest" | "complete"
+        activeParticipant: null,
+        activeTaskIndex: 0
+      },
       mobileScreen: qScreen || "home", // "home" | "job" | "success" | "applies" | "details" | "notifications" | "similar"
       mobileHistory: [],
       desktopSubView: qSub || "home", // "home" | "tracker" | "jobs" | "jobDetail" | "applySuccess" | "companies" | "services"
@@ -451,6 +457,68 @@
       `;
     }
 
+    if (state.modal.type === "logIssueModal") {
+      const sessions = window.NaukriTesting ? window.NaukriTesting.getStoredSessions() : [];
+      return `
+        <div class="modal-backdrop" data-backdrop-close="true">
+          <div class="modal-panel modal-panel-dark" style="max-width:540px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+              <h3 style="margin:0;font-size:16px;color:#f8fafc;">Log Observed Usability Friction / Issue</h3>
+              <button class="mob-btn-secondary" style="padding:4px 10px;" data-action="close-modal">✕</button>
+            </div>
+            <p style="font-size:12px;color:#94a3b8;margin:0 0 14px;">
+              Record friction points noticed during participant observations with rigorous severity classification.
+            </p>
+            <form id="log-issue-form" style="display:flex;flex-direction:column;gap:12px;">
+              <div>
+                <label class="testing-obs-label">Participant:</label>
+                <select name="participantId" class="testing-select" required>
+                  ${sessions.map(s => `<option value="${s.id}">${s.id} (${s.background.employmentStatus || 'Participant'})</option>`).join("")}
+                </select>
+              </div>
+              <div>
+                <label class="testing-obs-label">Affected Task:</label>
+                <select name="taskName" class="testing-select" required>
+                  <option value="General Prototype">General Prototype / Navigation</option>
+                  <option value="Task 1 — Application Tracking">Task 1 — Application Tracking</option>
+                  <option value="Task 2 — Prolonged Inactivity">Task 2 — Prolonged Inactivity</option>
+                  <option value="Task 3 — Not Shortlisted">Task 3 — Not Shortlisted</option>
+                  <option value="Task 4 — Hiring On Hold">Task 4 — Hiring On Hold</option>
+                  <option value="Task 5 — Application Notifications">Task 5 — Application Notifications</option>
+                  <option value="Task 6 — Application Management">Task 6 — Application Management</option>
+                </select>
+              </div>
+              <div>
+                <label class="testing-obs-label">Severity Level:</label>
+                <select name="severity" class="testing-select" required>
+                  <option value="Critical">Critical — Prevents task completion</option>
+                  <option value="Major">Major — Causes significant confusion or requires assistance</option>
+                  <option value="Minor" selected>Minor — Creates friction but does not prevent completion</option>
+                  <option value="Suggestion">Suggestion — Optional improvement</option>
+                </select>
+              </div>
+              <div>
+                <label class="testing-obs-label">Issue Summary:</label>
+                <input type="text" name="title" class="testing-input" placeholder="e.g., Looked for notifications on profile icon instead of bell" required />
+              </div>
+              <div>
+                <label class="testing-obs-label">Observed Evidence / Quotes:</label>
+                <textarea name="evidence" class="testing-textarea" rows="2" placeholder="Participant spent 40s searching the bottom bar before clicking top bell..." required></textarea>
+              </div>
+              <div>
+                <label class="testing-obs-label">Recommended Action:</label>
+                <input type="text" name="recommendedAction" class="testing-input" placeholder="e.g., Add an inline notification badge on the My Applications tab" required />
+              </div>
+              <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:10px;">
+                <button type="button" class="testing-sec-btn" data-action="close-modal">Cancel</button>
+                <button type="submit" class="testing-primary-btn">Save Issue to Log ✓</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      `;
+    }
+
     return "";
   }
 
@@ -483,6 +551,9 @@
           <button class="proto-tab ${state.mode === 'rationale' ? 'active' : ''}" data-action="switch-mode" data-mode="rationale">
             Design Rationale
           </button>
+          <button class="proto-tab ${state.mode === 'testing' ? 'active' : ''}" data-action="switch-mode" data-mode="testing">
+            🧪 Usability Testing
+          </button>
         </nav>
 
         <div>
@@ -496,7 +567,8 @@
     else if (state.mode === "desktop") body = window.NaukriDesktop.render(state);
     else if (state.mode === "recruiter") body = window.NaukriRecruiter.render(state);
     else if (state.mode === "comparisons") body = window.NaukriPortfolio.renderComparisons(state);
-    else body = window.NaukriPortfolio.renderRationale();
+    else if (state.mode === "rationale") body = window.NaukriPortfolio.renderRationale();
+    else if (state.mode === "testing" && window.NaukriTesting) body = window.NaukriTesting.render(state);
 
     const toastHtml = state.toast ? `<div class="toast-banner">✓ ${window.NaukriMobile.esc(state.toast)}</div>` : "";
     appEl.innerHTML = header + body + renderModals() + toastHtml;
@@ -906,6 +978,200 @@
     if (action === "toast-neo") { showToast("Neo AI: Contextual career assistant retained inside existing header."); return; }
     if (action === "toast-improve") { showToast("Profile checklist: Add measurable SQL & A/B testing outcomes."); return; }
     if (action === "toast-recruiter-note") { showToast("Preserved existing Naukri Recruiter Panel action."); return; }
+
+    /* Usability Testing Actions */
+    if (action === "test-switch-subview") {
+      if (!state.testing) state.testing = {};
+      state.testing.subView = target.getAttribute("data-sub");
+      render();
+      return;
+    }
+
+    if (action === "test-start-consent") {
+      const cb = document.getElementById("participant-consent-cb");
+      if (!cb || !cb.checked) {
+        alert("Please check the consent box to proceed with the usability session.");
+        return;
+      }
+      if (!state.testing) state.testing = {};
+      state.testing.participantStage = "background";
+      render();
+      return;
+    }
+
+    if (action === "test-start-participant" || action === "test-new-participant") {
+      if (!state.testing) state.testing = {};
+      state.testing.subView = "participant";
+      state.testing.participantStage = "consent";
+      state.testing.activeParticipant = null;
+      state.testing.activeTaskIndex = 0;
+      render();
+      return;
+    }
+
+    if (action === "test-prev-task") {
+      if (state.testing && state.testing.activeTaskIndex > 0) {
+        state.testing.activeTaskIndex -= 1;
+        render();
+      }
+      return;
+    }
+
+    if (action === "test-load-sample-template") {
+      showToast("Ready for live participant! Click 'Launch First Participant Session' to begin.");
+      return;
+    }
+
+    if (action === "test-export-csv") {
+      if (window.NaukriTesting) window.NaukriTesting.exportCSV();
+      return;
+    }
+
+    if (action === "test-export-json") {
+      if (window.NaukriTesting) window.NaukriTesting.exportJSON();
+      return;
+    }
+
+    if (action === "test-export-report-md") {
+      if (window.NaukriTesting) window.NaukriTesting.exportReportMD();
+      return;
+    }
+
+    if (action === "test-open-issue-modal") {
+      const sessions = window.NaukriTesting ? window.NaukriTesting.getStoredSessions() : [];
+      if (sessions.length === 0) {
+        alert("No participants have completed a session yet. Complete at least one participant task session before logging participant-specific issues.");
+        return;
+      }
+      state.modal = { type: "logIssueModal" };
+      render();
+      return;
+    }
+
+    if (action === "test-clear-data") {
+      if (confirm("Are you sure you want to clear all locally stored usability test sessions on this browser? This cannot be undone.")) {
+        if (window.NaukriTesting) window.NaukriTesting.clearAllSessions();
+        showToast("All usability test session data cleared.");
+      }
+      return;
+    }
+  });
+
+  /* Form Submit Event Delegation */
+  document.addEventListener("submit", function (e) {
+    if (e.target.id === "participant-bg-form") {
+      e.preventDefault();
+      const form = e.target;
+      const formData = new FormData(form);
+      const bg = {
+        employmentStatus: formData.get("employmentStatus"),
+        yearsExperience: formData.get("yearsExperience"),
+        applicationFrequency: formData.get("applicationFrequency"),
+        naukriUsageLast3Mos: formData.get("naukriUsageLast3Mos"),
+        currentSatisfaction: Number(formData.get("currentSatisfaction")) || 3
+      };
+      const p = window.NaukriTesting.createNewParticipant(bg);
+      if (!state.testing) state.testing = {};
+      state.testing.activeParticipant = p;
+      state.testing.participantStage = "tasks";
+      state.testing.activeTaskIndex = 0;
+      showToast(`Participant ${p.id} registered. Task 1 ready!`);
+      render();
+      return;
+    }
+
+    if (e.target.id === "observer-task-form") {
+      e.preventDefault();
+      const form = e.target;
+      const formData = new FormData(form);
+      const taskId = formData.get("taskId");
+      const p = state.testing && state.testing.activeParticipant;
+      if (!p) {
+        showToast("No active participant session found.");
+        return;
+      }
+      if (!p.taskResults) p.taskResults = {};
+      p.taskResults[taskId] = {
+        completionType: formData.get("completionType") || "independent",
+        timeTakenSec: Number(formData.get("timeTakenSec")) || 45,
+        incorrectActions: Number(formData.get("incorrectActions")) || 0,
+        confusionObserved: formData.get("confusionObserved") || "",
+        participantComments: formData.get("participantComments") || "",
+        easeRating: Number(formData.get("easeRating")) || 5
+      };
+
+      const nextIdx = state.testing.activeTaskIndex + 1;
+      if (nextIdx < window.NaukriTesting.TASKS.length) {
+        state.testing.activeTaskIndex = nextIdx;
+        showToast(`Task ${taskId} recorded. Proceeding to Task ${nextIdx + 1}.`);
+      } else {
+        state.testing.participantStage = "postTest";
+        showToast("All tasks recorded! Proceeding to Post-Test Questionnaire.");
+      }
+      render();
+      return;
+    }
+
+    if (e.target.id === "post-test-form") {
+      e.preventDefault();
+      const form = e.target;
+      const formData = new FormData(form);
+      const p = state.testing && state.testing.activeParticipant;
+      if (!p) return;
+
+      p.postTest = {
+        trackingEase: Number(formData.get("trackingEase")) || 4,
+        statusClarity: Number(formData.get("statusClarity")) || 4,
+        inactivityUnderstanding: Number(formData.get("inactivityUnderstanding")) || 4,
+        hiringVsCandidateClarity: Number(formData.get("hiringVsCandidateClarity")) || 4,
+        nextStepsConfidence: Number(formData.get("nextStepsConfidence")) || 4,
+        transparencyPerception: Number(formData.get("transparencyPerception")) || 4,
+        overallSatisfaction: Number(formData.get("overallSatisfaction")) || 4,
+        mostUseful: formData.get("mostUseful") || "",
+        confusingParts: formData.get("confusingParts") || "",
+        missingInfo: formData.get("missingInfo") || "",
+        comparisonNaukri: formData.get("comparisonNaukri") || "",
+        suggestedChange: formData.get("suggestedChange") || ""
+      };
+
+      // Save to localStorage
+      const sessions = window.NaukriTesting.getStoredSessions();
+      sessions.push(p);
+      window.NaukriTesting.saveStoredSessions(sessions);
+
+      state.testing.participantStage = "complete";
+      showToast(`Session for ${p.id} saved successfully!`);
+      render();
+      return;
+    }
+
+    if (e.target.id === "log-issue-form") {
+      e.preventDefault();
+      const form = e.target;
+      const formData = new FormData(form);
+      const participantId = formData.get("participantId");
+      const issue = {
+        id: "ISSUE-" + Date.now().toString(36).toUpperCase(),
+        title: formData.get("title"),
+        taskName: formData.get("taskName"),
+        severity: formData.get("severity"),
+        evidence: formData.get("evidence"),
+        recommendedAction: formData.get("recommendedAction")
+      };
+
+      const sessions = window.NaukriTesting.getStoredSessions();
+      const targetS = sessions.find(s => s.id === participantId);
+      if (targetS) {
+        if (!targetS.issues) targetS.issues = [];
+        targetS.issues.push(issue);
+        window.NaukriTesting.saveStoredSessions(sessions);
+        showToast(`Logged ${issue.severity} issue for ${participantId}.`);
+      }
+      state.modal = null;
+      render();
+      return;
+    }
+  });
   });
 
   document.addEventListener("change", function (e) {
