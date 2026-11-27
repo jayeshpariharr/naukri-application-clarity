@@ -1172,7 +1172,6 @@
       return;
     }
   });
-  });
 
   document.addEventListener("change", function (e) {
     const target = e.target.closest("[data-action]");
