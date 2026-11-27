@@ -32,16 +32,22 @@ window.NaukriCaseStudy = (function () {
             </p>
 
             <!-- Hero CTAs -->
-            <div class="portfolio-cta-group">
+            <div class="portfolio-cta-group" style="gap:10px;align-items:center;">
               <button class="port-btn-primary" data-action="switch-mode" data-mode="casestudy">
-                Explore Full Case Study →
+                Explore Case Study →
               </button>
               <button class="port-btn-secondary" data-action="switch-mode" data-mode="mobile">
                 📱 Launch Interactive Prototype
               </button>
-              <button class="port-btn-ghost" data-action="download-prd-md">
-                📥 Download Full PRD (Markdown)
-              </button>
+              <a href="./assets/docs/Naukri_Application_Clarity_PRD.pdf" target="_blank" class="port-btn-ghost" style="display:inline-flex;align-items:center;text-decoration:none;">
+                👁️ View Full PRD
+              </a>
+              <a href="./assets/docs/Naukri_Application_Clarity_PRD.pdf" download="Naukri_Application_Clarity_PRD.pdf" class="port-btn-ghost" style="display:inline-flex;align-items:center;text-decoration:none;">
+                📄 Download PDF
+              </a>
+              <a href="./assets/docs/Naukri_Application_Clarity_PRD.docx" download="Naukri_Application_Clarity_PRD.docx" class="port-btn-ghost" style="display:inline-flex;align-items:center;text-decoration:none;">
+                📝 Download Editable Word
+              </a>
             </div>
 
             <!-- Evidence-Safe Project Statistics -->
@@ -193,9 +199,21 @@ window.NaukriCaseStudy = (function () {
             <a href="#cs-14" class="toc-link">14 · Rollout & Experimentation Plan</a>
             <a href="#cs-15" class="toc-link">15 · Future Roadmap & Recommendation</a>
           </nav>
-          <div style="padding:14px 18px;border-top:1px solid #1e293b;">
-            <button class="port-btn-secondary" style="width:100%;font-size:12px;padding:8px;" data-action="download-prd-md">
-              📥 Download PRD (.md)
+          <div style="padding:14px 18px;border-top:1px solid #1e293b;display:flex;flex-direction:column;gap:8px;">
+            <div style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.5px;">Original PRD Downloads</div>
+            <a href="./assets/docs/Naukri_Application_Clarity_PRD.pdf" target="_blank" class="port-btn-secondary" style="width:100%;font-size:11px;padding:6px 10px;text-align:center;text-decoration:none;box-sizing:border-box;">
+              👁️ View Full PRD
+            </a>
+            <div style="display:flex;gap:6px;">
+              <a href="./assets/docs/Naukri_Application_Clarity_PRD.pdf" download="Naukri_Application_Clarity_PRD.pdf" class="port-btn-ghost" style="flex:1;font-size:10px;padding:5px 6px;text-align:center;text-decoration:none;box-sizing:border-box;">
+                📄 PDF
+              </a>
+              <a href="./assets/docs/Naukri_Application_Clarity_PRD.docx" download="Naukri_Application_Clarity_PRD.docx" class="port-btn-ghost" style="flex:1;font-size:10px;padding:5px 6px;text-align:center;text-decoration:none;box-sizing:border-box;">
+                📝 Word
+              </a>
+            </div>
+            <button class="port-btn-ghost" style="width:100%;font-size:10px;padding:5px 6px;" data-action="download-prd-md">
+              📋 Summary (.md)
             </button>
           </div>
         </aside>
@@ -628,6 +646,78 @@ window.NaukriCaseStudy = (function () {
             <div class="port-callout-box" style="margin-top:16px;">
               <strong>MVP Release Gate Criteria:</strong>
               All 4 P0 acceptance criteria satisfied; reliable data and authorization verified; no critical usability or data integrity defects; analytics instrumentation and rollback flags ready; zero mandatory extra recruiter steps.
+            </div>
+
+            <!-- Four Core MVP Features Showcase -->
+            <div style="margin-top:32px;">
+              <h3 style="font-size:18px;font-weight:700;color:#f8fafc;margin-bottom:12px;display:flex;align-items:center;gap:8px;">
+                <span>🎯</span> Four Core MVP Features (P0 Deep-Dive)
+              </h3>
+              <p style="font-size:14px;color:#94a3b8;margin-bottom:16px;">
+                Addressing the root cause of candidate drop-off and uncertainty without altering recruiter operational workflows or introducing speculative AI scoring.
+              </p>
+
+              <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(260px, 1fr));gap:16px;">
+                <div style="background:rgba(30,41,59,0.7);border:1px solid #334155;border-radius:12px;padding:16px;">
+                  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                    <span class="port-badge badge-p0">F01 · P0</span>
+                    <span style="font-size:11px;color:#64748b;">Screen 03 &rarr; 07</span>
+                  </div>
+                  <strong style="color:#f8fafc;font-size:15px;display:block;margin-bottom:6px;">Track Application CTA</strong>
+                  <p style="font-size:13px;color:#cbd5e1;line-height:1.5;margin:0;">
+                    Replaces promotional distraction on the submission confirmation screen with an explicit, high-contrast action routing directly to the candidate's live application tracker.
+                  </p>
+                </div>
+
+                <div style="background:rgba(30,41,59,0.7);border:1px solid #334155;border-radius:12px;padding:16px;">
+                  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                    <span class="port-badge badge-p0">F02 · P0</span>
+                    <span style="font-size:11px;color:#64748b;">Screen 07 Details</span>
+                  </div>
+                  <strong style="color:#f8fafc;font-size:15px;display:block;margin-bottom:6px;">Enhanced Application Timeline</strong>
+                  <p style="font-size:13px;color:#cbd5e1;line-height:1.5;margin:0;">
+                    Chronological audit of confirmed hiring milestones with plain-language explanations (e.g., <em>Application Sent</em> &rarr; <em>Application Viewed</em>), avoiding speculative intermediate stages.
+                  </p>
+                </div>
+
+                <div style="background:rgba(30,41,59,0.7);border:1px solid #334155;border-radius:12px;padding:16px;">
+                  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                    <span class="port-badge badge-p0">F03 · P0</span>
+                    <span style="font-size:11px;color:#64748b;">Screen 06 & 07</span>
+                  </div>
+                  <strong style="color:#f8fafc;font-size:15px;display:block;margin-bottom:6px;">Last Confirmed Update Timestamp</strong>
+                  <p style="font-size:13px;color:#cbd5e1;line-height:1.5;margin:0;">
+                    Displays verified recency of employer action. Preserves data integrity: routine candidate logins and portal views never falsify this milestone.
+                  </p>
+                </div>
+
+                <div style="background:rgba(30,41,59,0.7);border:1px solid #334155;border-radius:12px;padding:16px;">
+                  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                    <span class="port-badge badge-p0">F04 · P0</span>
+                    <span style="font-size:11px;color:#64748b;">Screen 07 Details</span>
+                  </div>
+                  <strong style="color:#f8fafc;font-size:15px;display:block;margin-bottom:6px;">Contextual Inactivity Indicator</strong>
+                  <p style="font-size:13px;color:#cbd5e1;line-height:1.5;margin:0;">
+                    Calculates elapsed days without confirmed activity (7d/14d/30d+ thresholds) paired with clear non-rejection reassurance and next-step actions.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Before vs After Interactive Showcase Preview -->
+            <div style="margin-top:28px;background:linear-gradient(135deg, rgba(37,99,235,0.1), rgba(15,23,42,0.8));border:1px solid #2563eb;border-radius:12px;padding:20px;">
+              <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
+                <div>
+                  <span class="port-pill port-pill-blue" style="font-size:11px;">Design Validation</span>
+                  <h4 style="font-size:16px;font-weight:700;color:#f8fafc;margin:6px 0 4px;">10 Side-by-Side Before vs. After Screen Comparisons</h4>
+                  <p style="font-size:13px;color:#94a3b8;margin:0;">
+                    Explore exact UI diffs between current production Naukri workflows and the proposed clarity improvements.
+                  </p>
+                </div>
+                <button class="port-btn-primary" data-action="switch-mode" data-mode="comparisons" style="padding:10px 18px;font-size:13px;">
+                  Launch Comparison Gallery &rarr;
+                </button>
+              </div>
             </div>
           </section>
 
@@ -1105,131 +1195,191 @@ window.NaukriCaseStudy = (function () {
           </div>
         </div>
 
-        <!-- QA Scenarios (QA01–QA18) -->
+                <!-- QA Individual Traceability Report (QA01–QA18) -->
         <div class="testing-card">
           <div class="testing-card-header">
-            <span class="desk-pill dpill-green">Regression Test Suite</span>
-            <h3 style="font-size:18px;font-weight:700;color:#f8fafc;margin:6px 0;">QA Scenarios & Expected Invariants (QA01–QA18)</h3>
+            <span class="desk-pill dpill-green">Individual QA Traceability</span>
+            <h3 style="font-size:18px;font-weight:700;color:#f8fafc;margin:6px 0;">Individual QA Traceability Report (QA01–QA18)</h3>
+            <p style="font-size:13px;color:#94a3b8;margin:4px 0 12px;">
+              Rigorous scenario-level test execution matrix. Every invariant distinguishes between prototype client simulation and requirements that strictly require production backend infrastructure.
+            </p>
           </div>
 
           <div class="port-table-wrap">
             <table class="port-table">
               <thead>
                 <tr>
-                  <th>ID</th>
-                  <th>Scenario</th>
-                  <th>Expected Invariant Behavior</th>
-                  <th>Prototype Status</th>
+                  <th style="width:100px;">QA Scenario ID</th>
+                  <th style="width:140px;">Test Environment</th>
+                  <th style="width:220px;">Preconditions &amp; Steps</th>
+                  <th style="width:240px;">Expected vs. Actual Result</th>
+                  <th style="width:130px;">Execution Status</th>
+                  <th style="width:150px;">Supporting Evidence</th>
+                  <th style="width:160px;">Known Limitations</th>
                 </tr>
               </thead>
               <tbody>
                 <tr>
-                  <td><strong>QA01</strong></td>
-                  <td>Submission Navigation</td>
-                  <td>Successful submission routes to correct authorised application</td>
-                  <td><span class="status-badge-done">PASS</span></td>
+                  <td style="white-space:nowrap;"><strong>QA01</strong><br><small style="color:#94a3b8;">Submission Navigation</small></td>
+                  <td><small style="color:#cbd5e1;">Client Browser (Chrome / Headless Playwright) against GitHub Pages &amp; Local Server</small></td>
+                  <td><small style="color:#cbd5e1;"><strong>Pre:</strong> Candidate is on a job posting with active hiring status (e.g., `job-101` ZenithPay India). Application has not yet been submitted.<br><br><strong>Steps:</strong> 1. Click `Apply` button on job details view. 2. Verify navigation to `Applied Successfully` (Screen 03). 3. Click `Track Application` primary CTA.</small></td>
+                  <td><small style="color:#cbd5e1;"><strong>Expected:</strong> Directly navigates to the detailed application tracker for `job-101` (`app-01` equivalent) showing status `Application Sent` and submission timestamp.<br><br><strong>Actual:</strong> Navigates directly to the specific application detail view without intermediate drop-off.</small></td>
+                  <td><span class="status-badge-passed" style="background:rgba(34,197,94,0.15);color:#86efac;border:1px solid #22c55e;padding:3px 8px;border-radius:6px;font-size:11px;font-weight:700;display:inline-block;">Passed (Prototype Simulation)</span></td>
+                  <td><small style="color:#94a3b8;">Automated browser step assertion: `#comp-apply-cta` routes cleanly; URL query params reflect `screen=details`.</small></td>
+                  <td><small style="color:#fca5a5;">In a production multi-tenant backend, routing depends on asynchronous distributed queue ingestion and authorized JWT token exchange.</small></td>
                 </tr>
                 <tr>
-                  <td><strong>QA02</strong></td>
-                  <td>Submission Recovery</td>
-                  <td>Failed submission/navigation shows clear retry mechanism</td>
-                  <td><span class="status-badge-done">PASS</span></td>
+                  <td style="white-space:nowrap;"><strong>QA02</strong><br><small style="color:#94a3b8;">Failed Submission / Recovery</small></td>
+                  <td><small style="color:#cbd5e1;">Client Prototype Engine (`app.js`)</small></td>
+                  <td><small style="color:#cbd5e1;"><strong>Pre:</strong> Job is marked `Closed` or simulated network failure is triggered.<br><br><strong>Steps:</strong> 1. Attempt to apply to `job-103` (Closed position) or trigger submission failure. 2. Inspect system feedback and error messaging.</small></td>
+                  <td><small style="color:#cbd5e1;"><strong>Expected:</strong> System prevents submission; displays toast/callout explaining the position is no longer accepting applications; never shows false `&quot;Applied Successfully&quot;` state.<br><br><strong>Actual:</strong> `applyToJob()` validates job availability, displays toast `&quot;This position is closed and no longer accepting applications&quot;`, and halts submission.</small></td>
+                  <td><span class="status-badge-passed" style="background:rgba(34,197,94,0.15);color:#86efac;border:1px solid #22c55e;padding:3px 8px;border-radius:6px;font-size:11px;font-weight:700;display:inline-block;">Passed (Prototype Simulation)</span></td>
+                  <td><small style="color:#94a3b8;">`app.js` line 80–84 guard check.</small></td>
+                  <td><small style="color:#fca5a5;">Production requires offline sync, idempotency keys, and retry queues for intermittent mobile packet loss.</small></td>
                 </tr>
                 <tr>
-                  <td><strong>QA03</strong></td>
-                  <td>Inactivity Meaning</td>
-                  <td>Inactivity duration does not imply rejection</td>
-                  <td><span class="status-badge-done">PASS</span></td>
+                  <td style="white-space:nowrap;"><strong>QA03</strong><br><small style="color:#94a3b8;">Inactivity Does Not Imply Rejection</small></td>
+                  <td><small style="color:#cbd5e1;">Client Browser UI &amp; Component Inspection</small></td>
+                  <td><small style="color:#cbd5e1;"><strong>Pre:</strong> Candidate views an application where `inactivityDays &gt;= 14` (e.g., `app-03` at 14 days or `app-04` at 37 days).<br><br><strong>Steps:</strong> 1. Open `app-03` (HealthTech Analytics) or `app-04` (BizCorp Analytics). 2. Inspect the inactivity banner, timeline, and status explanation.</small></td>
+                  <td><small style="color:#cbd5e1;"><strong>Expected:</strong> Banner states `No confirmed update for 14/37 days`; timeline remains at `Awaiting Recruiter Action`; candidate is explicitly advised to continue exploring other roles without claiming the application was rejected.<br><br><strong>Actual:</strong> Neutral callout rendered; status remains `Awaiting Action`; next-step CTA points to `Explore Similar Active Jobs`.</small></td>
+                  <td><span class="status-badge-passed" style="background:rgba(34,197,94,0.15);color:#86efac;border:1px solid #22c55e;padding:3px 8px;border-radius:6px;font-size:11px;font-weight:700;display:inline-block;">Passed (Prototype Simulation)</span></td>
+                  <td><small style="color:#94a3b8;">Screenshot evidence in `06_screenshots_before_after/after-inactive-mobile.jpg` and `screens-mobile.js` inactivity rendering block.</small></td>
+                  <td><small style="color:#fca5a5;">Long-term candidate psychological reassurance requires validation through real-world longitudinal cohort testing.</small></td>
                 </tr>
                 <tr>
-                  <td><strong>QA04</strong></td>
-                  <td>Missing Timestamps</td>
-                  <td>Missing timestamp suppresses duration calculation</td>
-                  <td><span class="status-badge-done">PASS</span></td>
+                  <td style="white-space:nowrap;"><strong>QA04</strong><br><small style="color:#94a3b8;">Missing Timestamp Suppresses Duration Calculation</small></td>
+                  <td><small style="color:#cbd5e1;">Client State Store (`app.js`, `data.js`)</small></td>
+                  <td><small style="color:#cbd5e1;"><strong>Pre:</strong> Application record has `lastUpdatedDate = null` or corrupt timestamp.<br><br><strong>Steps:</strong> 1. Load an unconfirmed consultancy listing or application with no verified event date. 2. Check status card and inactivity duration.</small></td>
+                  <td><small style="color:#cbd5e1;"><strong>Expected:</strong> Duration calculation (`X days ago`) is suppressed; status displays `&quot;Hiring status not confirmed&quot;` or `&quot;Submission date unavailable&quot;` rather than calculating bogus durations or defaulting to 1970.<br><br><strong>Actual:</strong> Inactivity counter is hidden when timestamps are unverified; fallback label displays cleanly.</small></td>
+                  <td><span class="status-badge-passed" style="background:rgba(34,197,94,0.15);color:#86efac;border:1px solid #22c55e;padding:3px 8px;border-radius:6px;font-size:11px;font-weight:700;display:inline-block;">Passed (Prototype Simulation)</span></td>
+                  <td><small style="color:#94a3b8;">`app.js` and `screens-mobile.js` ternary checks for `lastUpdatedDate`.</small></td>
+                  <td><small style="color:#fca5a5;">In production, legacy database records may require data cleaning and migration scripts for null timestamps.</small></td>
                 </tr>
                 <tr>
-                  <td><strong>QA05</strong></td>
-                  <td>Recency Update</td>
-                  <td>New confirmed candidate event updates recency timestamp</td>
-                  <td><span class="status-badge-done">PASS</span></td>
+                  <td style="white-space:nowrap;"><strong>QA05</strong><br><small style="color:#94a3b8;">New Confirmed Event Updates Recency</small></td>
+                  <td><small style="color:#cbd5e1;">Client State Sync Engine (`app.js`)</small></td>
+                  <td><small style="color:#cbd5e1;"><strong>Pre:</strong> Candidate application is at `lastUpdatedDate = &quot;10 Nov 2026&quot;`.<br><br><strong>Steps:</strong> 1. Recruiter updates candidate status to `Shortlisted` or `Application Viewed`. 2. Inspect `lastUpdatedDate` in candidate view.</small></td>
+                  <td><small style="color:#cbd5e1;"><strong>Expected:</strong> Timestamp immediately updates to current confirmed date (`27 Nov 2026 (Just now)`), resetting `inactivityDays` to `0`.<br><br><strong>Actual:</strong> `syncRecruiterCandidateStatus()` updates `app.lastUpdatedDate` to current date and sets `app.inactivityDays = 0`.</small></td>
+                  <td><span class="status-badge-passed" style="background:rgba(34,197,94,0.15);color:#86efac;border:1px solid #22c55e;padding:3px 8px;border-radius:6px;font-size:11px;font-weight:700;display:inline-block;">Passed (Prototype Simulation)</span></td>
+                  <td><small style="color:#94a3b8;">Test assertion verified in automated regression run.</small></td>
+                  <td><small style="color:#fca5a5;">Production requires WebSocket or push notification sync to update background candidate sessions in real time.</small></td>
                 </tr>
                 <tr>
-                  <td><strong>QA06</strong></td>
-                  <td>Unrelated Activity</td>
-                  <td>Unrelated recruiter login or candidate view does not reset recency</td>
-                  <td><span class="status-badge-done">PASS</span></td>
+                  <td style="white-space:nowrap;"><strong>QA06</strong><br><small style="color:#94a3b8;">Unrelated Recruiter Login Does Not Reset Recency</small></td>
+                  <td><small style="color:#cbd5e1;">Client State Store (`app.js`)</small></td>
+                  <td><small style="color:#cbd5e1;"><strong>Pre:</strong> Job has candidate `app-03` waiting 14 days. Recruiter logs into portal to review other jobs.<br><br><strong>Steps:</strong> 1. Trigger recruiter dashboard load or login event. 2. Inspect candidate `app-03` timestamp and inactivity days.</small></td>
+                  <td><small style="color:#cbd5e1;"><strong>Expected:</strong> Recruiter's general platform presence does NOT reset candidate's specific application clock. `lastUpdatedDate` remains unchanged unless candidate's specific profile is acted upon.<br><br><strong>Actual:</strong> Only candidate-specific status mutations trigger `app.lastUpdatedDate` updates. General portal navigation does not alter candidate records.</small></td>
+                  <td><span class="status-badge-passed" style="background:rgba(34,197,94,0.15);color:#86efac;border:1px solid #22c55e;padding:3px 8px;border-radius:6px;font-size:11px;font-weight:700;display:inline-block;">Passed (Prototype Simulation)</span></td>
+                  <td><small style="color:#94a3b8;">Code inspection of `syncRecruiterCandidateStatus()` vs. `syncRecruiterJobStatus()`.</small></td>
+                  <td><small style="color:#fca5a5;">Production event streams must filter out noisy telemetry (e.g., recruiter page views on candidate lists) from candidate-facing milestones.</small></td>
                 </tr>
                 <tr>
-                  <td><strong>QA07</strong></td>
-                  <td>Duplicate Events</td>
-                  <td>Repeated identical actions produce no duplicate history or alerts</td>
-                  <td><span class="status-badge-done">PASS</span></td>
+                  <td style="white-space:nowrap;"><strong>QA07</strong><br><small style="color:#94a3b8;">Duplicate Events Produce No Duplicate History or Notifications</small></td>
+                  <td><small style="color:#cbd5e1;">Recruiter Panel &amp; Notification Store</small></td>
+                  <td><small style="color:#cbd5e1;"><strong>Pre:</strong> Candidate `cand-04` (`app-01`) is already marked `Shortlisted`.<br><br><strong>Steps:</strong> 1. Recruiter clicks `✓ Shortlist` on `cand-04` again. 2. Check notification count and candidate timeline.</small></td>
+                  <td><small style="color:#cbd5e1;"><strong>Expected:</strong> Toast notifies recruiter `&quot;Status is already Shortlisted — no duplicate notification sent&quot;`; notification list length is unchanged; timeline contains exactly one `Shortlisted` milestone.<br><br><strong>Actual:</strong> Action is suppressed; zero duplicate notifications added to `state.notifications`.</small></td>
+                  <td><span class="status-badge-passed" style="background:rgba(34,197,94,0.15);color:#86efac;border:1px solid #22c55e;padding:3px 8px;border-radius:6px;font-size:11px;font-weight:700;display:inline-block;">Passed (Prototype Simulation)</span></td>
+                  <td><small style="color:#94a3b8;">Automated test run `Test 1: Notification deduplication &amp; legitimate recurring transitions` PASSED.</small></td>
+                  <td><small style="color:#fca5a5;">Distributed architectures require database-level unique constraints and Redis deduplication locks.</small></td>
                 </tr>
                 <tr>
-                  <td><strong>QA08</strong></td>
-                  <td>Out-of-Order Events</td>
-                  <td>Out-of-order event does not overwrite newer confirmed state</td>
-                  <td><span class="status-badge-done">PASS</span></td>
+                  <td style="white-space:nowrap;"><strong>QA08</strong><br><small style="color:#94a3b8;">Out-of-Order Event Does Not Overwrite Newer Confirmed State</small></td>
+                  <td><small style="color:#cbd5e1;">Prototype State Store (`appendConfirmedTimelineEvent`)</small></td>
+                  <td><small style="color:#cbd5e1;"><strong>Pre:</strong> Application timeline has confirmed `Shortlisted` event on 25 Nov 2026.<br><br><strong>Steps:</strong> 1. Simulate delayed arrival of older event (e.g., `Application Viewed` dated 21 Nov 2026). 2. Inspect active status and timeline order.</small></td>
+                  <td><small style="color:#cbd5e1;"><strong>Expected:</strong> Active status remains `Shortlisted`; historical event is inserted chronologically without downgrading current state.<br><br><strong>Actual:</strong> `appendConfirmedTimelineEvent()` filters non-confirmed states and prevents downgrading valid terminal states.</small></td>
+                  <td><span class="status-badge-passed" style="background:rgba(34,197,94,0.15);color:#86efac;border:1px solid #22c55e;padding:3px 8px;border-radius:6px;font-size:11px;font-weight:700;display:inline-block;">Passed (Prototype Simulation)</span></td>
+                  <td><small style="color:#94a3b8;">Code verification in `app.js` lines 195–206.</small></td>
+                  <td><small style="color:#fca5a5;">Distributed event sourcing (e.g. Apache Kafka) requires monotonic event sequence numbers and vector clocks.</small></td>
                 </tr>
                 <tr>
-                  <td><strong>QA09</strong></td>
-                  <td>Notification Preferences</td>
-                  <td>Disabled notification category suppresses simulated delivery</td>
-                  <td><span class="status-badge-done">PASS</span></td>
+                  <td style="white-space:nowrap;"><strong>QA09</strong><br><small style="color:#94a3b8;">Disabled Notification Category Respected</small></td>
+                  <td><small style="color:#cbd5e1;">Client UI &amp; Notification Delivery Engine</small></td>
+                  <td><small style="color:#cbd5e1;"><strong>Pre:</strong> Candidate opens Notification Preferences and toggles `Application status updates` to OFF.<br><br><strong>Steps:</strong> 1. Uncheck `Application status updates` and save preferences. 2. Recruiter marks candidate as `Not Shortlisted` or `Shortlisted`. 3. Inspect Notification center unread badge and list.</small></td>
+                  <td><small style="color:#cbd5e1;"><strong>Expected:</strong> Status on application tracker updates visually, but simulated notification is suppressed.<br><br><strong>Actual:</strong> `pushNotification()` checks `state.notificationPrefs.applicationUpdates`, returns `false`, and does not unshift notification.</small></td>
+                  <td><span class="status-badge-passed" style="background:rgba(34,197,94,0.15);color:#86efac;border:1px solid #22c55e;padding:3px 8px;border-radius:6px;font-size:11px;font-weight:700;display:inline-block;">Passed (Prototype Simulation)</span></td>
+                  <td><small style="color:#94a3b8;">Verified in automated preferences suite.</small></td>
+                  <td><small style="color:#fca5a5;">In production, user preferences must be enforced at the push gateway (FCM / APNs) to prevent device battery drain.</small></td>
                 </tr>
                 <tr>
-                  <td><strong>QA10</strong></td>
-                  <td>Archive Invariance</td>
-                  <td>Archived application continues receiving confirmed updates</td>
-                  <td><span class="status-badge-done">PASS</span></td>
+                  <td style="white-space:nowrap;"><strong>QA10</strong><br><small style="color:#94a3b8;">Archived Application Continues Receiving Confirmed Updates</small></td>
+                  <td><small style="color:#cbd5e1;">Client State Store &amp; My Applications View</small></td>
+                  <td><small style="color:#cbd5e1;"><strong>Pre:</strong> Candidate archives `app-01` (`archived = true`).<br><br><strong>Steps:</strong> 1. Archive `app-01`. Verify it disappears from active `Applies on Naukri` tab. 2. Recruiter marks `app-01` candidate as `Shortlisted`. 3. Inspect `Archived` filter and notification tray.</small></td>
+                  <td><small style="color:#cbd5e1;"><strong>Expected:</strong> Candidate receives notification; `app-01` in Archived list updates to `Shortlisted`; restoring brings it back to active list with updated state intact.<br><br><strong>Actual:</strong> State updates apply to application object regardless of `archived` boolean flag.</small></td>
+                  <td><span class="status-badge-passed" style="background:rgba(34,197,94,0.15);color:#86efac;border:1px solid #22c55e;padding:3px 8px;border-radius:6px;font-size:11px;font-weight:700;display:inline-block;">Passed (Prototype Simulation)</span></td>
+                  <td><small style="color:#94a3b8;">Interactive test in Screen 04 My Applications.</small></td>
+                  <td><small style="color:#fca5a5;">None on client; production needs index optimization for queries filtering `archived = false`.</small></td>
                 </tr>
                 <tr>
-                  <td><strong>QA11</strong></td>
-                  <td>Decision Reset</td>
-                  <td>Reconsidering candidate to Viewed/Maybe clears stale decision fields</td>
-                  <td><span class="status-badge-done">PASS</span></td>
+                  <td style="white-space:nowrap;"><strong>QA11</strong><br><small style="color:#94a3b8;">Reconsideration Clears Stale Current Decision Fields</small></td>
+                  <td><small style="color:#cbd5e1;">Client Recruiter Sync Engine</small></td>
+                  <td><small style="color:#cbd5e1;"><strong>Pre:</strong> Candidate was previously marked `Not Shortlisted` with reason `&quot;Location mismatch&quot;`.<br><br><strong>Steps:</strong> 1. Recruiter re-evaluates and moves candidate to `Viewed` or `Maybe`. 2. Inspect candidate decision fields in `app.js`.</small></td>
+                  <td><small style="color:#cbd5e1;"><strong>Expected:</strong> `individualDecisionAvailable` resets to `false`; `recruiterDecisionReason` and `recruiterDecisionDate` reset to `null`; historical confirmed milestones (`Applied`, `Application Sent`) remain untouched.<br><br><strong>Actual:</strong> Decision fields cleanly cleared; timeline transitions to `Awaiting Recruiter Action (Under review)`.</small></td>
+                  <td><span class="status-badge-passed" style="background:rgba(34,197,94,0.15);color:#86efac;border:1px solid #22c55e;padding:3px 8px;border-radius:6px;font-size:11px;font-weight:700;display:inline-block;">Passed (Prototype Simulation)</span></td>
+                  <td><small style="color:#94a3b8;">Automated Node/Python test script PASSED.</small></td>
+                  <td><small style="color:#fca5a5;">Production enterprise ATS audits must retain an internal audit trail of status changes even if candidate view is cleared.</small></td>
                 </tr>
                 <tr>
-                  <td><strong>QA12</strong></td>
-                  <td>Hiring Pause Decoupling</td>
-                  <td>Role pause / closure preserves existing candidate shortlist outcome</td>
-                  <td><span class="status-badge-done">PASS</span></td>
+                  <td style="white-space:nowrap;"><strong>QA12</strong><br><small style="color:#94a3b8;">Role Closure Preserves Shortlist Outcome</small></td>
+                  <td><small style="color:#cbd5e1;">Client Multi-Job Sync</small></td>
+                  <td><small style="color:#cbd5e1;"><strong>Pre:</strong> Candidate `cand-04` is `Shortlisted` for `rec-job-02`.<br><br><strong>Steps:</strong> 1. Recruiter changes job hiring status dropdown from `Active` to `Closed`. 2. Inspect candidate's application details screen.</small></td>
+                  <td><small style="color:#cbd5e1;"><strong>Expected:</strong> Job availability displays `Closed`; candidate status REMAINS `Shortlisted` (never overwritten to Closed or Rejected).<br><br><strong>Actual:</strong> Candidate view renders dual badges: `Shortlisted` (candidate outcome) + `Closed` (job availability).</small></td>
+                  <td><span class="status-badge-passed" style="background:rgba(34,197,94,0.15);color:#86efac;border:1px solid #22c55e;padding:3px 8px;border-radius:6px;font-size:11px;font-weight:700;display:inline-block;">Passed (Prototype Simulation)</span></td>
+                  <td><small style="color:#94a3b8;">Live screenshot `status_07_role_closed.png` and `app.js` line 310–350.</small></td>
+                  <td><small style="color:#fca5a5;">In real-world recruiting, candidate must be informed if a closed requisition cancels an interview cycle.</small></td>
                 </tr>
                 <tr>
-                  <td><strong>QA13</strong></td>
-                  <td>Recurring Transitions</td>
-                  <td>Pause → resume → pause cycle yields distinct eligible alerts</td>
-                  <td><span class="status-badge-done">PASS</span></td>
+                  <td style="white-space:nowrap;"><strong>QA13</strong><br><small style="color:#94a3b8;">Pause → Resume → Pause Cycle Yields Distinct Eligible Events</small></td>
+                  <td><small style="color:#cbd5e1;">Prototype Notification Store</small></td>
+                  <td><small style="color:#cbd5e1;"><strong>Pre:</strong> Candidate is subscribed to hiring status alerts (`notifyOnResume = true`).<br><br><strong>Steps:</strong> 1. Recruiter sets Job Availability to `On Hold` (Alert 1 sent). 2. Recruiter sets Job Availability to `Active` (Alert 2 sent). 3. Recruiter sets Job Availability to `On Hold` again (Alert 3).</small></td>
+                  <td><small style="color:#cbd5e1;"><strong>Expected:</strong> Because a legitimate state cycle occurred (`On Hold` → `Active` → `On Hold`), Alert 3 is emitted rather than blocked by the deduplicator.<br><br><strong>Actual:</strong> System compares against latest recorded event for that app; since intermediate event was `Hiring resumed`, new `Hiring paused` alert delivers cleanly.</small></td>
+                  <td><span class="status-badge-passed" style="background:rgba(34,197,94,0.15);color:#86efac;border:1px solid #22c55e;padding:3px 8px;border-radius:6px;font-size:11px;font-weight:700;display:inline-block;">Passed (Prototype Simulation)</span></td>
+                  <td><small style="color:#94a3b8;">Test 1 script output: `Assert len(notifications) == 3 PASSED`.</small></td>
+                  <td><small style="color:#fca5a5;">Flapping detection (e.g. recruiter toggling status 5 times in 1 minute) should be throttled in production.</small></td>
                 </tr>
                 <tr>
-                  <td><strong>QA14</strong></td>
-                  <td>Secondary Pause Eligibility</td>
-                  <td>Second pause eligible even when resume notification was disabled</td>
-                  <td><span class="status-badge-done">PASS</span></td>
+                  <td style="white-space:nowrap;"><strong>QA14</strong><br><small style="color:#94a3b8;">Second Pause Eligible Even When Resume Notification Was Disabled</small></td>
+                  <td><small style="color:#cbd5e1;">Client Prototype Engine</small></td>
+                  <td><small style="color:#cbd5e1;"><strong>Pre:</strong> Candidate did NOT opt into resume alerts (`notifyOnResume = false`).<br><br><strong>Steps:</strong> 1. Job moves `Active` → `On Hold` (Notification sent). 2. Job moves `On Hold` → `Active` (Notification suppressed because candidate opted out). 3. Job moves `Active` → `On Hold` again.</small></td>
+                  <td><small style="color:#cbd5e1;"><strong>Expected:</strong> The second `On Hold` transition emits a notification because the role was genuinely reactivated in the interim.<br><br><strong>Actual:</strong> Correctly evaluated based on state transition history.</small></td>
+                  <td><span class="status-badge-passed" style="background:rgba(34,197,94,0.15);color:#86efac;border:1px solid #22c55e;padding:3px 8px;border-radius:6px;font-size:11px;font-weight:700;display:inline-block;">Passed (Prototype Simulation)</span></td>
+                  <td><small style="color:#94a3b8;">Automated edge-case script logic.</small></td>
+                  <td><small style="color:#fca5a5;">Requires backend state transition machine (FSM) in production.</small></td>
                 </tr>
                 <tr>
-                  <td><strong>QA15</strong></td>
-                  <td>Authorisation Guardrail</td>
-                  <td>Unauthorised application access denied</td>
-                  <td><span class="status-badge-done">PASS</span></td>
+                  <td style="white-space:nowrap;"><strong>QA15</strong><br><small style="color:#94a3b8;">Unauthorised Application Access Denied</small></td>
+                  <td><small style="color:#cbd5e1;">Production Authorization Architecture (Conceptual)</small></td>
+                  <td><small style="color:#cbd5e1;"><strong>Pre:</strong> User B attempts to access Application A belonging to User A via URL tampering (`?app=app-01`).<br><br><strong>Steps:</strong> 1. Attempt direct GET request to unauthorized application ID.</small></td>
+                  <td><small style="color:#cbd5e1;"><strong>Expected:</strong> Server verifies JWT/session ownership; rejects with HTTP 403 Forbidden; never exposes candidate PII or recruiter internal notes.<br><br><strong>Actual:</strong> Client-side prototype uses static simulated mock state (`state.applications`). In-memory isolation prevents cross-browser leaks, but backend OAuth/JWT enforcement is not implemented in static prototype.</small></td>
+                  <td><span class="status-badge-validation" style="background:rgba(239,68,68,0.15);color:#fca5a5;border:1px solid #ef4444;padding:3px 8px;border-radius:6px;font-size:11px;font-weight:700;display:inline-block;">Requires Production Validation</span></td>
+                  <td><small style="color:#94a3b8;">PRD Section 12 &amp; 13 (Risk R12). Documented as non-goal for client prototype.</small></td>
+                  <td><small style="color:#fca5a5;">Full verification requires live production API gateway with RBAC / OAuth2 tokens.</small></td>
                 </tr>
                 <tr>
-                  <td><strong>QA16</strong></td>
-                  <td>Match vs Reason</td>
-                  <td>Profile mismatch is not presented as confirmed recruiter reason</td>
-                  <td><span class="status-badge-done">PASS</span></td>
+                  <td style="white-space:nowrap;"><strong>QA16</strong><br><small style="color:#94a3b8;">Profile Mismatch Not Presented as Confirmed Reason</small></td>
+                  <td><small style="color:#cbd5e1;">Application Details View (Screen 05 / 07)</small></td>
+                  <td><small style="color:#cbd5e1;"><strong>Pre:</strong> Candidate has an algorithmic profile match score of 71% (e.g., `app-06` missing 1 key skill).<br><br><strong>Steps:</strong> 1. Inspect `app-06` (Not Shortlisted). 2. Verify distinction between `Profile Match Insights` and `Recruiter Decision`.</small></td>
+                  <td><small style="color:#cbd5e1;"><strong>Expected:</strong> Algorithmic match score is displayed under `Profile Match Insights` with an explicit disclaimer; it is NEVER presented as the recruiter's official rejection reason unless the recruiter explicitly selected it.<br><br><strong>Actual:</strong> Clear visual divider; candidate is informed: *&quot;The recruiter has not shared a specific reason for this decision.&quot;*</small></td>
+                  <td><span class="status-badge-passed" style="background:rgba(34,197,94,0.15);color:#86efac;border:1px solid #22c55e;padding:3px 8px;border-radius:6px;font-size:11px;font-weight:700;display:inline-block;">Passed (Prototype Simulation)</span></td>
+                  <td><small style="color:#94a3b8;">Component inspection in `screens-mobile.js` lines 610–660.</small></td>
+                  <td><small style="color:#fca5a5;">Candidates may still intuitively associate low match scores with rejection; UX copy must remain vigilant.</small></td>
                 </tr>
                 <tr>
-                  <td><strong>QA17</strong></td>
-                  <td>External ATS Notice</td>
-                  <td>External tracking limitations displayed clearly</td>
-                  <td><span class="status-badge-done">PASS</span></td>
+                  <td style="white-space:nowrap;"><strong>QA17</strong><br><small style="color:#94a3b8;">External ATS Tracking Limitations Displayed</small></td>
+                  <td><small style="color:#cbd5e1;">Screen 04 My Applications &amp; Screen 05 Details</small></td>
+                  <td><small style="color:#cbd5e1;"><strong>Pre:</strong> Candidate inspects an application marked `isExternal: true` (`app-09` FinCorp Global).<br><br><strong>Steps:</strong> 1. Open `app-09` external application. 2. Inspect tracking status card and information banner.</small></td>
+                  <td><small style="color:#cbd5e1;"><strong>Expected:</strong> Card displays `External Application` badge and informs candidate that detailed stage tracking depends on the third-party company portal.<br><br><strong>Actual:</strong> Explanatory banner displayed; external application limitations disclosed transparently.</small></td>
+                  <td><span class="status-badge-passed" style="background:rgba(34,197,94,0.15);color:#86efac;border:1px solid #22c55e;padding:3px 8px;border-radius:6px;font-size:11px;font-weight:700;display:inline-block;">Passed (Prototype Simulation)</span></td>
+                  <td><small style="color:#94a3b8;">Data record `app-09` in `data.js` and rendering in `screens-mobile.js`.</small></td>
+                  <td><small style="color:#fca5a5;">Deep webhook integration with Workday/Taleo/Greenhouse is required for automated two-way synchronization.</small></td>
                 </tr>
                 <tr>
-                  <td><strong>QA18</strong></td>
-                  <td>Free Essential Access</td>
-                  <td>Core tracking transparency remains free and non-paywalled</td>
-                  <td><span class="status-badge-done">PASS</span></td>
+                  <td style="white-space:nowrap;"><strong>QA18</strong><br><small style="color:#94a3b8;">Essential Transparency Remains 100% Free</small></td>
+                  <td><small style="color:#cbd5e1;">Client Prototype UI &amp; Commercial Placement Review</small></td>
+                  <td><small style="color:#cbd5e1;"><strong>Pre:</strong> Candidate reviews application status, timeline, inactivity indicators, and rejection notes across all 10 screens.<br><br><strong>Steps:</strong> 1. Navigate through all candidate screens without purchasing Naukri Pro or FastForward. 2. Inspect whether any essential tracking feature is blocked behind a paywall.</small></td>
+                  <td><small style="color:#cbd5e1;"><strong>Expected:</strong> All essential tracking information is 100% accessible for free. Contextual promotions (Naukri Pro / Resume Score) appear as non-blocking supportive cards below core status.<br><br><strong>Actual:</strong> Zero paywalls on tracking data; promotional upsells are placed contextually below functional status timelines.</small></td>
+                  <td><span class="status-badge-passed" style="background:rgba(34,197,94,0.15);color:#86efac;border:1px solid #22c55e;padding:3px 8px;border-radius:6px;font-size:11px;font-weight:700;display:inline-block;">Passed (Prototype Simulation)</span></td>
+                  <td><small style="color:#94a3b8;">Visual audit across Screens 01–10.</small></td>
+                  <td><small style="color:#fca5a5;">Business commercial non-inferiority must be monitored in production A/B experiments.</small></td>
                 </tr>
               </tbody>
             </table>
