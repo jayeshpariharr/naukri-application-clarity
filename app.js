@@ -14,7 +14,7 @@
     const qJob = params.get("job");
     const qSub = params.get("sub");
     return {
-      mode: qMode || "mobile", // "mobile" | "desktop" | "recruiter" | "comparisons" | "rationale" | "testing"
+      mode: qMode || "overview", // "overview" | "casestudy" | "mobile" | "desktop" | "recruiter" | "comparisons" | "documentation" | "testing" | "rationale"
       testing: {
         subView: params.get("testsub") || "participant", // "participant" | "dashboard" | "report"
         participantStage: "consent", // "consent" | "background" | "tasks" | "postTest" | "complete"
@@ -529,46 +529,57 @@
     const unread = state.notifications.filter(n => n.unread).length;
     const header = `
       <header class="proto-bar">
-        <div class="proto-bar-title">
-          <span>Naukri Application Clarity</span>
-          <span class="proto-tag">Incremental Feature Prototype</span>
+        <div class="proto-bar-title" data-action="switch-mode" data-mode="overview" title="Go to Portfolio Overview">
+          <span style="font-weight:700;letter-spacing:-0.2px;">Naukri Application Clarity</span>
+          <span class="proto-tag">PM Portfolio Case Study</span>
         </div>
 
-        <nav class="proto-tabs" aria-label="Prototype Views">
-          <button class="proto-tab ${state.mode === 'mobile' ? 'active' : ''}" data-action="switch-mode" data-mode="mobile">
-            Mobile (Dark · 01–10)
+        <nav class="proto-tabs" aria-label="Portfolio Sections">
+          <button class="proto-tab ${state.mode === 'overview' ? 'active' : ''}" data-action="switch-mode" data-mode="overview">
+            Overview
+          </button>
+          <button class="proto-tab ${state.mode === 'casestudy' ? 'active' : ''}" data-action="switch-mode" data-mode="casestudy">
+            Case Study (PRD)
+          </button>
+          <button class="proto-tab ${(state.mode === 'mobile' || state.mode === 'desktop' || state.mode === 'recruiter') ? 'active' : ''}" data-action="switch-mode" data-mode="mobile">
+            Interactive Prototype
             ${unread > 0 ? `<span class="notif-dot-count">${unread}</span>` : ""}
-          </button>
-          <button class="proto-tab ${state.mode === 'desktop' ? 'active' : ''}" data-action="switch-mode" data-mode="desktop">
-            Desktop Web (Light · 12)
-          </button>
-          <button class="proto-tab ${state.mode === 'recruiter' ? 'active' : ''}" data-action="switch-mode" data-mode="recruiter">
-            Recruiter Panel (11)
           </button>
           <button class="proto-tab ${state.mode === 'comparisons' ? 'active' : ''}" data-action="switch-mode" data-mode="comparisons">
             Before vs. After
           </button>
-          <button class="proto-tab ${state.mode === 'rationale' ? 'active' : ''}" data-action="switch-mode" data-mode="rationale">
-            Design Rationale
+          <button class="proto-tab ${state.mode === 'documentation' || state.mode === 'rationale' ? 'active' : ''}" data-action="switch-mode" data-mode="documentation">
+            Product Documentation
           </button>
-          <button class="proto-tab ${state.mode === 'testing' ? 'active' : ''}" data-action="switch-mode" data-mode="testing">
-            🧪 Usability Testing
+          <button class="proto-tab ${state.mode === 'testing' ? 'active' : ''}" style="margin-left:6px;border-color:#334155;color:#94a3b8;" data-action="switch-mode" data-mode="testing">
+            🧪 Usability Lab
           </button>
         </nav>
 
-        <div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          ${(state.mode === 'mobile' || state.mode === 'desktop' || state.mode === 'recruiter') ? `
+            <div style="display:flex;gap:4px;background:#18181b;padding:2px 4px;border-radius:6px;border:1px solid #27272a;">
+              <button class="proto-tab ${state.mode === 'mobile' ? 'active' : ''}" style="padding:4px 8px;font-size:11.5px;" data-action="switch-mode" data-mode="mobile">Mobile (Dark)</button>
+              <button class="proto-tab ${state.mode === 'desktop' ? 'active' : ''}" style="padding:4px 8px;font-size:11.5px;" data-action="switch-mode" data-mode="desktop">Desktop</button>
+              <button class="proto-tab ${state.mode === 'recruiter' ? 'active' : ''}" style="padding:4px 8px;font-size:11.5px;" data-action="switch-mode" data-mode="recruiter">Recruiter</button>
+            </div>
+          ` : ""}
           <button class="proto-reset" data-action="reset-demo">Reset Demo</button>
         </div>
       </header>
     `;
 
     let body = "";
-    if (state.mode === "mobile") body = window.NaukriMobile.render(state);
+    if (state.mode === "overview" && window.NaukriCaseStudy) body = window.NaukriCaseStudy.renderOverview(state);
+    else if (state.mode === "casestudy" && window.NaukriCaseStudy) body = window.NaukriCaseStudy.renderCaseStudy(state);
+    else if (state.mode === "documentation" && window.NaukriCaseStudy) body = window.NaukriCaseStudy.renderDocumentation(state);
+    else if (state.mode === "mobile") body = window.NaukriMobile.render(state);
     else if (state.mode === "desktop") body = window.NaukriDesktop.render(state);
     else if (state.mode === "recruiter") body = window.NaukriRecruiter.render(state);
     else if (state.mode === "comparisons") body = window.NaukriPortfolio.renderComparisons(state);
     else if (state.mode === "rationale") body = window.NaukriPortfolio.renderRationale();
     else if (state.mode === "testing" && window.NaukriTesting) body = window.NaukriTesting.render(state);
+    else if (window.NaukriCaseStudy) body = window.NaukriCaseStudy.renderOverview(state);
 
     const toastHtml = state.toast ? `<div class="toast-banner">✓ ${window.NaukriMobile.esc(state.toast)}</div>` : "";
     appEl.innerHTML = header + body + renderModals() + toastHtml;
@@ -1034,6 +1045,11 @@
 
     if (action === "test-export-report-md") {
       if (window.NaukriTesting) window.NaukriTesting.exportReportMD();
+      return;
+    }
+
+    if (action === "download-prd-md") {
+      if (window.NaukriCaseStudy) window.NaukriCaseStudy.downloadPRD();
       return;
     }
 
