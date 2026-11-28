@@ -612,30 +612,51 @@
       });
     }
 
-    // Clearly separate scheduled time, simulated actual occurrence time, and confirmation recording time
-    // If explicit simulated actual occurrence timestamp provided in params, validate and use it
+    // Clearly separate scheduled time, simulated actual occurrence time, and confirmation recording time.
+    // Requirement: Remove scheduled-time fallback in recordAttendance. Require an explicit simulated occurrence timestamp
+    // and validate that it is not in the future relative to the demo clock.
     let actualOccurrenceIso = params.simulated_occurrence_at || interview.simulated_actual_occurrence || null;
-    if (actualOccurrenceIso) {
-      const occDate = new Date(actualOccurrenceIso);
-      if (isNaN(occDate.getTime())) {
-        return { success: false, error: 'Invalid simulated occurrence timestamp format' };
-      }
-      actualOccurrenceIso = occDate.toISOString();
-    } else {
-      // Default to scheduled start time as the actual occurrence for simulation, but explicitly tagged
-      actualOccurrenceIso = interview.starts_at;
+    if (!actualOccurrenceIso) {
+      return {
+        success: false,
+        error: 'Explicit simulated occurrence timestamp (simulated_occurrence_at) is strictly required to record attendance. Scheduled time cannot be used as an implicit fallback.',
+        field: 'missing_simulated_occurrence'
+      };
     }
+
+    const occDate = new Date(actualOccurrenceIso);
+    if (isNaN(occDate.getTime())) {
+      return { success: false, error: 'Invalid simulated occurrence timestamp format', field: 'invalid_occurrence_format' };
+    }
+
+    // Validate that occurrence timestamp is not in the future relative to current DemoClock time
+    if (occDate.getTime() > currentTime.getTime()) {
+      return {
+        success: false,
+        error: `Simulated occurrence timestamp (${actualOccurrenceIso}) cannot be in the future relative to current simulated time (${currentTime.toISOString()}).`,
+        field: 'future_occurrence_timestamp'
+      };
+    }
+
+    actualOccurrenceIso = occDate.toISOString();
 
     // Persist actual occurrence on interview so both candidate and recruiter confirmations align
     if (!interview.simulated_actual_occurrence) {
       interview.simulated_actual_occurrence = actualOccurrenceIso;
+    } else if (params.simulated_occurrence_at && interview.simulated_actual_occurrence !== actualOccurrenceIso) {
+      // Require consistent occurrence timestamps for both attendance records
+      return {
+        success: false,
+        error: `Inconsistent occurrence timestamp. Existing interview occurrence is ${interview.simulated_actual_occurrence}, but provided ${actualOccurrenceIso}. Both participants must reference the same actual occurrence.`,
+        field: 'inconsistent_occurrence_timestamp'
+      };
     }
 
     const record = {
       result: result,
       recorded_at: DemoClock.nowIso(state),
       occurred_at: actualOccurrenceIso,
-      occurred_at_type: params.simulated_occurrence_at ? 'explicit_simulated_occurrence' : 'scheduled_aligned_simulated',
+      occurred_at_type: 'explicit_simulated_occurrence',
       actor_role: actor_role,
       actor_id: actor_role === 'candidate' ? (interview.seeker_id || 'seeker-01') : 'recruiter-01',
       schedule_version: interview.schedule_version || 1,
@@ -874,12 +895,26 @@
             return false;
           }
 
-          // Do not silently substitute scheduled timestamp when actual occurrence timestamp is missing!
-          const actualOccurrenceStr = candAtt.occurred_at || inv.simulated_actual_occurrence;
-          if (!actualOccurrenceStr) return false;
+          // Enforce consistent occurrence timestamps for both attendance records
+          const candOccurred = candAtt.occurred_at || inv.simulated_actual_occurrence;
+          const recOccurred = recAtt.occurred_at || inv.simulated_actual_occurrence;
+          if (!candOccurred || !recOccurred) return false;
+          if (candOccurred !== recOccurred) {
+            // Inconsistent occurrence timestamps reject qualification
+            return false;
+          }
 
-          const actualOccurred = new Date(actualOccurrenceStr).getTime();
+          const actualOccurred = new Date(candOccurred).getTime();
           if (isNaN(actualOccurred)) return false;
+
+          // Enforce confirmation recording timestamps against the CAIR reporting cutoff (refDate)
+          const candRecordedTime = candAtt.recorded_at ? new Date(candAtt.recorded_at).getTime() : actualOccurred;
+          const recRecordedTime = recAtt.recorded_at ? new Date(recAtt.recorded_at).getTime() : actualOccurred;
+          const cutoffTime = refDate.getTime();
+          if (candRecordedTime > cutoffTime || recRecordedTime > cutoffTime) {
+            // Confirmations recorded after the evaluation reference cutoff cannot count in this reporting period
+            return false;
+          }
 
           const anchorTime = anchorDate.getTime();
           const windowEndTime = anchorTime + 14 * 24 * 60 * 60 * 1000;

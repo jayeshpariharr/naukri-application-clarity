@@ -946,6 +946,41 @@ window.NAUKRI_DATA = {
           recommended: false
         }
       ]
+    },
+    {
+      id: "rec-job-05",
+      linkedAppId: "app-10",
+      company: "BrightLeaf EdTech",
+      title: "CX Product Lead (Applied via Neo)",
+      location: "Bengaluru (Hybrid)",
+      category: "Hot Vacancy",
+      jobStatus: "Active",
+      totalResponses: 42,
+      newResponses: 3,
+      shortlistedCount: 4,
+      postedBy: "Pooja Malhotra (BrightLeaf)",
+      postedDate: "15 Nov 2026",
+      candidates: [
+        {
+          id: "cand-10",
+          isPrototypeUser: true,
+          linkedAppId: "app-10",
+          name: "Aarav Mehta",
+          experience: "3y 6m",
+          ctc: "₹ 14.5 Lacs",
+          notice: "30d notice",
+          location: "Bengaluru",
+          currentRole: "Product Analyst at MetroPay Systems",
+          previousRole: "Associate Business Analyst at FinServe Analytics",
+          education: "B.Tech, NIT Surathkal 2022",
+          prefLocations: "Bengaluru",
+          keySkills: ["Product Analytics", "SQL", "PRD Writing", "CX Automation", "Figma"],
+          appliedDate: "16 Nov 2026",
+          recruiterStatus: "Shortlisted",
+          decisionReason: null,
+          recommended: true
+        }
+      ]
     }
   ],
 

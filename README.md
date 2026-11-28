@@ -1,21 +1,21 @@
 # Naukri Application Clarity V2.2 — Product Management Portfolio & Prototype
 
-> **Independent Capstone Project — Master PRD V2.0 Implementation**  
-> **Development Branch:** `capstone-v2` | **Audit Version:** 2.2 (Focused Audit Corrections)  
+> **Independent Capstone Project — Master PRD V2.0 Implementation (Final Frozen Patch)**  
+> **Development Branch:** `capstone-v2` | **Audit Version:** 2.2 Patch (Frozen Audit Corrections)  
 > *Note: This is an independent, unofficial product management case study and prototype. The live GitHub Pages deployment reflects the stable V1.0 release on `main`; this V2.2 development branch contains the complete audited interview progression journey, deterministic Demo Clock, and strict CAIR analytics engine.*
 
 ---
 
 ## 🚀 90-Second Demonstration Route for Evaluators
 
-Follow this exact 90-second route to experience the end-to-end V2.0 interview progression journey and V2.2 audit improvements:
+Follow this exact continuous route on application `app-10` to experience the end-to-end V2.0 interview progression journey and V2.2 audit improvements:
 
 1. **Launch the Prototype:**
    - Open `index.html` in any modern web browser or start a local server (`python3 -m http.server 8080`).
    - Click on the **Interactive Prototype** tab in the top navigation bar.
 
 2. **Inspect an Active Interview Invitation (FR18 & FR19):**
-   - Click on **My Applications** -> Select the **CX Product Lead** application at **BrightLeaf EdTech** (app-10).
+   - Click on **My Applications** -> Select the **CX Product Lead (Applied via Neo)** application at **BrightLeaf EdTech** (`app-10`, interview `int-02`).
    - Notice the prominent **Interview Coordination (V2.0)** card displaying the scheduled date, round name (*Hiring Manager Discussion*), and meeting format.
    - Click **✓ Accept Invitation**. The badge immediately updates to **Confirmed** and appends a verified confirmation event to the timeline.
 
@@ -25,16 +25,15 @@ Follow this exact 90-second route to experience the end-to-end V2.0 interview pr
 
 4. **Recruiter Confirmation of Proposed Slot (V2.2 Fix):**
    - In the top bar mode switcher, click **Recruiter**.
-   - In the Recruiter Console, open the Growth Product Manager role responses and locate candidate Aarav Mehta.
-   - Click **✓ Accept Proposed Slot**. The schedule version increments to `v2`, the new slot is officially confirmed, and the obsolete reminder is invalidated.
+   - In the Recruiter Console, open `Manage Jobs and Responses` -> **CX Product Lead (Applied via Neo)** at BrightLeaf EdTech and locate candidate **Aarav Mehta**.
+   - Click **✓ Accept Proposed Slot (5 Dec 2026 at 14:30)**. The schedule version increments to `v2`, the new slot is officially confirmed, and the obsolete reminder is invalidated.
 
 5. **Advance the Simulated Demo Clock (FR23 & BUG-01 Fix):**
-   - Try clicking **Confirm Attendance** immediately. Notice the system strictly enforces integrity: *Attendance cannot be confirmed before the interview occurrence.*
    - In the top header bar, locate the **⏱ Demo Clock** controls.
-   - Click **+7d** to advance the simulated time past the confirmed interview occurrence.
+   - Click **+7d** and **+1d** to advance the simulated time past the confirmed interview occurrence (past 5 Dec 2026).
 
 6. **Execute Dual Attendance Confirmation & CAIR Qualification (FR23, FR24, FR25):**
-   - Click **Confirm Attendance** as the candidate (*Candidate Confirmed: ✓ Attended*).
+   - In Candidate view, click **Confirm I Attended** (*Candidate Confirmed: ✓ Attended*).
    - In Recruiter view, click **Mark Interviewed (Conducted)** (*Recruiter Confirmed: ✓ Conducted*).
    - Return to **Mobile** or **Desktop** tracker: the attendance status updates to **🎯 Dual Confirmed**, qualifying this application for the **CAIR (Candidate Application-to-Interview Rate)** metric!
 
@@ -45,9 +44,15 @@ Follow this exact 90-second route to experience the end-to-end V2.0 interview pr
 V2.2 features an authentic executable Node.js test harness that executes real assertions against domain functions and boundaries:
 
 ```bash
-# Run the complete audited regression suite (56 scenarios, 137 strict assertions)
+# Run the complete audited regression suite (59 scenarios, 150 strict assertions)
 node test_runner_real.js
 ```
+
+### Accurate Test Coverage & Simulation vs Production Classification
+- **Domain unit tests (24 scenarios):** Business logic, time-travel evaluation, attendance derivation, and CAIR analytics.
+- **Fixture validations (17 scenarios):** Seed data consistency, schema integrity, and initial states.
+- **Production Validation (1 scenario — QA15):** Explicitly marks server-side JWT authentication, rate limiting, and multitenant infrastructure as requiring production backends rather than claiming client-side verification.
+- **Audit Specific Regressions (20 scenarios — BUG-01 through BUG-20):** Edge cases, deduplication boundaries, occurrence timestamp requirements, and reporting cutoffs.
 
 ### Coverage Classification:
 Every scenario is strictly classified in accordance with audit guidelines:

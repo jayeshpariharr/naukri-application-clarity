@@ -1127,7 +1127,15 @@
       const intId = target.getAttribute("data-interview-id");
       const result = target.getAttribute("data-result"); // 'positive' or 'negative'
       if (window.NaukriInterviewDomain) {
-        window.NaukriInterviewDomain.recordAttendance(state, { interview_id: intId, actor_role: "candidate", result: result });
+        const interview = (state.interviews || []).find(i => i.id === intId);
+        // Explicit simulated occurrence timestamp: align with interview start time or persisted occurrence
+        const explicitOccurrence = interview ? (interview.simulated_actual_occurrence || interview.starts_at) : null;
+        window.NaukriInterviewDomain.recordAttendance(state, {
+          interview_id: intId,
+          actor_role: "candidate",
+          result: result,
+          simulated_occurrence_at: explicitOccurrence
+        });
       }
       render();
       return;
@@ -1198,7 +1206,15 @@
       const intId = target.getAttribute("data-interview-id");
       const result = target.getAttribute("data-result");
       if (window.NaukriInterviewDomain) {
-        window.NaukriInterviewDomain.recordAttendance(state, { interview_id: intId, actor_role: "recruiter", result: result });
+        const interview = (state.interviews || []).find(i => i.id === intId);
+        // Explicit simulated occurrence timestamp: align with interview start time or persisted occurrence
+        const explicitOccurrence = interview ? (interview.simulated_actual_occurrence || interview.starts_at) : null;
+        window.NaukriInterviewDomain.recordAttendance(state, {
+          interview_id: intId,
+          actor_role: "recruiter",
+          result: result,
+          simulated_occurrence_at: explicitOccurrence
+        });
       }
       render();
       return;

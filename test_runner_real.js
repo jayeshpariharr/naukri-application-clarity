@@ -36,19 +36,11 @@ const testResults = [];
 let passedAssertions = 0;
 
 const SCENARIO_CLASSIFICATIONS = {
-  // Browser Functional Tests (Actual UI interaction tests)
-  "QA01": "Browser functional test",
-  "QA02": "Browser functional test",
-  "QA17": "Browser functional test",
-  "QA18": "Browser functional test",
-  "QA20": "Browser functional test",
-  "QA26": "Browser functional test",
-  "QA27": "Browser functional test",
-  "QA28": "Browser functional test",
-  "QA31": "Browser functional test",
-  "QA32": "Browser functional test",
-  "QA35": "Browser functional test",
-  // Fixture Validation
+  // Production Validation (External/Platform dependencies requiring production infrastructure)
+  "QA15": "Requires Production Validation",
+  // Fixture Validation (Deterministic verification of mock data, schemas, invariants)
+  "QA01": "Fixture validation",
+  "QA02": "Fixture validation",
   "QA03": "Fixture validation",
   "QA04": "Fixture validation",
   "QA06": "Fixture validation",
@@ -57,13 +49,14 @@ const SCENARIO_CLASSIFICATIONS = {
   "QA11": "Fixture validation",
   "QA12": "Fixture validation",
   "QA14": "Fixture validation",
+  "QA17": "Fixture validation",
+  "QA18": "Fixture validation",
   "QA19": "Fixture validation",
+  "QA20": "Fixture validation",
   "QA21": "Fixture validation",
   "QA23": "Fixture validation",
   "QA25": "Fixture validation",
-  // Production Validation
-  "QA15": "Requires Production Validation",
-  // Domain Unit Tests
+  // Domain Unit Tests (Core business logic, state machines, timing, CAIR analytics)
   "QA05": "Domain unit test",
   "QA07": "Domain unit test",
   "QA08": "Domain unit test",
@@ -71,10 +64,16 @@ const SCENARIO_CLASSIFICATIONS = {
   "QA16": "Domain unit test",
   "QA22": "Domain unit test",
   "QA24": "Domain unit test",
+  "QA26": "Domain unit test",
+  "QA27": "Domain unit test",
+  "QA28": "Domain unit test",
   "QA29": "Domain unit test",
   "QA30": "Domain unit test",
+  "QA31": "Domain unit test",
+  "QA32": "Domain unit test",
   "QA33": "Domain unit test",
   "QA34": "Domain unit test",
+  "QA35": "Domain unit test",
   "QA36": "Domain unit test",
   "QA37": "Domain unit test",
   "QA38": "Domain unit test",
@@ -507,7 +506,8 @@ runScenario('QA31', 'Candidate Attendance Confirmation (FR23)', 'Attendance', ()
   const attRes = Domain.recordAttendance(state, {
     interview_id: invRes.interview.id,
     actor_role: 'candidate',
-    result: 'positive'
+    result: 'positive',
+    simulated_occurrence_at: '2026-11-28T10:00:00+05:30'
   });
   assert.strictEqual(attRes.success, true);
   assert.strictEqual(invRes.interview.attendance_candidate.result, 'positive');
@@ -532,7 +532,8 @@ runScenario('QA32', 'Recruiter Interviewed Confirmation (FR24)', 'Attendance', (
   const recRes = Domain.recordAttendance(state, {
     interview_id: invRes.interview.id,
     actor_role: 'recruiter',
-    result: 'positive'
+    result: 'positive',
+    simulated_occurrence_at: '2026-11-28T10:00:00+05:30'
   });
   assert.strictEqual(recRes.success, true);
   assert.strictEqual(invRes.interview.attendance_recruiter.result, 'positive');
@@ -553,8 +554,8 @@ runScenario('QA33', 'Dual Confirmation Outcome Qualification (FR25)', 'Progressi
     starts_at: '2026-11-28T10:00:00+05:30'
   });
   Domain.respondToInvitation(state, { interview_id: invRes.interview.id, response: 'Accepted' });
-  Domain.recordAttendance(state, { interview_id: invRes.interview.id, actor_role: 'candidate', result: 'positive' });
-  const finalRes = Domain.recordAttendance(state, { interview_id: invRes.interview.id, actor_role: 'recruiter', result: 'positive' });
+  Domain.recordAttendance(state, { interview_id: invRes.interview.id, actor_role: 'candidate', result: 'positive', simulated_occurrence_at: '2026-11-28T10:00:00+05:30' });
+  const finalRes = Domain.recordAttendance(state, { interview_id: invRes.interview.id, actor_role: 'recruiter', result: 'positive', simulated_occurrence_at: '2026-11-28T10:00:00+05:30' });
 
   assert.strictEqual(finalRes.outcome.status, 'Dual Confirmed');
   assert.strictEqual(finalRes.outcome.qualified, true);
@@ -570,8 +571,8 @@ runScenario('QA34', 'Conflicting Attendance Disputed State (FR25)', 'Progression
     starts_at: '2026-11-28T10:00:00+05:30'
   });
   Domain.respondToInvitation(state, { interview_id: invRes.interview.id, response: 'Accepted' });
-  Domain.recordAttendance(state, { interview_id: invRes.interview.id, actor_role: 'candidate', result: 'positive' });
-  const conflictRes = Domain.recordAttendance(state, { interview_id: invRes.interview.id, actor_role: 'recruiter', result: 'negative' });
+  Domain.recordAttendance(state, { interview_id: invRes.interview.id, actor_role: 'candidate', result: 'positive', simulated_occurrence_at: '2026-11-28T10:00:00+05:30' });
+  const conflictRes = Domain.recordAttendance(state, { interview_id: invRes.interview.id, actor_role: 'recruiter', result: 'negative', simulated_occurrence_at: '2026-11-28T10:00:00+05:30' });
 
   assert.strictEqual(conflictRes.outcome.status, 'Disputed');
   assert.strictEqual(conflictRes.outcome.qualified, false);
@@ -612,9 +613,9 @@ runScenario('QA36', 'Reported No-Show vs Missing Confirmation (FR27)', 'Terminal
   const pendingOutcome = Domain.deriveOutcome(invRes.interview);
   assert.strictEqual(pendingOutcome.status, 'Pending');
 
-  // Both report negative (mutual no-show)
-  Domain.recordAttendance(state, { interview_id: invRes.interview.id, actor_role: 'candidate', result: 'negative' });
-  Domain.recordAttendance(state, { interview_id: invRes.interview.id, actor_role: 'recruiter', result: 'negative' });
+  // Both report negative (mutual no-show) with explicit simulated occurrence
+  Domain.recordAttendance(state, { interview_id: invRes.interview.id, actor_role: 'candidate', result: 'negative', simulated_occurrence_at: '2026-11-28T10:00:00+05:30' });
+  Domain.recordAttendance(state, { interview_id: invRes.interview.id, actor_role: 'recruiter', result: 'negative', simulated_occurrence_at: '2026-11-28T10:00:00+05:30' });
   const notAttendedOutcome = Domain.deriveOutcome(invRes.interview);
   assert.strictEqual(notAttendedOutcome.status, 'Not Attended');
   passedAssertions += 2;
@@ -795,8 +796,8 @@ runScenario('BUG-05', 'Withdrawal After Completed Interview', 'Integrity', () =>
     starts_at: '2026-11-28T10:00:00+05:30'
   });
   Domain.respondToInvitation(state, { interview_id: invRes.interview.id, response: 'Accepted' });
-  Domain.recordAttendance(state, { interview_id: invRes.interview.id, actor_role: 'candidate', result: 'positive' });
-  Domain.recordAttendance(state, { interview_id: invRes.interview.id, actor_role: 'recruiter', result: 'positive' });
+  Domain.recordAttendance(state, { interview_id: invRes.interview.id, actor_role: 'candidate', result: 'positive', simulated_occurrence_at: '2026-11-28T10:00:00+05:30' });
+  Domain.recordAttendance(state, { interview_id: invRes.interview.id, actor_role: 'recruiter', result: 'positive', simulated_occurrence_at: '2026-11-28T10:00:00+05:30' });
 
   // Now candidate withdraws application
   Domain.withdrawApplication(state, { application_id: 'app-01', reason: 'Other offer accepted' });
@@ -920,7 +921,8 @@ runScenario('BUG-11', 'Attendance Confirmation Idempotency', 'Integrity', () => 
   const firstCall = Domain.recordAttendance(state, {
     interview_id: invRes.interview.id,
     actor_role: 'candidate',
-    result: 'positive'
+    result: 'positive',
+    simulated_occurrence_at: '2026-11-28T10:00:00+05:30'
   });
   assert.strictEqual(firstCall.success, true);
 
@@ -928,7 +930,8 @@ runScenario('BUG-11', 'Attendance Confirmation Idempotency', 'Integrity', () => 
   const secondCall = Domain.recordAttendance(state, {
     interview_id: invRes.interview.id,
     actor_role: 'candidate',
-    result: 'positive'
+    result: 'positive',
+    simulated_occurrence_at: '2026-11-28T10:00:00+05:30'
   });
   assert.strictEqual(secondCall.success, true);
   assert.strictEqual(secondCall.idempotent, true);
@@ -947,7 +950,12 @@ runScenario('BUG-12', 'Attendance Record Correction Audit', 'Audit', () => {
   Domain.respondToInvitation(state, { interview_id: invRes.interview.id, response: 'Accepted' });
 
   // Initially candidate confirms attended
-  Domain.recordAttendance(state, { interview_id: invRes.interview.id, actor_role: 'candidate', result: 'positive' });
+  Domain.recordAttendance(state, {
+    interview_id: invRes.interview.id,
+    actor_role: 'candidate',
+    result: 'positive',
+    simulated_occurrence_at: '2026-11-28T10:00:00+05:30'
+  });
   assert.strictEqual(invRes.interview.attendance_candidate.result, 'positive');
 
   // Candidate corrects to did not attend
@@ -955,7 +963,8 @@ runScenario('BUG-12', 'Attendance Record Correction Audit', 'Audit', () => {
     interview_id: invRes.interview.id,
     actor_role: 'candidate',
     result: 'negative',
-    notes: 'Clicked attended by mistake'
+    notes: 'Clicked attended by mistake',
+    simulated_occurrence_at: '2026-11-28T10:00:00+05:30'
   });
   assert.strictEqual(invRes.interview.attendance_candidate.result, 'negative');
   assert.strictEqual(invRes.interview.attendance_corrections.length, 1);
@@ -1005,7 +1014,12 @@ runScenario('BUG-15', 'Reschedule Rejection Post Attendance Recording', 'Lifecyc
     starts_at: '2026-11-28T10:00:00+05:30'
   });
   Domain.respondToInvitation(state, { interview_id: invRes.interview.id, response: 'Accepted' });
-  Domain.recordAttendance(state, { interview_id: invRes.interview.id, actor_role: 'candidate', result: 'positive' });
+  Domain.recordAttendance(state, {
+    interview_id: invRes.interview.id,
+    actor_role: 'candidate',
+    result: 'positive',
+    simulated_occurrence_at: '2026-11-28T10:00:00+05:30'
+  });
 
   // Attempt to propose reschedule without authorized correction workflow
   const resRes = Domain.proposeReschedule(state, {
@@ -1050,8 +1064,8 @@ runScenario('BUG-17', 'Completed Historical Outcome Cancellation Protection', 'L
     starts_at: '2026-11-28T10:00:00+05:30'
   });
   Domain.respondToInvitation(state, { interview_id: invRes.interview.id, response: 'Accepted' });
-  Domain.recordAttendance(state, { interview_id: invRes.interview.id, actor_role: 'candidate', result: 'positive' });
-  Domain.recordAttendance(state, { interview_id: invRes.interview.id, actor_role: 'recruiter', result: 'positive' });
+  Domain.recordAttendance(state, { interview_id: invRes.interview.id, actor_role: 'candidate', result: 'positive', simulated_occurrence_at: '2026-11-28T10:00:00+05:30' });
+  Domain.recordAttendance(state, { interview_id: invRes.interview.id, actor_role: 'recruiter', result: 'positive', simulated_occurrence_at: '2026-11-28T10:00:00+05:30' });
 
   assert.strictEqual(Domain.deriveOutcome(invRes.interview).status, 'Dual Confirmed');
 
@@ -1065,6 +1079,141 @@ runScenario('BUG-17', 'Completed Historical Outcome Cancellation Protection', 'L
   assert.strictEqual(Domain.deriveOutcome(invRes.interview).status, 'Dual Confirmed');
   passedAssertions += 3;
   return 'Completed historical interview outcomes strictly preserved from retroactive cancellation';
+});
+
+/* BUG-18: Missing explicit simulated occurrence timestamp rejected (no scheduled fallback) */
+runScenario('BUG-18', 'Explicit Simulated Occurrence Requirement (FR23/FR24)', 'Integrity', () => {
+  const state = { applications: clone(baseData.applications), interviews: [] };
+  const invRes = Domain.createInvitation(state, {
+    application_id: 'app-01',
+    starts_at: '2026-11-28T10:00:00+05:30'
+  });
+  Domain.respondToInvitation(state, { interview_id: invRes.interview.id, response: 'Accepted' });
+
+  // Call recordAttendance without explicit simulated_occurrence_at
+  const missingRes = Domain.recordAttendance(state, {
+    interview_id: invRes.interview.id,
+    actor_role: 'candidate',
+    result: 'positive'
+  });
+  assert.strictEqual(missingRes.success, false);
+  assert.strictEqual(missingRes.field, 'missing_simulated_occurrence');
+  assert.ok(missingRes.error.includes('Explicit simulated occurrence timestamp (simulated_occurrence_at) is strictly required'));
+
+  // Call recordAttendance with future occurrence timestamp relative to DemoClock
+  const futureRes = Domain.recordAttendance(state, {
+    interview_id: invRes.interview.id,
+    actor_role: 'candidate',
+    result: 'positive',
+    simulated_occurrence_at: '2026-11-28T16:00:00+05:30' // 4 hours in the future
+  });
+  assert.strictEqual(futureRes.success, false);
+  assert.strictEqual(futureRes.field, 'future_occurrence_timestamp');
+  assert.ok(futureRes.error.includes('cannot be in the future'));
+  passedAssertions += 5;
+  return 'Missing occurrence rejected without scheduled fallback; future occurrence timestamps rejected';
+});
+
+/* BUG-19: CAIR reporting cutoff strictly enforces confirmation recording timestamps */
+runScenario('BUG-19', 'CAIR Reporting Cutoff Confirmation Timestamp Enforcement (FR28)', 'Analytics', () => {
+  const state = {
+    applications: [
+      { id: 'app-c1', seekerId: 'seeker-CUTOFF', jobId: 'job-c1', appliedDate: '2026-11-01T10:00:00Z' },
+      { id: 'app-c2', seekerId: 'seeker-CUTOFF', jobId: 'job-c2', appliedDate: '2026-11-02T10:00:00Z' },
+      { id: 'app-c3', seekerId: 'seeker-CUTOFF', jobId: 'job-c3', appliedDate: '2026-11-03T10:00:00Z' } // anchor Nov 3, maturity Nov 17
+    ],
+    interviews: [{
+      id: 'inv-cutoff',
+      seeker_id: 'seeker-CUTOFF',
+      schedule_version: 1,
+      starts_at: '2026-11-10T10:00:00Z',
+      simulated_actual_occurrence: '2026-11-10T10:00:00Z',
+      attendance_candidate: {
+        result: 'positive',
+        schedule_version: 1,
+        occurred_at: '2026-11-10T10:00:00Z',
+        recorded_at: '2026-11-20T10:00:00Z' // recorded on Nov 20
+      },
+      attendance_recruiter: {
+        result: 'positive',
+        schedule_version: 1,
+        occurred_at: '2026-11-10T10:00:00Z',
+        recorded_at: '2026-11-20T10:00:00Z'
+      }
+    }]
+  };
+
+  // Evaluated as of Nov 18: confirmations recorded on Nov 20 are AFTER the reporting cutoff
+  const cairBefore = Domain.calculateCAIR(state, '2026-11-18T10:00:00Z');
+  assert.strictEqual(cairBefore.qualifyingSeekersWithDualConfirmed, 0, 'Confirmations recorded after cutoff must NOT qualify');
+
+  // Evaluated as of Nov 21: confirmations recorded on Nov 20 are BEFORE the reporting cutoff
+  const cairAfter = Domain.calculateCAIR(state, '2026-11-21T10:00:00Z');
+  assert.strictEqual(cairAfter.qualifyingSeekersWithDualConfirmed, 1, 'Confirmations recorded before cutoff must qualify');
+  passedAssertions += 2;
+  return 'Confirmation recording timestamp strictly bounded by CAIR evaluation reference cutoff';
+});
+
+/* BUG-20: Consistent occurrence timestamp required across both attendance records */
+runScenario('BUG-20', 'Consistent Occurrence Timestamps Across Participants (FR25/FR28)', 'Integrity', () => {
+  const state = { applications: clone(baseData.applications), interviews: [] };
+  const invRes = Domain.createInvitation(state, {
+    application_id: 'app-01',
+    starts_at: '2026-11-28T10:00:00+05:30'
+  });
+  Domain.respondToInvitation(state, { interview_id: invRes.interview.id, response: 'Accepted' });
+
+  // Candidate confirms with occurrence T1
+  const candRes = Domain.recordAttendance(state, {
+    interview_id: invRes.interview.id,
+    actor_role: 'candidate',
+    result: 'positive',
+    simulated_occurrence_at: '2026-11-28T10:00:00+05:30'
+  });
+  assert.strictEqual(candRes.success, true);
+
+  // Recruiter tries to confirm with a different occurrence timestamp T2
+  const recResInconsistent = Domain.recordAttendance(state, {
+    interview_id: invRes.interview.id,
+    actor_role: 'recruiter',
+    result: 'positive',
+    simulated_occurrence_at: '2026-11-28T11:00:00+05:30' // Inconsistent
+  });
+  assert.strictEqual(recResInconsistent.success, false);
+  assert.strictEqual(recResInconsistent.field, 'inconsistent_occurrence_timestamp');
+  assert.ok(recResInconsistent.error.includes('Inconsistent occurrence timestamp'));
+
+  // Recruiter confirms with matching occurrence timestamp T1
+  const recResConsistent = Domain.recordAttendance(state, {
+    interview_id: invRes.interview.id,
+    actor_role: 'recruiter',
+    result: 'positive',
+    simulated_occurrence_at: '2026-11-28T10:00:00+05:30'
+  });
+  assert.strictEqual(recResConsistent.success, true);
+  assert.strictEqual(recResConsistent.outcome.status, 'Dual Confirmed');
+
+  // Verify CAIR rejects inconsistent attendance records if injected
+  const stateInconsistent = {
+    applications: [
+      { id: 'app-x1', seekerId: 's-inc', jobId: 'j-x1', appliedDate: '2026-11-01T10:00:00Z' },
+      { id: 'app-x2', seekerId: 's-inc', jobId: 'j-x2', appliedDate: '2026-11-02T10:00:00Z' },
+      { id: 'app-x3', seekerId: 's-inc', jobId: 'j-x3', appliedDate: '2026-11-03T10:00:00Z' }
+    ],
+    interviews: [{
+      id: 'inv-inc',
+      seeker_id: 's-inc',
+      schedule_version: 1,
+      starts_at: '2026-11-10T10:00:00Z',
+      simulated_actual_occurrence: '2026-11-10T10:00:00Z',
+      attendance_candidate: { result: 'positive', schedule_version: 1, occurred_at: '2026-11-10T10:00:00Z' },
+      attendance_recruiter: { result: 'positive', schedule_version: 1, occurred_at: '2026-11-10T11:00:00Z' } // mismatched
+    }]
+  };
+  const cairInc = Domain.calculateCAIR(stateInconsistent, '2026-11-20T10:00:00Z');
+  assert.strictEqual(cairInc.qualifyingSeekersWithDualConfirmed, 0, 'Inconsistent occurrence timestamps must disqualify from CAIR');
+  passedAssertions += 6;
+  return 'Inconsistent occurrence timestamps rejected by recordAttendance and disqualified from CAIR';
 });
 
 console.log('\n================================================================');

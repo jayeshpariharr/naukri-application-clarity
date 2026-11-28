@@ -255,7 +255,7 @@ window.NaukriRecruiter = (function () {
 
                   <!-- V2.0 Contextual Recruiter Interview Actions (FR14, FR18, FR20, FR24, FR27) -->
                   ${(() => {
-                    const matchApp = state.applications.find(a => a.company === job.company || (cand.isPrototypeUser && a.id === 'app-05') || a.jobTitle === job.title);
+                    const matchApp = state.applications.find(a => a.id === cand.linkedAppId || a.company === job.company || a.jobTitle === job.title);
                     const interview = matchApp && state.interviews ? state.interviews.find(i => i.application_id === matchApp.id) : null;
                     const domain = window.NaukriInterviewDomain;
                     
