@@ -1,103 +1,83 @@
-# Naukri Application Clarity V2.0 — Turning Applications into Attended Interviews
+# Naukri Application Clarity V2.1 — Product Management Portfolio & Prototype
 
-> **Disclaimer:** This is an **independent Product Management case study, capstone proposal, and unofficial prototype** created strictly for portfolio, educational, and evaluation purposes. It is not affiliated with, endorsed by, or connected to Info Edge (India) Ltd. or Naukri.com. All candidate, recruiter, company, and interview records inside the prototype are fictional simulation fixtures.
-
----
-
-## 1. Executive Summary & V2.0 Mission
-
-**Naukri Application Clarity V2.0** upgrades the post-application experience from **application tracking** to **actionable application understanding and verified interview attendance**.
-
-- **Initiative North Star (CAIR):** Candidate Attended Interview Rate — targeting progression from **21% to 36% in six months** (modeled assignment target, not an achieved production outcome).
-- **Core Problem:** Insufficient actionable visibility into relevant, genuine opportunities and confirmed post-application progress causes candidates to abandon active search or miss interview coordination cues.
-- **Product Thesis:** Help job seekers identify suitable, credible opportunities, understand confirmed application milestones, and coordinate interviews without imposing a mandatory new recruiter tool.
+> **Independent Capstone Project — Master PRD V2.0 Implementation**  
+> **Development Branch:** `capstone-v2` | **Audit Version:** 2.1 (Executable Test Suite)  
+> *Note: This is an independent, unofficial product management case study and prototype. The live GitHub Pages deployment reflects the stable V1.0 release on `main`; this V2.1 development branch contains the audited interview progression journey.*
 
 ---
 
-## 2. Master PRD V2.0 Requirements Coverage (FR01–FR28)
+## 🚀 90-Second Demo Route for Evaluators
 
-| Phase | Requirement Area | Requirements Covered | Key User Outcome |
-|---|---|---|---|
-| **Phase A / B** | Core Application Clarity | **FR01–FR17** | Track CTA, timeline recency, 0/7/14/30d inactivity bands, contextual not shortlisted reasons, hiring availability, and scoped identity verification. |
-| **Phase C** | Interview Coordination | **FR18–FR22** | Structured interview invitations, candidate accept/decline, versioned mutual rescheduling, contextual reminders, and calendar (.ics) export. |
-| **Phase D** | Attendance & Dual Confirmation | **FR23–FR25** | Candidate independent confirmation, recruiter interviewed confirmation, dual-confirmed CAIR qualification, and dispute detection. |
-| **Phase E** | Autonomy & Cohort Analytics | **FR26–FR28** | Explicit application withdrawal vs archive, reported no-show distinction, and 14-day cohort anchor instrumentation. |
+Follow this exact 90-second route to experience the end-to-end V2.0 interview progression journey and V2.1 audit improvements:
 
----
+1. **Launch the Prototype:**
+   - Open `index.html` in any modern web browser or start a local server (`python3 -m http.server 8080`).
+   - Click on the **Interactive Prototype** tab in the top navigation bar.
 
-## 3. Local Preview & Execution Instructions
+2. **Inspect an Active Interview Invitation (FR18 & FR19):**
+   - Click on **My Applications** -> Select the **Lead Product Analyst** application at **Swiggy**.
+   - Notice the prominent **Interview Coordination (V2.0)** card displaying the scheduled date, round name (*Technical Product Case*), and meeting format.
+   - Click **✓ Accept Invitation**. The badge immediately updates to **Confirmed** and appends a verified confirmation event to the timeline.
 
-The project runs with **zero build dependencies** and is fully compatible with GitHub Pages and local HTTP servers.
+3. **Export Calendar (.ics) & Test Rescheduling (FR20 & FR22):**
+   - Click **📅 Export to Calendar (.ics)**. A valid RFC 5545 `.ics` file is instantly generated with UID, DTSTART, DTEND, and SEQUENCE versioning.
+   - Click **🔄 Request Reschedule**. Enter an alternative proposed time slot. The status transitions to **Reschedule Pending** with `schedule_version` preserved.
 
-### Running Locally:
-1. Clone or extract the repository:
-   ```bash
-   cd naukri-application-clarity
-   ```
-2. Start a lightweight local HTTP server (Python 3):
-   ```bash
-   python3 -m http.server 8000
-   ```
-3. Open your browser and navigate to:
-   ```
-   http://localhost:8000/
-   ```
+4. **Advance the Simulated Demo Clock (FR23 & BUG-01 Fix):**
+   - Try clicking **Confirm Attendance** immediately. Notice the system strictly enforces integrity: *Attendance cannot be confirmed before the interview occurrence.*
+   - In the top header bar, locate the **⏱ Demo Clock** controls.
+   - Click **+7d** to advance the simulated time past the interview start time.
 
-### Supported Direct URL Modes:
-- **Portfolio Overview:** `http://localhost:8000/?mode=overview`
-- **Case Study (PRD V2.0):** `http://localhost:8000/?mode=casestudy`
-- **Interactive Mobile Prototype:** `http://localhost:8000/?mode=mobile&screen=home`
-- **Interview Detail View:** `http://localhost:8000/?mode=mobile&screen=details&app=app-05`
-- **Desktop Tracker Experience:** `http://localhost:8000/?mode=desktop&sub=tracker`
-- **Recruiter Simulation Panel:** `http://localhost:8000/?mode=recruiter`
-- **Before vs. After Comparison Gallery:** `http://localhost:8000/?mode=comparisons`
-- **Engineering Documentation & QA:** `http://localhost:8000/?mode=documentation`
-- **Usability Testing Lab:** `http://localhost:8000/?mode=testing`
+5. **Execute Dual Attendance Confirmation (FR23, FR24, FR25):**
+   - Now click **Confirm Attendance** as the candidate. The card updates to show *Candidate Confirmed: ✓ Attended* while *Recruiter Confirmed* remains *Pending*.
+   - In the top bar mode switcher, click **Recruiter**.
+   - In the Recruiter Console, open the Swiggy role responses and click **Confirm Conducted**.
+   - Switch back to **Mobile** or **Desktop** tracker: the attendance status has advanced to **🎯 Dual Confirmed**, qualifying this application for the **CAIR (Candidate Application-to-Interview Rate)** metric!
 
 ---
 
-## 4. 90-Second Walkthrough Demonstration Route
+## 🧪 Genuine Executable Test Runner
 
-To demonstrate end-to-end interview progression in 90 seconds:
+Unlike previous releases that used static outputs, V2.1 features a genuine executable Node.js test harness that runs real assertions against domain functions and boundaries:
 
-1. **Discover & Apply:**
-   - Go to Mobile Mode (`?mode=mobile&screen=home`). Tap **Recommended Jobs**, select **ZenithPay India**, inspect the **Verified Employer** badge, and tap **Apply**.
-   - On the **Applied Successfully** screen, click the primary **Track Application** CTA.
-2. **Review Tracker & Recency:**
-   - Observe the chronological timeline, last confirmed update timestamp, and neutral inactivity wording.
-3. **Recruiter Invitation Simulation:**
-   - Switch to **Recruiter Mode** (`?mode=recruiter`). Locate the candidate under **Manage Jobs & Responses**.
-   - Click **+ Send Interview Invitation**.
-4. **Candidate Response & Reschedule:**
-   - Switch back to **Mobile Mode** (`?mode=mobile&screen=details&app=app-05`).
-   - Observe the **Interview Coordination (V2.0)** card.
-   - Tap **✓ Accept Invitation** (schedule state transitions to `Confirmed`).
-   - Tap **🔄 Request Reschedule** and propose an alternative time (transitions to `Reschedule Pending`).
-5. **Recruiter Confirmation:**
-   - In Recruiter Mode, click **✓ Accept Proposed Slot** (increments schedule version to `v2`).
-6. **Dual Attendance Confirmation:**
-   - In Mobile Mode, tap **Confirm I Attended** (Candidate Confirmed: `Attended`, Recruiter Confirmed: `Pending`).
-   - In Recruiter Mode, click **Mark Interviewed (Conducted)**.
-   - Return to Mobile Mode to view the derived **🎯 Dual Confirmed** CAIR status.
-7. **Legitimate Negative Outcome:**
-   - Tap **Withdraw Application from Consideration** to demonstrate that candidate autonomy cancels active coordination while safely preserving historical audit logs.
-
----
-
-## 5. Verification & Test Suite
-
-The pure domain engine and prototype interactions have been verified through an automated 39-scenario test runner:
-
-- **Total Test Scenarios:** 39 (QA01 through QA39)
-- **Passed (Prototype Simulation):** 38
-- **Requires Production Validation:** 1 (QA15 — Server-side authorization & multi-tenant security)
-- **Failed:** 0
-
-Run the test suite locally:
 ```bash
-python3 run_python_tests.py
+# Run the complete audited regression suite (51 scenarios, 128 strict assertions)
+node test_runner_real.js
 ```
-Detailed execution logs and known limitations are documented in:
-- `FUNCTIONAL_TEST_RESULTS.md`
-- `QA_TRACEABILITY_REPORT.md`
-- `KNOWN_LIMITATIONS.md`
+
+### Test Scope:
+- **QA01–QA39:** Full functional and progression regression matrix.
+- **BUG-01–BUG-12:** Independent audit defect verification.
+- **Boundary Precision:** Verifies exact 14.0-day CAIR window (±1 millisecond) and 7-day 3rd-application cohort anchoring.
+
+---
+
+## 📂 Key Project Files
+
+- `interview-domain.js` — Core interview lifecycle engine, deterministic Demo Clock, RFC 5545 ICS generator, and CAIR calculation engine.
+- `app.js` — Central state management and UI event routing.
+- `screens-mobile.js` & `screens-desktop.js` — Responsive seeker views featuring the Interview Coordination Card.
+- `screens-recruiter.js` — Recruiter Console for scheduling, status synchronization, and attendance verification.
+- `test_runner_real.js` — Executable Node.js test harness with real assertions.
+- `FUNCTIONAL_TEST_RESULTS.md` — Test execution output with real stdout logs and assertion counts.
+- `QA_TRACEABILITY_REPORT.md` — Requirement-to-test traceability matrix (FR01 through FR28).
+- `BUG_RESOLUTION_MATRIX.md` — Root cause and resolution audit for defects BUG-01 through BUG-12.
+- `KNOWN_LIMITATIONS.md` — Explicit prototype boundary declarations.
+
+---
+
+## 💻 Local Preview Instructions
+
+```bash
+# Clone or navigate to the repository
+cd /path/to/naukri-application-clarity
+
+# Check out the development branch
+git checkout capstone-v2
+
+# Start a local static file server
+python3 -m http.server 8080
+
+# Open in browser
+http://localhost:8080
+```

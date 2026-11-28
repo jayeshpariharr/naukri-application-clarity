@@ -567,6 +567,15 @@
               <button class="proto-tab ${state.mode === 'recruiter' ? 'active' : ''}" style="padding:4px 8px;font-size:11.5px;" data-action="switch-mode" data-mode="recruiter">Recruiter</button>
             </div>
           ` : ""}
+          <!-- Deterministic Demo Clock Simulator (FR23, FR25) -->
+          <div style="display:flex;align-items:center;gap:4px;background:#0f172a;border:1px solid #334155;border-radius:6px;padding:2px 8px;font-size:11px;color:#94a3b8;">
+            <span style="color:#38bdf8;font-weight:700;">⏱ Demo Clock:</span>
+            <span style="color:#f8fafc;font-family:monospace;font-size:11px;">${window.NaukriInterviewDomain ? window.NaukriInterviewDomain.DemoClock.format() : 'Current'}</span>
+            <button class="proto-tab" style="padding:2px 6px;font-size:10px;background:#1e293b;border-color:#475569;" data-action="advance-clock-hours" data-hours="2" title="Advance clock by 2 hours">+2h</button>
+            <button class="proto-tab" style="padding:2px 6px;font-size:10px;background:#1e293b;border-color:#475569;" data-action="advance-clock-days" data-days="1" title="Advance clock by 1 day">+1d</button>
+            <button class="proto-tab" style="padding:2px 6px;font-size:10px;background:#1e293b;border-color:#475569;" data-action="advance-clock-days" data-days="7" title="Advance clock by 7 days">+7d</button>
+            <button class="proto-tab" style="padding:2px 6px;font-size:10px;color:#f87171;background:#1e293b;border-color:#475569;" data-action="reset-clock" title="Reset clock to current wall time">Reset</button>
+          </div>
           <button class="proto-reset" data-action="reset-demo">Reset Demo</button>
         </div>
       </header>
@@ -650,7 +659,39 @@
       return;
     }
 
+    if (action === "advance-clock-hours") {
+      const h = Number(target.getAttribute("data-hours") || 1);
+      if (window.NaukriInterviewDomain) {
+        window.NaukriInterviewDomain.DemoClock.advanceHours(h);
+        showToast(`Advanced simulated Demo Clock by ${h} hour(s).`);
+      }
+      render();
+      return;
+    }
+
+    if (action === "advance-clock-days") {
+      const d = Number(target.getAttribute("data-days") || 1);
+      if (window.NaukriInterviewDomain) {
+        window.NaukriInterviewDomain.DemoClock.advanceDays(d);
+        showToast(`Advanced simulated Demo Clock by ${d} day(s).`);
+      }
+      render();
+      return;
+    }
+
+    if (action === "reset-clock") {
+      if (window.NaukriInterviewDomain) {
+        window.NaukriInterviewDomain.DemoClock.reset();
+        showToast("Demo Clock reset to live time.");
+      }
+      render();
+      return;
+    }
+
     if (action === "reset-demo") {
+      if (window.NaukriInterviewDomain) {
+        window.NaukriInterviewDomain.DemoClock.reset();
+      }
       state = createInitialState();
       showToast("Prototype data reset to initial 10 scenarios.");
       return;
