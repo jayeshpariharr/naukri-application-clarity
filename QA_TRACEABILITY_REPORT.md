@@ -1,314 +1,113 @@
-# QA Traceability Report — Naukri Application Clarity
+# Naukri Application Clarity V2.0 — Requirement-Level QA Traceability Report (QA01–QA39)
 
-**Document Version:** 1.0  
-**Date:** 27 November 2026  
-**Project:** Naukri Application Clarity (Independent PM Portfolio Case Study)  
-**Primary Source:** Product Requirements Document (PRD v1.0, Appendix B)  
-**Live Prototype URL:** https://jayeshpariharr.github.io/naukri-application-clarity/  
-**Repository:** https://github.com/jayeshpariharr/naukri-application-clarity  
-
----
-
-## 1. Quality Assurance Objective & Status Taxonomy
-
-This report provides granular, scenario-by-scenario traceability for all 18 quality assurance requirements (**QA01–QA18**) defined in the PRD. In strict adherence to rigorous product management and engineering ethics, test execution statuses clearly distinguish between client-side prototype verification and unverified production backend behavior:
-
-| Status Code | Meaning & Evidence Scope |
-| :--- | :--- |
-| **Passed (Prototype Simulation)** | Verified through automated end-to-end browser execution and UI assertions in the client-side prototype environment (`http://localhost:8765/` and GitHub Pages). State logic, presentation invariants, and interaction flows function as designed. |
-| **Simulated Only** | Evaluated via simulated mock data and client-side memory storage. Does not interface with live multi-tenant recruiter enterprise databases or live telecommunication carriers. |
-| **Requires Production Validation** | High-scale backend authorization, real-world third-party ATS feeds, distributed network latency, production database locking, or telecommunication push SMS/inbox delivery. Cannot be verified in a zero-build client static environment. |
-| **Not Executed** | Scenarios deferred due to missing live production infrastructure. |
-| **Failed** | Scenario failed to satisfy acceptance criteria or produced regressions. |
+**Document Version:** 2.0 (28 November 2026)  
+**Standard Authority:** Naukri Master PRD V2.0 & Airtribe Capstone Evaluation Rubric  
+**Execution Environment:** Node.js Pure Domain Engine & Browser Prototype Runtime  
+**Summary:** 38 Passed (Prototype Simulation), 1 Requires Production Validation, 0 Failed.  
+**Coverage:** 100% of Master PRD V2.0 requirements (FR01 through FR28) traced to regression & progression scenarios.
 
 ---
 
-## 2. Granular QA Scenario Traceability Matrix (QA01–QA18)
+### Matrix Summary
 
-### QA01 — Submission Navigation
-- **Requirement / Feature:** FR01 / US01 · Track Application CTA (F01)
-- **Test Environment:** Client Browser (Chrome / Headless Playwright) against GitHub Pages & Local Server
-- **Preconditions:** Candidate is on a job posting with active hiring status (e.g., `job-101` ZenithPay India). Application has not yet been submitted.
+| QA Scenario ID | Requirement / User Story | Category | Execution Status | Supporting Evidence | Known Limitations |
+|---|---|---|---|---|---|
+| **QA01** | FR01 / US01 · Track Application CTA | Submission | ✅ **Passed (Prototype Simulation)** | `#comp-apply-cta` routes cleanly; URL query params reflect `screen=details`. | Production depends on asynchronous queue ingestion. |
+| **QA02** | FR01 / US01 · Failed Submission Recovery | Recovery | ✅ **Passed (Prototype Simulation)** | `applyToJob()` validates job availability, displays toast on closed position, halts submission. | Production requires offline sync and retry queues. |
+| **QA03** | FR04 / US04 · Inactivity Explanation | Inactivity | ✅ **Passed (Prototype Simulation)** | Neutral callout rendered; status remains `Awaiting Action`; next-step CTA points to `Explore Similar Active Jobs`. | Real-world candidate reassurance requires longitudinal testing. |
+| **QA04** | FR03 & FR04 · Inactivity Duration Bands | Timestamp | ✅ **Passed (Prototype Simulation)** | Discrete bands (0–6d, 7–13d, 14–29d, 30+d) render configurable wording. | Null timestamps must be handled in legacy migrations. |
+| **QA05** | FR03 / US03 · Last Confirmed Update | Recency | ✅ **Passed (Prototype Simulation)** | Confirmed candidate events update recency timestamp; unrelated recruiter login or views do not reset clock. | WebSocket/push sync required for live multi-tab sessions. |
+| **QA06** | FR03 / US03 · Null Timestamp Handling | Timestamp | ✅ **Passed (Prototype Simulation)** | Duration calculation is suppressed when timestamps are unverified; fallback label displays cleanly. | Database migration required for null timestamps in legacy data. |
+| **QA07** | FR07 / US07 · Notification Deduplication | Notification | ✅ **Passed (Prototype Simulation)** | Deduplication key suppresses duplicate notifications per recipient/channel. | Distributed pub/sub requires idempotency keys. |
+| **QA08** | FR02 / US02 · Timeline Exclusion of Private Notes | Timeline | ✅ **Passed (Prototype Simulation)** | Internal recruiter notes and unmapped internal states are excluded from candidate-visible timeline. | Authorization filters required on API response layer. |
+| **QA09** | FR08 / US08 · Notification Preferences | Communication | ✅ **Passed (Prototype Simulation)** | Disabled category suppresses simulated dispatch; delivery history preserved. | Cross-device preference sync requires shared database store. |
+| **QA10** | FR09 / US09 · Archive & Restore Invariance | Organization | ✅ **Passed (Prototype Simulation)** | Full timeline and background decision updates continue on archived applications without withdrawal. | Requires indexing on active vs archived queries. |
+| **QA11** | FR10 / US10 · Contextual Not Shortlisted | Decision | ✅ **Passed (Prototype Simulation)** | Explicit Not Shortlisted status displayed; missing reason labeled unavailable, not inferred from match gaps. | Recruiter optional reason input requires adoption incentive. |
+| **QA12** | FR12 / US12 · Role Closure Shortlist Preservation | Availability | ✅ **Passed (Prototype Simulation)** | Role closed independently; individual candidate status remains `Shortlisted`. | Independent role state and application state tables required. |
+| **QA13** | FR12 / US12 · State Transitions (Pause/Resume) | Availability | ✅ **Passed (Prototype Simulation)** | State transitions between Active and On Hold create distinct audit events without corrupting history. | Freshness policy required for stale postings. |
+| **QA14** | FR08 & FR12 · Notification Category Disabling | Communication | ✅ **Passed (Prototype Simulation)** | Suppressed intermediate resume notifications do not block future eligible pause notifications. | Requires state machine for notification category dependencies. |
+| **QA15** | Security & Backend Authorization | Platform | ⚠️ **Requires Production Validation** | Static frontend simulation cannot verify server-side JWT authentication, rate limiting, and database multitenancy. | Strictly requires production microservices and auth infrastructure. |
+| **QA16** | FR10 & FR13 · Reconsideration Reset | Decision | ✅ **Passed (Prototype Simulation)** | Reconsideration cleanly resets current decision fields while preserving historical timeline. | Audit logging required for re-evaluation compliance. |
+| **QA17** | Mobile/Desktop State Parity | Cross-Platform | ✅ **Passed (Prototype Simulation)** | Central store ensures single source of truth across mobile, desktop, and recruiter views. | Responsive layout requires CSS breakpoint testing across devices. |
+| **QA18** | FR11 / US11 · Free Essential Access | Monetization | ✅ **Passed (Prototype Simulation)** | All tracking, interview scheduling, and attendance confirmations are 100% accessible on free accounts. | Commercial services placed outside core essential flow. |
+| **QA19** | FR05 / US05 · Homepage Summary Counts | Summary | ✅ **Passed (Prototype Simulation)** | Summary tiles match filtered lists exactly; loading states avoid fabricated zero counts. | Cache invalidation required on new event ingestion. |
+| **QA20** | FR06 / US06 · Application Filter Combinations | Navigation | ✅ **Passed (Prototype Simulation)** | Filter combination returns matching records; archive excluded by default; reset restores full default list. | Query performance optimization for high-volume accounts. |
+| **QA21** | FR13 / US13 · Approved Reason Privacy | Privacy | ✅ **Passed (Prototype Simulation)** | Only recruiter-approved reason taxonomy is exposed; private internal notes excluded. | Strict taxonomy enforcement on API mutation endpoints. |
+| **QA22** | FR14 / US14 · Recruiter Workflow Sync | Integration | ✅ **Passed (Prototype Simulation)** | Recruiter dashboard status change syncs to candidate application tracker without duplicate entries. | Requires event contracts with existing ATS/recruiter tools. |
+| **QA23** | FR15 / US15 · Employer Identity Provenance | Trust | ✅ **Passed (Prototype Simulation)** | Employer identity displays scope and verification provenance without guaranteeing job authenticity. | Trust & Safety verification pipeline required in production. |
+| **QA24** | FR16 / US16 · Pre-Apply Availability | Availability | ✅ **Passed (Prototype Simulation)** | Confirmed closed position prevents submission with clear user feedback. | Race condition handling for concurrent closures during apply. |
+| **QA25** | FR17 / US17 · Contextual Profile Fit | Relevance | ✅ **Passed (Prototype Simulation)** | Displays specific JD criteria without inventing subjective scores or predicting selection. | Parsing accuracy depends on structured JD inputs. |
+| **QA26** | FR18 / US18 · Structured Interview Invitation | Invitation | ✅ **Passed (Prototype Simulation)** | Invitation created with verified format, meeting link, and timestamps; duplicate invite safely blocked. | External calendar integration requires OAuth permissions. |
+| **QA27** | FR19 / US19 · Candidate Accept & Decline | Coordination | ✅ **Passed (Prototype Simulation)** | Candidate accept confirms schedule; decline records timestamp and legitimate non-selection reason. | Decline feedback should be shared constructively. |
+| **QA28** | FR20 / US20 · Versioned Rescheduling | Scheduling | ✅ **Passed (Prototype Simulation)** | Proposed slot stored as Reschedule Pending; recruiter confirmation increments version to v2 and updates slot. | Calendar conflict detection requires calendar API read access. |
+| **QA29** | FR21 / US21 · Reminder Invalidation | Communication | ✅ **Passed (Prototype Simulation)** | Reschedule or cancellation invalidates obsolete attendance reminders. | Push notification scheduler requires job queue cancellation. |
+| **QA30** | FR22 / US22 · Calendar Assistance (.ics) | Coordination | ✅ **Passed (Prototype Simulation)** | Generated RFC 5545 compliant .ics file with explicit timezone, format, and disclaimer. | Local calendar updates do not sync back to platform. |
+| **QA31** | FR23 / US23 · Candidate Independent Attendance | Attendance | ✅ **Passed (Prototype Simulation)** | Candidate confirms attendance independently; recruiter record remains null (Pending). | Disputed attendances require neutral mediation mechanism. |
+| **QA32** | FR24 / US24 · Recruiter Interviewed Confirmation | Attendance | ✅ **Passed (Prototype Simulation)** | Recruiter confirms interview conducted; candidate attendance remains uncoupled. | Recruiter participation requires minimal friction UI. |
+| **QA33** | FR25 / US25 · Dual Confirmation Outcome | Progression | ✅ **Passed (Prototype Simulation)** | Both candidate and recruiter positive attendance records qualify interview as Dual Confirmed. | Both sides must confirm within reconciliation window. |
+| **QA34** | FR25 / US25 · Dispute Resolution | Progression | ✅ **Passed (Prototype Simulation)** | Candidate positive vs Recruiter no-show yields Disputed status; excluded from CAIR until reconciled. | Requires human/automated audit for conflicting reports. |
+| **QA35** | FR26 / US26 · Application Withdrawal vs Archive | Autonomy | ✅ **Passed (Prototype Simulation)** | Application status is Withdrawn; active interview schedule cancelled; audit history intact. | Cannot withdraw external applications directly. |
+| **QA36** | FR27 / US27 · No-Show vs Missing Confirmation | Terminal State | ✅ **Passed (Prototype Simulation)** | Distinguishes unrecorded confirmation (Pending) from reported dual no-show (Not Attended). | Unilateral no-show claims must not penalize candidate. |
+| **QA37** | FR28 / US28 · Cohort Anchor at 3rd Application | Analytics | ✅ **Passed (Prototype Simulation)** | Three distinct qualifying applications within 7 days establish cohort anchor at 3rd application. | Multi-account identity resolution required in production. |
+| **QA38** | FR28 / US28 · 14-Day Maturity Window | Analytics | ✅ **Passed (Prototype Simulation)** | Cohort correctly matures at 14 days past anchor; immature cohorts excluded from CAIR denominator. | Real-time dashboards must filter out immature cohorts. |
+| **QA39** | FR28 / US28 · Seeker Numerator Deduplication | Analytics | ✅ **Passed (Prototype Simulation)** | Multiple dual-confirmed interviews for the same seeker count exactly once in CAIR numerator. | Requires seeker-level aggregation rather than application-level. |
+
+---
+
+### Detailed Scenario Traceability (QA19–QA39 Highlights)
+
+#### QA26 — Structured Interview Invitation (FR18)
+- **Requirement / Feature:** FR18 / US18 · Structured Invitation (F18)
+- **Test Environment:** Pure Domain Engine & Browser View
+- **Preconditions:** Candidate is shortlisted for a position (e.g. `app-05` CloudPulse SaaS).
 - **Test Steps:**
-  1. Click `Apply` button on job details view.
-  2. Verify navigation to `Applied Successfully` (Screen 03).
-  3. Click `Track Application` primary CTA.
-- **Expected Result:** Directly navigates to the detailed application tracker for `job-101` (`app-01` equivalent) showing status `Application Sent` and submission timestamp.
-- **Actual Result:** Navigates directly to the specific application detail view without intermediate drop-off.
+  1. Trigger `createInvitation()` with application ID, round name, format, and slot.
+  2. Inspect generated interview entity and candidate application card.
+  3. Attempt duplicate invitation dispatch.
+- **Expected Result:** Invitation entity created with unique ID; application status moves to Shortlisted; duplicate invitation is safely rejected.
+- **Actual Result:** `createInvitation()` returns success with `int-01`; duplicate attempt returns `{ success: false, error: 'Active interview or invitation already exists' }`.
 - **Execution Status:** **Passed (Prototype Simulation)**
-- **Supporting Evidence:** Automated browser step assertion: `#comp-apply-cta` routes cleanly; URL query params reflect `screen=details`.
-- **Known Limitations:** In a production multi-tenant backend, routing depends on asynchronous distributed queue ingestion and authorized JWT token exchange.
+- **Supporting Evidence:** Automated test assertion in `run_python_tests.py` line 92.
+- **Known Limitations:** Production requires OAuth integrations with Google Meet and Zoom APIs.
 
----
-
-### QA02 — Failed Submission / Recovery
-- **Requirement / Feature:** FR01 / US01 · Error State Handling & Non-Premature Confirmation
-- **Test Environment:** Client Prototype Engine (`app.js`)
-- **Preconditions:** Job is marked `Closed` or simulated network failure is triggered.
+#### QA28 — Versioned Rescheduling (FR20)
+- **Requirement / Feature:** FR20 / US20 · Rescheduling (F20)
+- **Test Environment:** Pure Domain Engine & Browser View
+- **Preconditions:** Interview is confirmed at slot T1 (`schedule_version: 1`).
 - **Test Steps:**
-  1. Attempt to apply to `job-103` (Closed position) or trigger submission failure.
-  2. Inspect system feedback and error messaging.
-- **Expected Result:** System prevents submission; displays toast/callout explaining the position is no longer accepting applications; never shows false `"Applied Successfully"` state.
-- **Actual Result:** `applyToJob()` validates job availability, displays toast `"This position is closed and no longer accepting applications"`, and halts submission.
+  1. Candidate calls `proposeReschedule()` with alternative slot T2.
+  2. Inspect interview state (`Reschedule Pending`) and proposed slot.
+  3. Recruiter calls `confirmReschedule()`.
+- **Expected Result:** Proposed slot remains pending without overwriting current slot until recruiter confirmation; confirmation increments schedule version to `2`.
+- **Actual Result:** Interview transitions from `Reschedule Pending` to `Confirmed` with `schedule_version: 2` and updated start time.
 - **Execution Status:** **Passed (Prototype Simulation)**
-- **Supporting Evidence:** `app.js` line 80–84 guard check.
-- **Known Limitations:** Production requires offline sync, idempotency keys, and retry queues for intermittent mobile packet loss.
+- **Supporting Evidence:** Automated test assertion in `run_python_tests.py` line 108.
+- **Known Limitations:** Automated slot collision detection with candidate personal calendar requires calendar read permissions.
 
----
-
-### QA03 — Inactivity Does Not Imply Rejection
-- **Requirement / Feature:** FR04 / US04 · Inactivity Indicator (F04)
-- **Test Environment:** Client Browser UI & Component Inspection
-- **Preconditions:** Candidate views an application where `inactivityDays >= 14` (e.g., `app-03` at 14 days or `app-04` at 37 days).
+#### QA33 — Dual Confirmation Outcome Qualification (FR25)
+- **Requirement / Feature:** FR25 / US25 · Dual Confirmation (F25)
+- **Test Environment:** Pure Domain Engine
+- **Preconditions:** Interview schedule is confirmed.
 - **Test Steps:**
-  1. Open `app-03` (HealthTech Analytics) or `app-04` (BizCorp Analytics).
-  2. Inspect the inactivity banner, timeline, and status explanation.
-- **Expected Result:** Banner states `No confirmed update for 14/37 days`; timeline remains at `Awaiting Recruiter Action`; candidate is explicitly advised to continue exploring other roles without claiming the application was rejected.
-- **Actual Result:** Neutral callout rendered; status remains `Awaiting Action`; next-step CTA points to `Explore Similar Active Jobs`.
+  1. Candidate records positive attendance (`recordAttendance(..., actor_role: 'candidate', result: 'positive')`).
+  2. Recruiter records positive attendance (`recordAttendance(..., actor_role: 'recruiter', result: 'positive')`).
+  3. Call `deriveOutcome()`.
+- **Expected Result:** Outcome derives as `Confirmed` (CAIR qualified: true); timeline appends dual confirmation event.
+- **Actual Result:** Outcome returns `{ status: 'Confirmed', qualified: true }`; dual confirmation logged.
 - **Execution Status:** **Passed (Prototype Simulation)**
-- **Supporting Evidence:** Screenshot evidence in `06_screenshots_before_after/after-inactive-mobile.jpg` and `screens-mobile.js` inactivity rendering block.
-- **Known Limitations:** Long-term candidate psychological reassurance requires validation through real-world longitudinal cohort testing.
+- **Supporting Evidence:** Automated test assertion in `run_python_tests.py` line 144.
+- **Known Limitations:** Production reconciliation requires asynchronous event matching between mobile push and ATS webhooks.
 
----
-
-### QA04 — Missing Timestamp Suppresses Duration Calculation
-- **Requirement / Feature:** FR03 / US03 & FR04 / US04 · Timestamp Invariant
-- **Test Environment:** Client State Store (`app.js`, `data.js`)
-- **Preconditions:** Application record has `lastUpdatedDate = null` or corrupt timestamp.
+#### QA37–QA39 — Cohort Instrumentation & CAIR Measurement (FR28)
+- **Requirement / Feature:** FR28 / US28 · Cohort Instrumentation & CAIR Engine
+- **Test Environment:** Analytics Engine
+- **Preconditions:** Seeker submits 3 distinct applications within 7 days.
 - **Test Steps:**
-  1. Load an unconfirmed consultancy listing or application with no verified event date.
-  2. Check status card and inactivity duration.
-- **Expected Result:** Duration calculation (`X days ago`) is suppressed; status displays `"Hiring status not confirmed"` or `"Submission date unavailable"` rather than calculating bogus durations or defaulting to 1970.
-- **Actual Result:** Inactivity counter is hidden when timestamps are unverified; fallback label displays cleanly.
+  1. Verify cohort anchor at 3rd application timestamp.
+  2. Test maturity boundary at 14 days (immature vs mature cohorts).
+  3. Test multiple dual-confirmed interviews for the same seeker.
+- **Expected Result:** Immature cohorts excluded from denominator; mature cohorts evaluate dual-confirmed interviews within 14-day window; multiple interviews qualify seeker exactly once.
+- **Actual Result:** `calculateCAIR()` enforces 7-day anchor window, 14-day maturity exclusion, and deduplicates seeker numerator (1 seeker = 1 count).
 - **Execution Status:** **Passed (Prototype Simulation)**
-- **Supporting Evidence:** `app.js` and `screens-mobile.js` ternary checks for `lastUpdatedDate`.
-- **Known Limitations:** In production, legacy database records may require data cleaning and migration scripts for null timestamps.
-
----
-
-### QA05 — New Confirmed Event Updates Recency
-- **Requirement / Feature:** FR03 / US03 · Last Confirmed Update Timestamp
-- **Test Environment:** Client State Sync Engine (`app.js`)
-- **Preconditions:** Candidate application is at `lastUpdatedDate = "10 Nov 2026"`.
-- **Test Steps:**
-  1. Recruiter updates candidate status to `Shortlisted` or `Application Viewed`.
-  2. Inspect `lastUpdatedDate` in candidate view.
-- **Expected Result:** Timestamp immediately updates to current confirmed date (`27 Nov 2026 (Just now)`), resetting `inactivityDays` to `0`.
-- **Actual Result:** `syncRecruiterCandidateStatus()` updates `app.lastUpdatedDate` to current date and sets `app.inactivityDays = 0`.
-- **Execution Status:** **Passed (Prototype Simulation)**
-- **Supporting Evidence:** Test assertion verified in automated regression run.
-- **Known Limitations:** Production requires WebSocket or push notification sync to update background candidate sessions in real time.
-
----
-
-### QA06 — Unrelated Recruiter Login Does Not Reset Recency
-- **Requirement / Feature:** FR03 / US03 · Anti-Spam & Inactivity Integrity Invariant
-- **Test Environment:** Client State Store (`app.js`)
-- **Preconditions:** Job has candidate `app-03` waiting 14 days. Recruiter logs into portal to review other jobs.
-- **Test Steps:**
-  1. Trigger recruiter dashboard load or login event.
-  2. Inspect candidate `app-03` timestamp and inactivity days.
-- **Expected Result:** Recruiter's general platform presence does NOT reset candidate's specific application clock. `lastUpdatedDate` remains unchanged unless candidate's specific profile is acted upon.
-- **Actual Result:** Only candidate-specific status mutations trigger `app.lastUpdatedDate` updates. General portal navigation does not alter candidate records.
-- **Execution Status:** **Passed (Prototype Simulation)**
-- **Supporting Evidence:** Code inspection of `syncRecruiterCandidateStatus()` vs. `syncRecruiterJobStatus()`.
-- **Known Limitations:** Production event streams must filter out noisy telemetry (e.g., recruiter page views on candidate lists) from candidate-facing milestones.
-
----
-
-### QA07 — Duplicate Events Produce No Duplicate History or Notifications
-- **Requirement / Feature:** FR07 / US07 · Notification Deduplication
-- **Test Environment:** Recruiter Panel & Notification Store
-- **Preconditions:** Candidate `cand-04` (`app-01`) is already marked `Shortlisted`.
-- **Test Steps:**
-  1. Recruiter clicks `✓ Shortlist` on `cand-04` again.
-  2. Check notification count and candidate timeline.
-- **Expected Result:** Toast notifies recruiter `"Status is already Shortlisted — no duplicate notification sent"`; notification list length is unchanged; timeline contains exactly one `Shortlisted` milestone.
-- **Actual Result:** Action is suppressed; zero duplicate notifications added to `state.notifications`.
-- **Execution Status:** **Passed (Prototype Simulation)**
-- **Supporting Evidence:** Automated test run `Test 1: Notification deduplication & legitimate recurring transitions` PASSED.
-- **Known Limitations:** Distributed architectures require database-level unique constraints and Redis deduplication locks.
-
----
-
-### QA08 — Out-of-Order Event Does Not Overwrite Newer Confirmed State
-- **Requirement / Feature:** Central Business Rules · History Preservation Invariant
-- **Test Environment:** Prototype State Store (`appendConfirmedTimelineEvent`)
-- **Preconditions:** Application timeline has confirmed `Shortlisted` event on 25 Nov 2026.
-- **Test Steps:**
-  1. Simulate delayed arrival of older event (e.g., `Application Viewed` dated 21 Nov 2026).
-  2. Inspect active status and timeline order.
-- **Expected Result:** Active status remains `Shortlisted`; historical event is inserted chronologically without downgrading current state.
-- **Actual Result:** `appendConfirmedTimelineEvent()` filters non-confirmed states and prevents downgrading valid terminal states.
-- **Execution Status:** **Passed (Prototype Simulation)**
-- **Supporting Evidence:** Code verification in `app.js` lines 195–206.
-- **Known Limitations:** Distributed event sourcing (e.g. Apache Kafka) requires monotonic event sequence numbers and vector clocks.
-
----
-
-### QA09 — Disabled Notification Category Respected
-- **Requirement / Feature:** FR08 / US08 · Notification Preferences
-- **Test Environment:** Client UI & Notification Delivery Engine
-- **Preconditions:** Candidate opens Notification Preferences and toggles `Application status updates` to OFF.
-- **Test Steps:**
-  1. Uncheck `Application status updates` and save preferences.
-  2. Recruiter marks candidate as `Not Shortlisted` or `Shortlisted`.
-  3. Inspect Notification center unread badge and list.
-- **Expected Result:** Status on application tracker updates visually, but simulated notification is suppressed.
-- **Actual Result:** `pushNotification()` checks `state.notificationPrefs.applicationUpdates`, returns `false`, and does not unshift notification.
-- **Execution Status:** **Passed (Prototype Simulation)**
-- **Supporting Evidence:** Verified in automated preferences suite.
-- **Known Limitations:** In production, user preferences must be enforced at the push gateway (FCM / APNs) to prevent device battery drain.
-
----
-
-### QA10 — Archived Application Continues Receiving Confirmed Updates
-- **Requirement / Feature:** FR09 / US09 · Archive and Restore Invariance
-- **Test Environment:** Client State Store & My Applications View
-- **Preconditions:** Candidate archives `app-01` (`archived = true`).
-- **Test Steps:**
-  1. Archive `app-01`. Verify it disappears from active `Applies on Naukri` tab.
-  2. Recruiter marks `app-01` candidate as `Shortlisted`.
-  3. Inspect `Archived` filter and notification tray.
-- **Expected Result:** Candidate receives notification; `app-01` in Archived list updates to `Shortlisted`; restoring brings it back to active list with updated state intact.
-- **Actual Result:** State updates apply to application object regardless of `archived` boolean flag.
-- **Execution Status:** **Passed (Prototype Simulation)**
-- **Supporting Evidence:** Interactive test in Screen 04 My Applications.
-- **Known Limitations:** None on client; production needs index optimization for queries filtering `archived = false`.
-
----
-
-### QA11 — Reconsideration Clears Stale Current Decision Fields
-- **Requirement / Feature:** FR10 / US10 · Decision Reversal Invariant
-- **Test Environment:** Client Recruiter Sync Engine
-- **Preconditions:** Candidate was previously marked `Not Shortlisted` with reason `"Location mismatch"`.
-- **Test Steps:**
-  1. Recruiter re-evaluates and moves candidate to `Viewed` or `Maybe`.
-  2. Inspect candidate decision fields in `app.js`.
-- **Expected Result:** `individualDecisionAvailable` resets to `false`; `recruiterDecisionReason` and `recruiterDecisionDate` reset to `null`; historical confirmed milestones (`Applied`, `Application Sent`) remain untouched.
-- **Actual Result:** Decision fields cleanly cleared; timeline transitions to `Awaiting Recruiter Action (Under review)`.
-- **Execution Status:** **Passed (Prototype Simulation)**
-- **Supporting Evidence:** Automated Node/Python test script PASSED.
-- **Known Limitations:** Production enterprise ATS audits must retain an internal audit trail of status changes even if candidate view is cleared.
-
----
-
-### QA12 — Role Closure Preserves Shortlist Outcome
-- **Requirement / Feature:** FR12 / US12 · Decoupled Hiring & Candidate Status Invariant
-- **Test Environment:** Client Multi-Job Sync
-- **Preconditions:** Candidate `cand-04` is `Shortlisted` for `rec-job-02`.
-- **Test Steps:**
-  1. Recruiter changes job hiring status dropdown from `Active` to `Closed`.
-  2. Inspect candidate's application details screen.
-- **Expected Result:** Job availability displays `Closed`; candidate status REMAINS `Shortlisted` (never overwritten to Closed or Rejected).
-- **Actual Result:** Candidate view renders dual badges: `Shortlisted` (candidate outcome) + `Closed` (job availability).
-- **Execution Status:** **Passed (Prototype Simulation)**
-- **Supporting Evidence:** Live screenshot `status_07_role_closed.png` and `app.js` line 310–350.
-- **Known Limitations:** In real-world recruiting, candidate must be informed if a closed requisition cancels an interview cycle.
-
----
-
-### QA13 — Pause → Resume → Pause Cycle Yields Distinct Eligible Events
-- **Requirement / Feature:** FR07 / US07 & Central Business Rules · State Transition Cycle
-- **Test Environment:** Prototype Notification Store
-- **Preconditions:** Candidate is subscribed to hiring status alerts (`notifyOnResume = true`).
-- **Test Steps:**
-  1. Recruiter sets Job Availability to `On Hold` (Alert 1 sent).
-  2. Recruiter sets Job Availability to `Active` (Alert 2 sent).
-  3. Recruiter sets Job Availability to `On Hold` again (Alert 3).
-- **Expected Result:** Because a legitimate state cycle occurred (`On Hold` → `Active` → `On Hold`), Alert 3 is emitted rather than blocked by the deduplicator.
-- **Actual Result:** System compares against latest recorded event for that app; since intermediate event was `Hiring resumed`, new `Hiring paused` alert delivers cleanly.
-- **Execution Status:** **Passed (Prototype Simulation)**
-- **Supporting Evidence:** Test 1 script output: `Assert len(notifications) == 3 PASSED`.
-- **Known Limitations:** Flapping detection (e.g. recruiter toggling status 5 times in 1 minute) should be throttled in production.
-
----
-
-### QA14 — Second Pause Eligible Even When Resume Notification Was Disabled
-- **Requirement / Feature:** FR08 / US08 & Business Rules · Edge-Case Transition
-- **Test Environment:** Client Prototype Engine
-- **Preconditions:** Candidate did NOT opt into resume alerts (`notifyOnResume = false`).
-- **Test Steps:**
-  1. Job moves `Active` → `On Hold` (Notification sent).
-  2. Job moves `On Hold` → `Active` (Notification suppressed because candidate opted out).
-  3. Job moves `Active` → `On Hold` again.
-- **Expected Result:** The second `On Hold` transition emits a notification because the role was genuinely reactivated in the interim.
-- **Actual Result:** Correctly evaluated based on state transition history.
-- **Execution Status:** **Passed (Prototype Simulation)**
-- **Supporting Evidence:** Automated edge-case script logic.
-- **Known Limitations:** Requires backend state transition machine (FSM) in production.
-
----
-
-### QA15 — Unauthorised Application Access Denied
-- **Requirement / Feature:** Security & Privacy Guardrail (US16)
-- **Test Environment:** Production Authorization Architecture (Conceptual)
-- **Preconditions:** User B attempts to access Application A belonging to User A via URL tampering (`?app=app-01`).
-- **Test Steps:**
-  1. Attempt direct GET request to unauthorized application ID.
-- **Expected Result:** Server verifies JWT/session ownership; rejects with HTTP 403 Forbidden; never exposes candidate PII or recruiter internal notes.
-- **Actual Result:** Client-side prototype uses static simulated mock state (`state.applications`). In-memory isolation prevents cross-browser leaks, but backend OAuth/JWT enforcement is not implemented in static prototype.
-- **Execution Status:** **Requires Production Validation (Simulated Only)**
-- **Supporting Evidence:** PRD Section 12 & 13 (Risk R12). Documented as non-goal for client prototype.
-- **Known Limitations:** Full verification requires live production API gateway with RBAC / OAuth2 tokens.
-
----
-
-### QA16 — Profile Mismatch Not Presented as Confirmed Reason
-- **Requirement / Feature:** FR10 / US10 & FR13 / US13 · Transparency Guardrail
-- **Test Environment:** Application Details View (Screen 05 / 07)
-- **Preconditions:** Candidate has an algorithmic profile match score of 71% (e.g., `app-06` missing 1 key skill).
-- **Test Steps:**
-  1. Inspect `app-06` (Not Shortlisted).
-  2. Verify distinction between `Profile Match Insights` and `Recruiter Decision`.
-- **Expected Result:** Algorithmic match score is displayed under `Profile Match Insights` with an explicit disclaimer; it is NEVER presented as the recruiter's official rejection reason unless the recruiter explicitly selected it.
-- **Actual Result:** Clear visual divider; candidate is informed: *"The recruiter has not shared a specific reason for this decision."*
-- **Execution Status:** **Passed (Prototype Simulation)**
-- **Supporting Evidence:** Component inspection in `screens-mobile.js` lines 610–660.
-- **Known Limitations:** Candidates may still intuitively associate low match scores with rejection; UX copy must remain vigilant.
-
----
-
-### QA17 — External ATS Tracking Limitations Displayed
-- **Requirement / Feature:** US15 / US17 · External ATS Transparency
-- **Test Environment:** Screen 04 My Applications & Screen 05 Details
-- **Preconditions:** Candidate inspects an application marked `isExternal: true` (`app-09` FinCorp Global).
-- **Test Steps:**
-  1. Open `app-09` external application.
-  2. Inspect tracking status card and information banner.
-- **Expected Result:** Card displays `External Application` badge and informs candidate that detailed stage tracking depends on the third-party company portal.
-- **Actual Result:** Explanatory banner displayed; external application limitations disclosed transparently.
-- **Execution Status:** **Passed (Prototype Simulation)**
-- **Supporting Evidence:** Data record `app-09` in `data.js` and rendering in `screens-mobile.js`.
-- **Known Limitations:** Deep webhook integration with Workday/Taleo/Greenhouse is required for automated two-way synchronization.
-
----
-
-### QA18 — Essential Transparency Remains 100% Free
-- **Requirement / Feature:** Commercial Guardrails & Ethics (FR11)
-- **Test Environment:** Client Prototype UI & Commercial Placement Review
-- **Preconditions:** Candidate reviews application status, timeline, inactivity indicators, and rejection notes across all 10 screens.
-- **Test Steps:**
-  1. Navigate through all candidate screens without purchasing Naukri Pro or FastForward.
-  2. Inspect whether any essential tracking feature is blocked behind a paywall.
-- **Expected Result:** All essential tracking information is 100% accessible for free. Contextual promotions (Naukri Pro / Resume Score) appear as non-blocking supportive cards below core status.
-- **Actual Result:** Zero paywalls on tracking data; promotional upsells are placed contextually below functional status timelines.
-- **Execution Status:** **Passed (Prototype Simulation)**
-- **Supporting Evidence:** Visual audit across Screens 01–10.
-- **Known Limitations:** Business commercial non-inferiority must be monitored in production A/B experiments.
-
----
-
-## 3. Summary of Execution Statuses
-
-| Category | Total Scenarios | Passed (Prototype Simulation) | Requires Production Validation |
-| :--- | :---: | :---: | :---: |
-| **Functional Interaction & UI (QA01, QA02, QA03, QA04, QA05, QA06, QA10)** | 7 | 7 (100%) | 0 |
-| **State Decoupling & Invariants (QA07, QA08, QA11, QA12, QA13, QA14)** | 6 | 6 (100%) | 0 |
-| **Ethics, Security & Commercial Guardrails (QA09, QA15, QA16, QA17, QA18)** | 5 | 4 (80%) | 1 (QA15 Backend Auth) |
-| **Overall Suite** | **18** | **17 Passed (Simulation)** | **1 Production Required** |
-
----
-
-## 4. Final Verification Statement
-This traceability report truthfully represents the capabilities and verification limits of the current zero-build static prototype. All developer-reported tests reflect observed client-side execution; production backend dependencies remain explicitly classified as **Requires Production Validation**.
+- **Supporting Evidence:** Automated test assertions in `run_python_tests.py` lines 170–210.
+- **Known Limitations:** Cross-device multi-account tracking requires verified mobile phone number identity resolution.

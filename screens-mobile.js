@@ -474,7 +474,177 @@ window.NaukriMobile = (function () {
   }
 
   /* SCREENS 05–09: ENHANCED APPLICATION DETAILS + VARIATIONS */
-  function renderAppDetails(state) {
+  
+  function renderInterviewProgressionCard(state, app) {
+    if (!state.interviews) return '';
+    const interview = state.interviews.find(i => i.application_id === app.id);
+    if (!interview) return '';
+
+    const domain = window.NaukriInterviewDomain;
+    const derivedState = domain ? domain.deriveInterviewState(interview) : interview.schedule_state;
+    const outcome = domain ? domain.deriveOutcome(interview) : { status: 'Pending' };
+
+    const candAttended = interview.attendance_candidate && interview.attendance_candidate.result === 'positive';
+    const recInterviewed = interview.attendance_recruiter && interview.attendance_recruiter.result === 'positive';
+    const isCancelled = interview.cancellation && interview.cancellation.cancelled;
+
+    return `
+      <!-- V2.0 INTERVIEW PROGRESSION & COORDINATION (FR18–FR27) -->
+      <div class="mob-card" style="border:1px solid #3b82f6;background:linear-gradient(180deg, rgba(30,41,59,0.9), rgba(15,23,42,0.95));box-shadow:0 4px 16px rgba(37,99,235,0.2);">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;">
+          <div>
+            <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.5px;font-weight:700;color:#60a5fa;">
+              Interview Coordination (V2.0)
+            </div>
+            <div style="font-size:14px;font-weight:700;color:#ffffff;margin-top:2px;">
+              ${esc(interview.round_name || 'Interview Round')}
+            </div>
+          </div>
+          <span class="mob-pill ${isCancelled ? 'pill-red' : interview.schedule_state === 'Confirmed' ? 'pill-green' : 'pill-amber'}">
+            ${esc(derivedState)}
+          </span>
+        </div>
+
+        <div style="background:rgba(15,23,42,0.6);border:1px solid #334155;border-radius:8px;padding:10px;margin-bottom:12px;display:flex;flex-direction:column;gap:6px;">
+          <div style="display:flex;justify-content:space-between;font-size:11.5px;">
+            <span style="color:#94a3b8;">Format:</span>
+            <span style="font-weight:600;color:#f8fafc;">${esc(interview.format)}</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:11.5px;">
+            <span style="color:#94a3b8;">Scheduled Time:</span>
+            <span style="font-weight:600;color:#60a5fa;">${domain ? domain.formatDateDisplay(interview.starts_at) : interview.starts_at} (${esc(interview.timezone)})</span>
+          </div>
+          ${interview.venue_or_link && !isCancelled ? `
+            <div style="display:flex;justify-content:space-between;font-size:11.5px;">
+              <span style="color:#94a3b8;">Meeting Link:</span>
+              <a href="${esc(interview.venue_or_link)}" target="_blank" style="color:#38bdf8;text-decoration:underline;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(interview.venue_or_link)}</a>
+            </div>
+          ` : ''}
+          ${interview.schedule_version > 1 ? `
+            <div style="font-size:10px;color:#94a3b8;border-top:1px dashed #334155;padding-top:4px;">
+              Schedule Version: v${interview.schedule_version} (Rescheduled)
+            </div>
+          ` : ''}
+        </div>
+
+        ${isCancelled ? `
+          <div style="background:rgba(239,68,68,0.15);border:1px solid #ef4444;border-radius:7px;padding:8px 10px;margin-bottom:10px;">
+            <div style="font-size:11.5px;font-weight:700;color:#fca5a5;">Interview Cancelled</div>
+            <div style="font-size:11px;color:#cbd5e1;margin-top:2px;">${esc(interview.cancellation.reason)}</div>
+          </div>
+        ` : ''}
+
+        ${interview.schedule_state === 'Reschedule Pending' ? `
+          <div style="background:rgba(245,158,11,0.15);border:1px solid #f59e0b;border-radius:7px;padding:8px 10px;margin-bottom:10px;">
+            <div style="font-size:11.5px;font-weight:700;color:#fde047;">Reschedule Requested</div>
+            <div style="font-size:11px;color:#cbd5e1;margin-top:2px;">
+              Proposed slot: <strong>${domain && interview.proposed_slot ? domain.formatDateDisplay(interview.proposed_slot.slot) : ''}</strong>. Pending recruiter confirmation.
+            </div>
+          </div>
+        ` : ''}
+
+        <!-- Candidate Action Controls (FR19, FR20, FR22, FR23) -->
+        ${!isCancelled ? `
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            ${interview.response === 'Pending' ? `
+              <div style="display:flex;gap:8px;">
+                <button class="mob-btn-primary" style="flex:1;font-size:11.5px;padding:8px;" data-action="accept-invitation" data-interview-id="${interview.id}">
+                  ✓ Accept Invitation
+                </button>
+                <button class="mob-btn-secondary" style="flex:1;font-size:11.5px;padding:8px;color:#f87171;" data-action="decline-invitation" data-interview-id="${interview.id}">
+                  ✕ Decline
+                </button>
+              </div>
+            ` : ''}
+
+            ${interview.response === 'Accepted' && interview.schedule_state === 'Confirmed' ? `
+              <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                <button class="mob-btn-secondary" style="flex:1;font-size:11px;padding:6px 8px;" data-action="export-calendar" data-interview-id="${interview.id}">
+                  📅 Export to Calendar (.ics)
+                </button>
+                <button class="mob-btn-secondary" style="flex:1;font-size:11px;padding:6px 8px;" data-action="open-reschedule-modal" data-interview-id="${interview.id}">
+                  🔄 Request Reschedule
+                </button>
+              </div>
+
+              <!-- Post-Interview Attendance Recording (FR23, FR25) -->
+              <div style="margin-top:6px;background:rgba(30,41,59,0.6);border:1px solid #334155;border-radius:8px;padding:10px;">
+                <div style="font-size:11px;font-weight:700;color:#e2e8f0;margin-bottom:6px;">
+                  Post-Interview Attendance Confirmation
+                </div>
+                
+                <div style="display:flex;gap:8px;margin-bottom:8px;">
+                  <button class="mob-btn-secondary" style="flex:1;font-size:11px;padding:6px;background:${candAttended ? '#059669' : 'rgba(15,23,42,0.8)'};color:${candAttended ? '#ffffff' : '#94a3b8'};border-color:${candAttended ? '#10b981' : '#475569'};" data-action="confirm-candidate-attendance" data-interview-id="${interview.id}" data-result="positive">
+                    ${candAttended ? '✓ I Attended' : 'Confirm I Attended'}
+                  </button>
+                  <button class="mob-btn-secondary" style="flex:1;font-size:11px;padding:6px;color:#fca5a5;" data-action="confirm-candidate-attendance" data-interview-id="${interview.id}" data-result="negative">
+                    Did Not Attend
+                  </button>
+                </div>
+
+                <!-- Independent Status Verification Badges -->
+                <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 8px;background:rgba(15,23,42,0.8);border-radius:6px;font-size:10.5px;">
+                  <span style="color:#94a3b8;">Candidate Confirmation:</span>
+                  <strong style="color:${interview.attendance_candidate ? '#86efac' : '#cbd5e1'};">
+                    ${interview.attendance_candidate ? (interview.attendance_candidate.result === 'positive' ? '✓ Attended' : '✕ Missed') : 'Pending'}
+                  </strong>
+                </div>
+                <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 8px;background:rgba(15,23,42,0.8);border-radius:6px;font-size:10.5px;margin-top:4px;">
+                  <span style="color:#94a3b8;">Recruiter Confirmation:</span>
+                  <strong style="color:${interview.attendance_recruiter ? '#86efac' : '#cbd5e1'};">
+                    ${interview.attendance_recruiter ? (interview.attendance_recruiter.result === 'positive' ? '✓ Conducted' : '✕ No-Show') : 'Pending'}
+                  </strong>
+                </div>
+
+                <!-- Derived Attendance Outcome -->
+                <div style="margin-top:8px;padding:6px 8px;border-radius:6px;background:${outcome.status === 'Confirmed' ? 'rgba(34,197,94,0.15)' : outcome.status === 'Disputed' ? 'rgba(239,68,68,0.15)' : 'rgba(59,130,246,0.15)'};border:1px solid ${outcome.status === 'Confirmed' ? '#22c55e' : outcome.status === 'Disputed' ? '#ef4444' : '#3b82f6'};display:flex;justify-content:space-between;align-items:center;">
+                  <span style="font-size:10.5px;color:#cbd5e1;">CAIR Outcome Status:</span>
+                  <span style="font-size:11px;font-weight:700;color:${outcome.status === 'Confirmed' ? '#86efac' : outcome.status === 'Disputed' ? '#fca5a5' : '#93c5fd'};">
+                    ${outcome.status === 'Confirmed' ? '🎯 Dual Confirmed' : outcome.status}
+                  </span>
+                </div>
+              </div>
+
+              <!-- P2 Optional Interview Readiness Assistant -->
+              <div style="margin-top:8px;padding:8px 10px;background:rgba(139,92,246,0.1);border:1px solid rgba(139,92,246,0.3);border-radius:8px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;">
+                  <span style="font-size:11px;font-weight:700;color:#c4b5fd;">✨ Interview Readiness Assistant (P2)</span>
+                  <button class="mob-btn-ghost" style="font-size:10px;padding:3px 6px;color:#a78bfa;" data-action="toggle-readiness-plan" data-interview-id="${interview.id}">
+                    ${state.showReadinessPlan === interview.id ? 'Hide Plan' : 'View Checklist'}
+                  </button>
+                </div>
+                ${state.showReadinessPlan === interview.id ? `
+                  <div style="margin-top:8px;font-size:11px;color:#cbd5e1;display:flex;flex-direction:column;gap:5px;">
+                    <div style="display:flex;gap:6px;align-items:center;">
+                      <span>✓</span> <span>Review ${esc(app.company)} recent product analytics releases</span>
+                    </div>
+                    <div style="display:flex;gap:6px;align-items:center;">
+                      <span>✓</span> <span>Prepare 2 SQL & metric decomposition case examples</span>
+                    </div>
+                    <div style="display:flex;gap:6px;align-items:center;">
+                      <span>✓</span> <span>Test audio, webcam, and Google Meet connection</span>
+                    </div>
+                    <div style="font-size:9.5px;color:#94a3b8;margin-top:4px;">
+                      Note: Rule-based simulation; does not auto-schedule or predict hiring outcomes.
+                    </div>
+                  </div>
+                ` : ''}
+              </div>
+            ` : ''}
+          </div>
+        ` : ''}
+
+        <!-- Explicit Application Withdrawal Link (FR26) -->
+        <div style="margin-top:10px;text-align:center;">
+          <button style="background:none;border:none;color:#94a3b8;font-size:10.5px;text-decoration:underline;cursor:pointer;" data-action="open-withdraw-modal" data-app-id="${app.id}">
+            Withdraw Application from Consideration
+          </button>
+        </div>
+      </div>
+    `;
+  }
+
+function renderAppDetails(state) {
     const app = state.applications.find(a => a.id === state.selectedAppId) || state.applications[0];
     const unavailable = state.unavailableDataMode;
     const isInactive = !app.isExternal && app.inactivityDays >= state.inactivityThreshold && (app.status === "Awaiting Action" || app.status === "Viewed") && app.hiringStatus !== "On Hold" && app.hiringStatus !== "Closed";
@@ -630,6 +800,8 @@ window.NaukriMobile = (function () {
       </div>
 
       <!-- Existing Profile Match Insights -->
+      ${renderInterviewProgressionCard(state, app)}
+
       <div class="mob-card">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
           <div>

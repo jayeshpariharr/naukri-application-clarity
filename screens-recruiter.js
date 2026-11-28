@@ -252,6 +252,62 @@ window.NaukriRecruiter = (function () {
                       <button class="rec-action-pill rec-reject ${cand.recruiterStatus === 'Not Shortlisted' ? 'active' : ''}" data-action="rec-open-reject" data-rec-job-id="${esc(job.id)}" data-cand-id="${esc(cand.id)}">⊗ Reject</button>
                     </div>
                   </div>
+
+                  <!-- V2.0 Contextual Recruiter Interview Actions (FR14, FR18, FR20, FR24, FR27) -->
+                  ${(() => {
+                    const matchApp = state.applications.find(a => a.company === job.company || (cand.isPrototypeUser && a.id === 'app-05') || a.jobTitle === job.title);
+                    const interview = matchApp && state.interviews ? state.interviews.find(i => i.application_id === matchApp.id) : null;
+                    const domain = window.NaukriInterviewDomain;
+                    
+                    return `
+                      <div style="margin-top:10px;padding:10px 12px;background:#f8faff;border:1px solid #dbeafe;border-radius:8px;display:flex;flex-direction:column;gap:6px;">
+                        <div style="display:flex;justify-content:space-between;align-items:center;">
+                          <strong style="font-size:11.5px;color:#1e3a8a;">📅 Interview Coordination & Confirmation (V2.0)</strong>
+                          <span style="font-size:10.5px;padding:2px 7px;border-radius:4px;background:#eff6ff;color:#2563eb;font-weight:700;">
+                            ${interview ? (domain ? domain.deriveInterviewState(interview) : interview.schedule_state) : 'No Invite Sent'}
+                          </span>
+                        </div>
+                        
+                        ${interview ? `
+                          <div style="font-size:11.5px;color:#334155;">
+                            Slot: <strong>${domain ? domain.formatDateDisplay(interview.starts_at) : interview.starts_at}</strong> (${esc(interview.format)})
+                          </div>
+                          
+                          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px;">
+                            ${interview.schedule_state === 'Reschedule Pending' ? `
+                              <button class="desk-btn-primary" style="font-size:11px;padding:4px 8px;background:#059669;" data-action="rec-confirm-reschedule" data-interview-id="${interview.id}">
+                                ✓ Accept Proposed Slot (${domain && interview.proposed_slot ? domain.formatDateDisplay(interview.proposed_slot.slot) : 'New Time'})
+                              </button>
+                            ` : ''}
+
+                            ${interview.schedule_state === 'Confirmed' && !interview.cancellation?.cancelled ? `
+                              <button class="desk-btn-outline" style="font-size:11px;padding:4px 8px;border-color:#10b981;color:#047857;background:#ecfdf5;" data-action="rec-confirm-attendance" data-interview-id="${interview.id}" data-result="positive">
+                                ${interview.attendance_recruiter?.result === 'positive' ? '✓ Interviewed Confirmed' : 'Mark Interviewed (Conducted)'}
+                              </button>
+                              <button class="desk-btn-outline" style="font-size:11px;padding:4px 8px;border-color:#f87171;color:#b91c1c;" data-action="rec-confirm-attendance" data-interview-id="${interview.id}" data-result="negative">
+                                Mark Candidate No-Show
+                              </button>
+                              <button class="desk-btn-outline" style="font-size:11px;padding:4px 8px;color:#64748b;" data-action="rec-cancel-interview" data-interview-id="${interview.id}">
+                                Cancel Interview
+                              </button>
+                            ` : ''}
+                          </div>
+
+                          <div style="display:flex;justify-content:space-between;font-size:10.5px;color:#64748b;margin-top:2px;">
+                            <span>Recruiter Confirmed: <strong style="color:${interview.attendance_recruiter ? '#059669' : '#64748b'};">${interview.attendance_recruiter?.result || 'Pending'}</strong></span>
+                            <span>Candidate Confirmed: <strong style="color:${interview.attendance_candidate ? '#059669' : '#64748b'};">${interview.attendance_candidate?.result || 'Pending'}</strong></span>
+                          </div>
+                        ` : `
+                          <div style="display:flex;justify-content:space-between;align-items:center;">
+                            <span style="font-size:11px;color:#64748b;">Invite this shortlisted candidate to schedule Round 1:</span>
+                            <button class="desk-btn-primary" style="font-size:11px;padding:4px 10px;" data-action="rec-send-invite" data-app-id="${matchApp ? matchApp.id : 'app-01'}">
+                              + Send Interview Invitation
+                            </button>
+                          </div>
+                        `}
+                      </div>
+                    `;
+                  })()}
                 </div>
 
                 <!-- Right Column matching Naukri Recruiter screenshot -->

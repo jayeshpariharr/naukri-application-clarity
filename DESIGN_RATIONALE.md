@@ -7,7 +7,7 @@
 ## 1. Research Context & Directional Caveat
 
 This proposal is grounded in a multi-source discovery study:
-- **10 job seeker survey responses** (including **6 recent Naukri applicants**)
+- **7 populated job seeker survey rows (6 eligible recent Naukri applicants, 1 ineligible)** (including **6 recent Naukri applicants**)
 - **7 hiring professional responses**
 - **4 Google Play Store reviews**
 - **Existing Naukri desktop and mobile product audits**
@@ -131,3 +131,25 @@ This proposal is grounded in a multi-source discovery study:
   - Incorrect or misleading status updates
   - Application abandonment rate
   - Naukri Pro conversion and revenue impact
+
+---
+
+## 7. V2.0 Progression: Turning Applications into Attended Interviews
+
+While V1.0 solved the post-application transparency problem (Application Clarity Rate), V2.0 extends the candidate journey through **interview coordination and verified attendance**:
+
+1. **North Star Evolution (CAIR):**
+   - **Candidate Attended Interview Rate (CAIR)** measures the proportion of eligible active seekers who achieve at least one dual-confirmed attended interview within 14 days of their 3rd qualifying application.
+   - Assignment target models a shift from **21% baseline to 36% in six months** (modeled design target, not an achieved production claim).
+
+2. **Decoupled Application & Interview States:**
+   - Role pauses or closures do not overwrite candidate shortlist status.
+   - An accepted interview invitation is not proof of attendance.
+   - Candidate attendance confirmation cannot unilaterally fabricate recruiter verification.
+
+3. **Dual Confirmation & Dispute Resolution:**
+   - Real-world hiring requires mutual agreement. A positive candidate confirmation paired with recruiter verification qualifies for CAIR.
+   - Conflicting reports enter an auditable **Disputed** state rather than silently assuming a candidate no-show.
+
+4. **Candidate Autonomy & Non-Prejudice:**
+   - Candidates retain full autonomy to decline invitations or withdraw applications without erasing historical milestones or penalizing profile visibility.

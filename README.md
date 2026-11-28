@@ -1,104 +1,103 @@
-# Naukri Application Clarity — Interactive Product Management Prototype
+# Naukri Application Clarity V2.0 — Turning Applications into Attended Interviews
 
-> **Disclaimer:** This is an **independent Product Management case study and unofficial prototype** created strictly for portfolio and educational purposes. It is not affiliated with, endorsed by, or connected to Info Edge (India) Ltd. or Naukri.com. All candidate, recruiter, and company records inside the prototype are completely fictional.
-
----
-
-## 1. Overview & Problem Statement
-
-Although Naukri.com already provides application tracking, candidates frequently experience uncertainty regarding application progress, hiring availability, and final outcomes when applications remain at **“Application Sent”**, **“Application Viewed”**, or **“Awaiting Recruiter Action”** for extended periods.
-
-**Core Design Philosophy:** *Improve the experience, not reinvent the interface.*
-
-Rather than redesigning Naukri's visual identity, navigation, business model, or recruiter panel, this prototype demonstrates incremental, high-clarity improvements across candidate mobile (dark theme), candidate desktop web (light theme), and recruiter response workflows.
+> **Disclaimer:** This is an **independent Product Management case study, capstone proposal, and unofficial prototype** created strictly for portfolio, educational, and evaluation purposes. It is not affiliated with, endorsed by, or connected to Info Edge (India) Ltd. or Naukri.com. All candidate, recruiter, company, and interview records inside the prototype are fictional simulation fixtures.
 
 ---
 
-## 2. Research Methodology & Directional Insights
+## 1. Executive Summary & V2.0 Mission
 
-The design decisions are informed by a multi-source qualitative and product discovery sample:
-- **10 job seeker survey responses** (including **6 recent Naukri applicants**)
-- **7 hiring professional responses**
-- **4 Google Play Store reviews**
-- **Existing Naukri desktop and mobile product audits**
-- **Hands-on recruiter dashboard training** and **recruiter panel training video analysis**
+**Naukri Application Clarity V2.0** upgrades the post-application experience from **application tracking** to **actionable application understanding and verified interview attendance**.
 
-> *Note: Findings reflect directional insights from a small research sample, not statistically representative metrics for all Naukri users.*
-
-Key directional signals:
-- **3 of 6** eligible job seekers received no response within 14 days.
-- **3 of 6** struggled to understand what was happening to their applications.
-- **2 of 6** reported applications viewed without a recruiter reply.
-- Average confidence in job and recruiter genuineness was **2.67 / 5**.
-- **5 of 7** hiring professionals cited **profile mismatch** as a reason for not replying, while **5 of 7** reported replying to **>60%** of applicants.
-- Observed application timelines remained unchanged for **11–12 weeks**, while notifications skewed toward job recommendations and promotional content rather than individual application outcomes.
+- **Initiative North Star (CAIR):** Candidate Attended Interview Rate — targeting progression from **21% to 36% in six months** (modeled assignment target, not an achieved production outcome).
+- **Core Problem:** Insufficient actionable visibility into relevant, genuine opportunities and confirmed post-application progress causes candidates to abandon active search or miss interview coordination cues.
+- **Product Thesis:** Help job seekers identify suitable, credible opportunities, understand confirmed application milestones, and coordinate interviews without imposing a mandatory new recruiter tool.
 
 ---
 
-## 3. Proposed Features & Interactive Screens
+## 2. Master PRD V2.0 Requirements Coverage (FR01–FR28)
 
-- **Mobile App Prototype (Dark Theme — Screens 01–10):**
-  - **01 Homepage:** Compact *My Applications* summary (`Total`, `Recent updates`, `Awaiting action`, `Needs attention`) integrated into the existing homepage stack.
-  - **02 Job Details:** Verified hiring status (`Active`, `On Hold`, `Closed`), posting & status-updated dates, employer verification badge only when confirmed, `"Hiring status not confirmed"` fallback, and disabled Apply on closed roles.
-  - **03 Application Success:** Submission date, next-step clarity, `Track Application` and `Explore Similar Jobs` CTAs above contextual Naukri Pro promotions.
-  - **04 My Applications:** Existing categories (`Applies on Naukri`, `Recruiter Actions`, `Applies via Neo`, `External Applications`) + lightweight status filters, hiring availability, last active info, archive/restore, and explicit external ATS limited-visibility notices.
-  - **05–09 Enhanced Application Details & Edge States:** Preserved timeline with plain-language explanations, configurable `7 / 14 / 30`-day non-punitive inactivity callouts, separate `Hiring On Hold` (with resume alert opt-in) and `Role Closed` states, and clear separation between automated `Profile Match Insights` and `Recruiter Decision Notes`.
-  - **10 Notifications:** Outcome-focused categories (`All`, `Application Updates`, `Job Recommendations`, `Recruiter Activity`) deep-linking to each application + Notification Preferences.
-- **11 Recruiter Panel Supporting Workflow (Light Theme · Conceptual):** Conceptual recruiter workflow, subject to feasibility validation. Preserves `Manage Jobs and Responses` and `Job Responses` (`Shortlist` / `Maybe` / `Reject`, `Select All`) while adding an `On Hold` availability toggle, optional structured rejection reasons, and a live candidate-facing update preview that syncs directly to the candidate views without overwriting existing candidate decisions on role pause/close/reopen.
-- **12 Desktop Web Experience & Tracker (Light Theme):** Matches Naukri's 3-column `My home` layout (`My Applications` summary, `Recommended jobs`, `Early access`, `MINIs`), `Jobs` filters, `Companies`, `Naukri 360 / Services`, Profile Drawer, and split-pane `Job Application Status` tracker.
-- **Visual Before vs. After Comparisons & Design Rationale:** Side-by-side comparisons using PII-redacted original Naukri audit screenshots and live prototype captures, plus P0/P1/P2 MVP prioritisation, a 2-minute hiring-manager demo journey, redacted Google Play Store research evidence, and [DESIGN_RATIONALE.md](./DESIGN_RATIONALE.md).
-- **Usability Testing Lab & Researcher Dashboard (`?mode=testing`):**
-  - **Participant Testing Mode:** Guided consent, 5-question participant background intake, 6 realistic post-application task scenarios (Application Tracking, Prolonged Inactivity, Not Shortlisted, Hiring On Hold, Application Notifications, Application Management), and a 7-metric post-test questionnaire with open-ended feedback.
-  - **Researcher Dashboard:** Real-time calculation of total participants (target 3–5), independent/assisted/failed completion rates, median completion times, Single Ease Question (SEQ 1–7) averages, and validation targets vs. observed results. Shows an explicit empty state until real sessions are conducted (no synthetic data).
-  - **Usability Issue Prioritisation:** Log and classify observed friction points by severity (`Critical`, `Major`, `Minor`, `Suggestion`) with evidence and recommended PM actions.
-  - **Consolidated Exports:** Export anonymised session data as CSV and JSON, or download the full synthesis report in Markdown.
-  - **Storage Model:** Uses browser `localStorage` with explicit guidance explaining local storage limits and cross-device consolidation instructions.
+| Phase | Requirement Area | Requirements Covered | Key User Outcome |
+|---|---|---|---|
+| **Phase A / B** | Core Application Clarity | **FR01–FR17** | Track CTA, timeline recency, 0/7/14/30d inactivity bands, contextual not shortlisted reasons, hiring availability, and scoped identity verification. |
+| **Phase C** | Interview Coordination | **FR18–FR22** | Structured interview invitations, candidate accept/decline, versioned mutual rescheduling, contextual reminders, and calendar (.ics) export. |
+| **Phase D** | Attendance & Dual Confirmation | **FR23–FR25** | Candidate independent confirmation, recruiter interviewed confirmation, dual-confirmed CAIR qualification, and dispute detection. |
+| **Phase E** | Autonomy & Cohort Analytics | **FR26–FR28** | Explicit application withdrawal vs archive, reported no-show distinction, and 14-day cohort anchor instrumentation. |
 
 ---
 
-## 4. Technology Stack & Repository Structure
+## 3. Local Preview & Execution Instructions
 
-- **Frontend:** Vanilla HTML5, CSS3, and modular JavaScript (`ES5/ES6` zero-build static architecture).
-- **Data & State:** Local fictional dataset ([data.js](./data.js)) and central client-side state store ([app.js](./app.js)) enforcing decoupled individual application status, hiring availability, timestamps, recruiter activity, inactivity duration, and preference-aware notification delivery.
-- **Audit & Evidence Assets:** `assets/comparisons/` (PII-redacted Before & captured After screenshots) and `assets/evidence/` (PII-redacted Google Play Store research evidence).
-- **Deployment:** Static GitHub Pages hosting via GitHub Actions ([.github/workflows/pages.yml](./.github/workflows/pages.yml)).
+The project runs with **zero build dependencies** and is fully compatible with GitHub Pages and local HTTP servers.
 
----
+### Running Locally:
+1. Clone or extract the repository:
+   ```bash
+   cd naukri-application-clarity
+   ```
+2. Start a lightweight local HTTP server (Python 3):
+   ```bash
+   python3 -m http.server 8000
+   ```
+3. Open your browser and navigate to:
+   ```
+   http://localhost:8000/
+   ```
 
-## 5. Verification & Known Limitations
-
-- **Verified End-to-End:** Apply → Track Application flow, status filters, Archive/Restore, recruiter Shortlist/Reject live sync, independent hiring pause/closure/reopening without overwriting candidate decisions, notification preferences & resume-alert subscriptions, Before vs. After images/annotations, and Desktop (`1280x800`) & Mobile (`390x844`) responsiveness with zero console errors.
-- **Known Limitations:** In-memory client state resets on reload; secondary portal links (`Resdex`, `Reports`, `Blogs`, `Pro` checkout) are demo stubs; conceptual recruiter workflow and P0/P1/P2 effort estimates are assumptions pending engineering feasibility validation; research insights are directional from a small sample.
-
----
-
-## 5. Project Structure
-
-```text
-naukri-application-clarity/
-├── .github/workflows/pages.yml   # GitHub Pages deployment workflow
-├── .gitignore                    # Ignores secrets, logs, OS/editor artifacts
-├── DESIGN_RATIONALE.md           # Full PM case study & metrics framework
-├── README.md                     # Project overview & setup documentation
-├── index.html                    # Entry point
-├── styles.css                    # Naukri Dark Mobile, Light Desktop & Recruiter styles
-├── data.js                       # 10 fictional applications, jobs & recruiter queues
-├── screens-mobile.js             # Mobile Screens 01–10
-├── screens-desktop.js            # Desktop Web Tracker (Screen 12)
-├── screens-recruiter.js          # Recruiter Supporting Workflow (Screen 11)
-├── screens-portfolio.js          # Before vs. After & Design Rationale views
-├── screens-testing.js            # Structured Usability Testing & Researcher Hub
-└── app.js                        # State store, routing & live recruiter sync
-```
+### Supported Direct URL Modes:
+- **Portfolio Overview:** `http://localhost:8000/?mode=overview`
+- **Case Study (PRD V2.0):** `http://localhost:8000/?mode=casestudy`
+- **Interactive Mobile Prototype:** `http://localhost:8000/?mode=mobile&screen=home`
+- **Interview Detail View:** `http://localhost:8000/?mode=mobile&screen=details&app=app-05`
+- **Desktop Tracker Experience:** `http://localhost:8000/?mode=desktop&sub=tracker`
+- **Recruiter Simulation Panel:** `http://localhost:8000/?mode=recruiter`
+- **Before vs. After Comparison Gallery:** `http://localhost:8000/?mode=comparisons`
+- **Engineering Documentation & QA:** `http://localhost:8000/?mode=documentation`
+- **Usability Testing Lab:** `http://localhost:8000/?mode=testing`
 
 ---
 
-## 6. Local Preview
+## 4. 90-Second Walkthrough Demonstration Route
 
-Open `index.html` directly in a browser or serve locally:
+To demonstrate end-to-end interview progression in 90 seconds:
 
+1. **Discover & Apply:**
+   - Go to Mobile Mode (`?mode=mobile&screen=home`). Tap **Recommended Jobs**, select **ZenithPay India**, inspect the **Verified Employer** badge, and tap **Apply**.
+   - On the **Applied Successfully** screen, click the primary **Track Application** CTA.
+2. **Review Tracker & Recency:**
+   - Observe the chronological timeline, last confirmed update timestamp, and neutral inactivity wording.
+3. **Recruiter Invitation Simulation:**
+   - Switch to **Recruiter Mode** (`?mode=recruiter`). Locate the candidate under **Manage Jobs & Responses**.
+   - Click **+ Send Interview Invitation**.
+4. **Candidate Response & Reschedule:**
+   - Switch back to **Mobile Mode** (`?mode=mobile&screen=details&app=app-05`).
+   - Observe the **Interview Coordination (V2.0)** card.
+   - Tap **✓ Accept Invitation** (schedule state transitions to `Confirmed`).
+   - Tap **🔄 Request Reschedule** and propose an alternative time (transitions to `Reschedule Pending`).
+5. **Recruiter Confirmation:**
+   - In Recruiter Mode, click **✓ Accept Proposed Slot** (increments schedule version to `v2`).
+6. **Dual Attendance Confirmation:**
+   - In Mobile Mode, tap **Confirm I Attended** (Candidate Confirmed: `Attended`, Recruiter Confirmed: `Pending`).
+   - In Recruiter Mode, click **Mark Interviewed (Conducted)**.
+   - Return to Mobile Mode to view the derived **🎯 Dual Confirmed** CAIR status.
+7. **Legitimate Negative Outcome:**
+   - Tap **Withdraw Application from Consideration** to demonstrate that candidate autonomy cancels active coordination while safely preserving historical audit logs.
+
+---
+
+## 5. Verification & Test Suite
+
+The pure domain engine and prototype interactions have been verified through an automated 39-scenario test runner:
+
+- **Total Test Scenarios:** 39 (QA01 through QA39)
+- **Passed (Prototype Simulation):** 38
+- **Requires Production Validation:** 1 (QA15 — Server-side authorization & multi-tenant security)
+- **Failed:** 0
+
+Run the test suite locally:
 ```bash
-python3 -m http.server 8765
+python3 run_python_tests.py
 ```
-
-Then visit `http://localhost:8765/`.
+Detailed execution logs and known limitations are documented in:
+- `FUNCTIONAL_TEST_RESULTS.md`
+- `QA_TRACEABILITY_REPORT.md`
+- `KNOWN_LIMITATIONS.md`

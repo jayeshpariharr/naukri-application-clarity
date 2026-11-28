@@ -39,14 +39,17 @@ window.NaukriCaseStudy = (function () {
               <button class="port-btn-secondary" data-action="switch-mode" data-mode="mobile">
                 📱 Launch Interactive Prototype
               </button>
-              <a href="./assets/docs/Naukri_Application_Clarity_PRD.pdf" target="_blank" class="port-btn-ghost" style="display:inline-flex;align-items:center;text-decoration:none;">
-                👁️ View Full PRD
+              <a href="./assets/docs/Naukri_Master_PRD_V2.pdf" target="_blank" class="port-btn-ghost" style="display:inline-flex;align-items:center;text-decoration:none;border-color:#3b82f6;color:#60a5fa;">
+                📘 View Master PRD V2.0 (PDF)
               </a>
-              <a href="./assets/docs/Naukri_Application_Clarity_PRD.pdf" download="Naukri_Application_Clarity_PRD.pdf" class="port-btn-ghost" style="display:inline-flex;align-items:center;text-decoration:none;">
-                📄 Download PDF
+              <a href="./assets/docs/Naukri_Master_PRD_V2.pdf" download="Naukri_Master_PRD_V2.pdf" class="port-btn-ghost" style="display:inline-flex;align-items:center;text-decoration:none;">
+                📥 Download PRD V2.0
               </a>
-              <a href="./assets/docs/Naukri_Application_Clarity_PRD.docx" download="Naukri_Application_Clarity_PRD.docx" class="port-btn-ghost" style="display:inline-flex;align-items:center;text-decoration:none;">
-                📝 Download Editable Word
+              <a href="./assets/docs/Naukri_Research_Analysis_Workbook.xlsx" download="Naukri_Research_Analysis_Workbook.xlsx" class="port-btn-ghost" style="display:inline-flex;align-items:center;text-decoration:none;">
+                📊 Research Workbook (.xlsx)
+              </a>
+              <a href="./assets/docs/Naukri_Application_Clarity_PRD.pdf" target="_blank" class="port-btn-ghost" style="display:inline-flex;align-items:center;text-decoration:none;color:#94a3b8;font-size:12px;">
+                📜 Baseline PRD V1.0 (PDF)
               </a>
             </div>
 
@@ -200,18 +203,21 @@ window.NaukriCaseStudy = (function () {
             <a href="#cs-15" class="toc-link">15 · Future Roadmap & Recommendation</a>
           </nav>
           <div style="padding:14px 18px;border-top:1px solid #1e293b;display:flex;flex-direction:column;gap:8px;">
-            <div style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.5px;">Original PRD Downloads</div>
-            <a href="./assets/docs/Naukri_Application_Clarity_PRD.pdf" target="_blank" class="port-btn-secondary" style="width:100%;font-size:11px;padding:6px 10px;text-align:center;text-decoration:none;box-sizing:border-box;">
-              👁️ View Full PRD
+            <div style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.5px;">PRD Documentation V2.0</div>
+            <a href="./assets/docs/Naukri_Master_PRD_V2.pdf" target="_blank" class="port-btn-secondary" style="width:100%;font-size:11px;padding:6px 10px;text-align:center;text-decoration:none;box-sizing:border-box;border-color:#3b82f6;color:#bfdbfe;">
+              📘 View Master PRD V2.0 (PDF)
             </a>
             <div style="display:flex;gap:6px;">
-              <a href="./assets/docs/Naukri_Application_Clarity_PRD.pdf" download="Naukri_Application_Clarity_PRD.pdf" class="port-btn-ghost" style="flex:1;font-size:10px;padding:5px 6px;text-align:center;text-decoration:none;box-sizing:border-box;">
-                📄 PDF
+              <a href="./assets/docs/Naukri_Master_PRD_V2.pdf" download="Naukri_Master_PRD_V2.pdf" class="port-btn-ghost" style="flex:1;font-size:10px;padding:5px 6px;text-align:center;text-decoration:none;box-sizing:border-box;">
+                📥 PRD V2.0
               </a>
-              <a href="./assets/docs/Naukri_Application_Clarity_PRD.docx" download="Naukri_Application_Clarity_PRD.docx" class="port-btn-ghost" style="flex:1;font-size:10px;padding:5px 6px;text-align:center;text-decoration:none;box-sizing:border-box;">
-                📝 Word
+              <a href="./assets/docs/Naukri_Research_Analysis_Workbook.xlsx" download="Naukri_Research_Analysis_Workbook.xlsx" class="port-btn-ghost" style="flex:1;font-size:10px;padding:5px 6px;text-align:center;text-decoration:none;box-sizing:border-box;">
+                📊 Data xlsx
               </a>
             </div>
+            <a href="./assets/docs/Naukri_Application_Clarity_PRD.pdf" target="_blank" class="port-btn-ghost" style="width:100%;font-size:10px;padding:5px 6px;text-align:center;text-decoration:none;box-sizing:border-box;color:#94a3b8;">
+              📜 Baseline PRD V1.0 (PDF)
+            </a>
             <button class="port-btn-ghost" style="width:100%;font-size:10px;padding:5px 6px;" data-action="download-prd-md">
               📋 Summary (.md)
             </button>

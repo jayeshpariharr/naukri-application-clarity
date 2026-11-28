@@ -715,7 +715,107 @@ window.NaukriDesktop = (function () {
   }
 
   /* SCREEN 12: DESKTOP WEB APPLICATION TRACKER */
-  function renderDesktopTracker(state) {
+  
+  function renderDesktopInterviewCard(state, selected) {
+    if (!state.interviews) return '';
+    const interview = state.interviews.find(i => i.application_id === selected.id);
+    if (!interview) return '';
+
+    const domain = window.NaukriInterviewDomain;
+    const derivedState = domain ? domain.deriveInterviewState(interview) : interview.schedule_state;
+    const outcome = domain ? domain.deriveOutcome(interview) : { status: 'Pending' };
+
+    const candAttended = interview.attendance_candidate && interview.attendance_candidate.result === 'positive';
+    const recInterviewed = interview.attendance_recruiter && interview.attendance_recruiter.result === 'positive';
+    const isCancelled = interview.cancellation && interview.cancellation.cancelled;
+
+    return `
+      <div style="margin-top:14px;border:1px solid #bfdbfe;background:#eff6ff;border-radius:10px;padding:16px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+          <div>
+            <span style="font-size:11px;font-weight:700;color:#1e40af;text-transform:uppercase;letter-spacing:0.5px;">Interview Coordination (V2.0)</span>
+            <div style="font-size:15px;font-weight:700;color:#1e3a8a;margin-top:2px;">
+              ${esc(interview.round_name || 'Interview Round')}
+            </div>
+          </div>
+          <span class="desk-pill ${isCancelled ? 'dpill-red' : interview.schedule_state === 'Confirmed' ? 'dpill-green' : 'dpill-amber'}">
+            ${esc(derivedState)}
+          </span>
+        </div>
+
+        <div style="background:#ffffff;border:1px solid #dbeafe;border-radius:8px;padding:12px;margin-bottom:12px;display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:12.5px;">
+          <div><span style="color:#64748b;">Format:</span> <strong>${esc(interview.format)}</strong></div>
+          <div><span style="color:#64748b;">Scheduled Time:</span> <strong style="color:#2563eb;">${domain ? domain.formatDateDisplay(interview.starts_at) : interview.starts_at} (${esc(interview.timezone)})</strong></div>
+          ${interview.venue_or_link && !isCancelled ? `
+            <div style="grid-column:1 / -1;"><span style="color:#64748b;">Link/Venue:</span> <a href="${esc(interview.venue_or_link)}" target="_blank" style="color:#2563eb;text-decoration:underline;">${esc(interview.venue_or_link)}</a></div>
+          ` : ''}
+          ${interview.schedule_version > 1 ? `
+            <div style="grid-column:1 / -1;font-size:11px;color:#64748b;">Schedule Version: v${interview.schedule_version} (Rescheduled)</div>
+          ` : ''}
+        </div>
+
+        ${isCancelled ? `
+          <div style="background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:10px;color:#991b1b;font-size:12px;margin-bottom:10px;">
+            <strong>Interview Cancelled:</strong> ${esc(interview.cancellation.reason)}
+          </div>
+        ` : ''}
+
+        ${interview.schedule_state === 'Reschedule Pending' ? `
+          <div style="background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:10px;color:#92400e;font-size:12px;margin-bottom:10px;">
+            <strong>Reschedule Requested:</strong> Proposed time ${domain && interview.proposed_slot ? domain.formatDateDisplay(interview.proposed_slot.slot) : ''}. Pending recruiter confirmation.
+          </div>
+        ` : ''}
+
+        ${!isCancelled ? `
+          <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+            ${interview.response === 'Pending' ? `
+              <button class="desk-btn-primary" style="font-size:12px;padding:6px 14px;" data-action="accept-invitation" data-interview-id="${interview.id}">
+                ✓ Accept Invitation
+              </button>
+              <button class="desk-btn-outline" style="font-size:12px;padding:6px 14px;color:#b91c1c;border-color:#f87171;" data-action="decline-invitation" data-interview-id="${interview.id}">
+                ✕ Decline
+              </button>
+            ` : ''}
+
+            ${interview.response === 'Accepted' && interview.schedule_state === 'Confirmed' ? `
+              <button class="desk-btn-outline" style="font-size:12px;padding:6px 12px;" data-action="export-calendar" data-interview-id="${interview.id}">
+                📅 Export to Calendar (.ics)
+              </button>
+              <button class="desk-btn-outline" style="font-size:12px;padding:6px 12px;" data-action="open-reschedule-modal" data-interview-id="${interview.id}">
+                🔄 Request Reschedule
+              </button>
+              <button class="desk-btn-outline" style="font-size:12px;padding:6px 12px;background:${candAttended ? '#ecfdf5' : '#ffffff'};color:${candAttended ? '#047857' : '#1e293b'};border-color:${candAttended ? '#10b981' : '#cbd5e1'};" data-action="confirm-candidate-attendance" data-interview-id="${interview.id}" data-result="positive">
+                ${candAttended ? '✓ I Attended' : 'Confirm Attendance'}
+              </button>
+              <button class="desk-btn-outline" style="font-size:12px;padding:6px 12px;color:#b91c1c;border-color:#fca5a5;" data-action="confirm-candidate-attendance" data-interview-id="${interview.id}" data-result="negative">
+                Did Not Attend
+              </button>
+            ` : ''}
+          </div>
+
+          <!-- Attendance Dual Confirmation Status Bar -->
+          <div style="margin-top:10px;padding:10px;background:#ffffff;border:1px solid #dbeafe;border-radius:8px;display:flex;justify-content:space-between;align-items:center;font-size:11.5px;">
+            <div>
+              <span style="color:#64748b;">Candidate Confirmed:</span> <strong style="color:${interview.attendance_candidate ? '#059669' : '#64748b'};">${interview.attendance_candidate ? (interview.attendance_candidate.result === 'positive' ? '✓ Attended' : '✕ Missed') : 'Pending'}</strong>
+              <span style="margin:0 8px;color:#cbd5e1;">|</span>
+              <span style="color:#64748b;">Recruiter Confirmed:</span> <strong style="color:${interview.attendance_recruiter ? '#059669' : '#64748b'};">${interview.attendance_recruiter ? (interview.attendance_recruiter.result === 'positive' ? '✓ Conducted' : '✕ No-Show') : 'Pending'}</strong>
+            </div>
+            <span class="desk-pill ${outcome.status === 'Confirmed' ? 'dpill-green' : outcome.status === 'Disputed' ? 'dpill-red' : 'dpill-blue'}">
+              Outcome: ${outcome.status === 'Confirmed' ? '🎯 Dual Confirmed' : outcome.status}
+            </span>
+          </div>
+        ` : ''}
+
+        <div style="margin-top:10px;text-align:right;">
+          <button style="background:none;border:none;color:#64748b;font-size:11px;text-decoration:underline;cursor:pointer;" data-action="open-withdraw-modal" data-app-id="${selected.id}">
+            Withdraw Application from Consideration
+          </button>
+        </div>
+      </div>
+    `;
+  }
+
+function renderDesktopTracker(state) {
     const categories = ["All", "Applies on Naukri", "Recruiter Actions", "Applies via Neo", "External Applications"];
     const baseList = state.applications.filter(a => state.appCategory === "All" || a.category === state.appCategory);
     const availableStatuses = ["All Applications"];
@@ -904,6 +1004,8 @@ window.NaukriDesktop = (function () {
                     </div>
                   </div>
                 ` : ""}
+
+                ${renderDesktopInterviewCard(state, selected)}
 
                 <div class="desk-insights-grid">
                   <div style="border:1px solid #e7e7f1;border-radius:10px;padding:13px;">

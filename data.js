@@ -994,6 +994,50 @@ window.NAUKRI_DATA = {
     }
   ],
 
+
+  /* V2.0 Interview Progression & Attendance Fixtures (FR18–FR28) */
+  interviews: [
+    {
+      id: "int-01",
+      application_id: "app-05", // CloudPulse SaaS (Shortlisted)
+      job_id: "hist-05",
+      seeker_id: "seeker-01",
+      round_name: "Round 1 · Technical Product Case",
+      format: "Video Call (Google Meet)",
+      timezone: "IST (UTC+05:30)",
+      starts_at: "2026-11-29T15:00:00+05:30",
+      venue_or_link: "https://meet.google.com/naukri-int-cloudpulse",
+      response: "Accepted",
+      responded_at: "2026-11-20T11:00:00+05:30",
+      schedule_state: "Confirmed",
+      schedule_version: 1,
+      proposed_slot: null,
+      attendance_candidate: null,
+      attendance_recruiter: null,
+      cancellation: null,
+      created_at: "2026-11-19T10:00:00+05:30"
+    },
+    {
+      id: "int-02",
+      application_id: "app-10", // BrightLeaf EdTech (Shortlisted)
+      job_id: "hist-10",
+      seeker_id: "seeker-01",
+      round_name: "Hiring Manager Discussion",
+      format: "Video Call (Microsoft Teams)",
+      timezone: "IST (UTC+05:30)",
+      starts_at: "2026-11-30T16:30:00+05:30",
+      venue_or_link: "https://teams.microsoft.com/l/meetup-join/naukri-demo",
+      response: "Pending",
+      responded_at: null,
+      schedule_state: "Unscheduled",
+      schedule_version: 1,
+      proposed_slot: null,
+      attendance_candidate: null,
+      attendance_recruiter: null,
+      cancellation: null,
+      created_at: "2026-11-27T09:30:00+05:30"
+    }
+  ],
   careerBlogs: [
     { title: "How Recruiters Screen Product Analyst Resumes in 2026", tag: "Naukri blog", date: "18 Nov 2026" },
     { title: "50+ Product & SQL Interview Questions with Answers", tag: "Naukri blog", date: "12 Nov 2026" },

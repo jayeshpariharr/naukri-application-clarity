@@ -309,6 +309,40 @@ window.NaukriPortfolio = (function () {
         metric: "Recruiter time per response triage (guardrail) and % eligible applications updated.",
         deps: "Conceptual recruiter workflow, subject to feasibility validation against Naukri recruiter ATS/backend capabilities."
       },
+    {
+      id: "11",
+      title: "11 · Proposed New State · Structured Interview Invitation & Coordination",
+      category: "Proposed New State",
+      beforeLabel: "Audited Naukri Baseline: Uncoordinated / External Communication",
+      beforeImage: "./assets/comparisons/after-notifications-mobile.jpg",
+      beforeDesc: "Interviews typically coordinated via unlinked third-party emails or unverified phone calls, with no platform record or mutual attendance verification.",
+      afterLabel: "Proposed V2 State: In-Platform Interview Coordination (FR18–FR22)",
+      afterImage: "./assets/comparisons/after-notifications-mobile.jpg",
+      afterDesc: "Structured invitation card with verified format, meeting link, candidate accept/decline, calendar .ics export, and versioned mutual rescheduling.",
+      keyWins: [
+        "Eliminates confusion over interview logistics and meeting links",
+        "Clear accept/decline actions with auditable timestamp records",
+        "Versioned rescheduling prevents conflicting or unilateral changes",
+        "Calendar export (.ics) ensures candidates do not miss scheduled rounds"
+      ]
+    },
+    {
+      id: "12",
+      title: "12 · Proposed New State · Dual Attendance Confirmation & CAIR (FR23–FR28)",
+      category: "Proposed New State",
+      beforeLabel: "Audited Naukri Baseline: Single-Sided / Unverified No-Show Assumptions",
+      beforeImage: "./assets/comparisons/after-not-shortlisted-mobile.jpg",
+      beforeDesc: "No independent attendance confirmation; candidate attendance assumed from scheduled invites or disputed via unrecorded recruiter notes.",
+      afterLabel: "Proposed V2 State: Independent Dual Confirmation & CAIR Instrumentation",
+      afterImage: "./assets/comparisons/after-desktop-tracker.jpg",
+      afterDesc: "Candidate and recruiter independently confirm attendance; dual-confirmed outcome qualifies CAIR; conflicts enter an auditable dispute state.",
+      keyWins: [
+        "Candidate confirmation cannot fabricate recruiter verification",
+        "Distinguishes reported no-show from pending confirmations",
+        "Eliminates duplicate interview weighting in seeker-level metrics",
+        "Instrumented CAIR cohort anchor tracks genuine attended interviews"
+      ]
+    },
       navLabel: "View Interactive Screen",
       navAttrs: `data-action="nav-prototype" data-mode="recruiter"`
     }

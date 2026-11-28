@@ -14,7 +14,10 @@
     const qJob = params.get("job");
     const qSub = params.get("sub");
     return {
-      mode: qMode || "overview", // "overview" | "casestudy" | "mobile" | "desktop" | "recruiter" | "comparisons" | "documentation" | "testing" | "rationale"
+      mode: qMode || "overview",
+      interviews: base.interviews || [],
+      showReadinessPlan: null,
+      analytics_events: [], // "overview" | "casestudy" | "mobile" | "desktop" | "recruiter" | "comparisons" | "documentation" | "testing" | "rationale"
       testing: {
         subView: params.get("testsub") || "participant", // "participant" | "dashboard" | "report"
         participantStage: "consent", // "consent" | "background" | "tasks" | "postTest" | "complete"
@@ -1045,6 +1048,128 @@
 
     if (action === "test-export-report-md") {
       if (window.NaukriTesting) window.NaukriTesting.exportReportMD();
+      return;
+    }
+
+
+    /* V2.0 Interview Progression & Coordination Action Handlers (FR18–FR28) */
+    if (action === "accept-invitation") {
+      const intId = target.getAttribute("data-interview-id");
+      if (window.NaukriInterviewDomain) {
+        window.NaukriInterviewDomain.respondToInvitation(state, { interview_id: intId, response: "Accepted" });
+      }
+      render();
+      return;
+    }
+
+    if (action === "decline-invitation") {
+      const intId = target.getAttribute("data-interview-id");
+      const reason = prompt("Optional: Provide a reason for declining this interview invitation:", "Schedule conflict / other commitments");
+      if (reason !== null && window.NaukriInterviewDomain) {
+        window.NaukriInterviewDomain.respondToInvitation(state, { interview_id: intId, response: "Declined", decline_reason: reason });
+      }
+      render();
+      return;
+    }
+
+    if (action === "open-reschedule-modal") {
+      const intId = target.getAttribute("data-interview-id");
+      const proposed = prompt("Propose alternative interview date & time (e.g. 2026-12-04T16:00:00+05:30 or 'Tomorrow 4 PM'):", "2026-12-04T16:00:00+05:30");
+      if (proposed && window.NaukriInterviewDomain) {
+        window.NaukriInterviewDomain.proposeReschedule(state, { interview_id: intId, proposed_slot: proposed, reason: "Schedule clash with current workday" });
+      }
+      render();
+      return;
+    }
+
+    if (action === "confirm-candidate-attendance") {
+      const intId = target.getAttribute("data-interview-id");
+      const result = target.getAttribute("data-result"); // 'positive' or 'negative'
+      if (window.NaukriInterviewDomain) {
+        window.NaukriInterviewDomain.recordAttendance(state, { interview_id: intId, actor_role: "candidate", result: result });
+      }
+      render();
+      return;
+    }
+
+    if (action === "export-calendar") {
+      const intId = target.getAttribute("data-interview-id");
+      const interview = (state.interviews || []).find(i => i.id === intId);
+      const app = interview ? state.applications.find(a => a.id === interview.application_id) : null;
+      if (window.NaukriInterviewDomain && interview) {
+        const icsContent = window.NaukriInterviewDomain.generateICS(interview, app);
+        if (icsContent) {
+          const blob = new Blob([icsContent], { type: "text/calendar;charset=utf-8" });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = `interview_${interview.id}.ics`;
+          document.body.appendChild(a);
+          a.click();
+          setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 100);
+        }
+      }
+      return;
+    }
+
+    if (action === "toggle-readiness-plan") {
+      const intId = target.getAttribute("data-interview-id");
+      state.showReadinessPlan = (state.showReadinessPlan === intId) ? null : intId;
+      render();
+      return;
+    }
+
+    if (action === "open-withdraw-modal") {
+      const appId = target.getAttribute("data-app-id");
+      if (confirm("Are you sure you want to withdraw this application from consideration?\n\nThis will cancel any pending or scheduled interviews while safely preserving your prior interview and application history.")) {
+        if (window.NaukriInterviewDomain) {
+          window.NaukriInterviewDomain.withdrawApplication(state, { application_id: appId, reason: "Candidate withdrew application" });
+        }
+        render();
+      }
+      return;
+    }
+
+    if (action === "rec-send-invite") {
+      const appId = target.getAttribute("data-app-id");
+      if (window.NaukriInterviewDomain) {
+        window.NaukriInterviewDomain.createInvitation(state, {
+          application_id: appId,
+          round_name: "Technical Product Case Interview",
+          format: "Video Call (Google Meet)",
+          starts_at: "2026-12-05T14:30:00+05:30"
+        });
+      }
+      render();
+      return;
+    }
+
+    if (action === "rec-confirm-reschedule") {
+      const intId = target.getAttribute("data-interview-id");
+      if (window.NaukriInterviewDomain) {
+        window.NaukriInterviewDomain.confirmReschedule(state, { interview_id: intId });
+      }
+      render();
+      return;
+    }
+
+    if (action === "rec-confirm-attendance") {
+      const intId = target.getAttribute("data-interview-id");
+      const result = target.getAttribute("data-result");
+      if (window.NaukriInterviewDomain) {
+        window.NaukriInterviewDomain.recordAttendance(state, { interview_id: intId, actor_role: "recruiter", result: result });
+      }
+      render();
+      return;
+    }
+
+    if (action === "rec-cancel-interview") {
+      const intId = target.getAttribute("data-interview-id");
+      const reason = prompt("Enter interview cancellation reason:", "Hiring requirements modified");
+      if (reason !== null && window.NaukriInterviewDomain) {
+        window.NaukriInterviewDomain.cancelInterview(state, { interview_id: intId, reason: reason, cancelled_by: "recruiter" });
+      }
+      render();
       return;
     }
 

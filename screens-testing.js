@@ -61,6 +61,42 @@ window.NaukriTesting = (function () {
       recommendedStart: { mode: "mobile", screen: "applies" },
       coreQuestion: "How do you archive an application, and where can you restore it if needed?",
       validationCriteria: "Participant uses the Archive action on an application card, verifies it disappears from active lists, and locates the Archived filter to inspect or restore."
+    },
+    {
+      id: "task-7",
+      number: 7,
+      title: "Interview Invitation & Response",
+      scenario: "You received an interview invitation for a shortlisted role. Find the invitation details, evaluate the proposed time/format, and decide whether to accept or decline.",
+      recommendedStart: { mode: "mobile", screen: "details", app: "app-05" },
+      coreQuestion: "Where do you review the interview format and meeting link, and how do you confirm your response?",
+      validationCriteria: "Participant locates the Interview Coordination card on the application detail, verifies format and scheduled time, and identifies Accept and Decline actions."
+    },
+    {
+      id: "task-8",
+      number: 8,
+      title: "Schedule Coordination & Rescheduling",
+      scenario: "You have an interview scheduled but have an urgent schedule clash. Request an alternative time slot without cancelling the opportunity.",
+      recommendedStart: { mode: "mobile", screen: "details", app: "app-05" },
+      coreQuestion: "How do you propose a new interview time, and how does the system indicate that the reschedule is pending mutual confirmation?",
+      validationCriteria: "Participant uses the 'Request Reschedule' action, proposes an alternative slot, and confirms the schedule status reflects 'Reschedule Requested' rather than unilaterally overwriting the slot."
+    },
+    {
+      id: "task-9",
+      number: 9,
+      title: "Independent Attendance Confirmation",
+      scenario: "Your interview has just concluded. Record your attendance independently and verify whether the recruiter has also confirmed.",
+      recommendedStart: { mode: "mobile", screen: "details", app: "app-05" },
+      coreQuestion: "How do you record whether you attended, and how do you know if the interview is dual-confirmed?",
+      validationCriteria: "Participant selects 'Confirm I Attended', observes the candidate confirmation status change, and understands that CAIR requires recruiter verification before reaching 'Dual Confirmed'."
+    },
+    {
+      id: "task-10",
+      number: 10,
+      title: "Application Withdrawal vs Archive",
+      scenario: "You accepted an offer elsewhere and wish to completely exit consideration for an active interview without deleting your historical records.",
+      recommendedStart: { mode: "mobile", screen: "details", app: "app-05" },
+      coreQuestion: "How does withdrawing an application differ from archiving it?",
+      validationCriteria: "Participant uses the 'Withdraw Application' link, understands that withdrawal notifies the hiring team and terminates future coordination while preserving audit history, unlike archiving which merely organizes personal views."
     }
   ];
 
