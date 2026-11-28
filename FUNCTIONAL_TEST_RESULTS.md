@@ -33,7 +33,7 @@
 | **QA23** | Employer Identity Provenance | Trust | **Fixture validation** | ✅ **Passed (Executable Assertions)** | Label verified: 'Verified Employer · Domain confirmed' displays provenance without guaranteeing job authenticity |
 | **QA24** | Pre-Apply Availability Check | Availability | **Domain unit test** | ✅ **Passed (Executable Assertions)** | Closed position job-103 safely halts submission before apply confirmation |
 | **QA25** | Contextual Profile Fit Gaps | Relevance | **Fixture validation** | ✅ **Passed (Executable Assertions)** | Evaluates 5 specific JD criteria without inventing selection prediction |
-| **QA26** | Structured Interview Invitation (FR18) | Interview | **Domain unit test** | ✅ **Passed (Executable Assertions)** | Invitation int-i1rhz3c8h created; duplicate safely blocked: 'Active interview or invitation already exists for this round' |
+| **QA26** | Structured Interview Invitation (FR18) | Interview | **Domain unit test** | ✅ **Passed (Executable Assertions)** | Invitation int-229p13lv3 created; duplicate safely blocked: 'Active interview or invitation already exists for this round' |
 | **QA27** | Candidate Accept & Decline (FR19) | Coordination | **Domain unit test** | ✅ **Passed (Executable Assertions)** | Accept sets status Confirmed; Decline sets status Cancelled with reason |
 | **QA28** | Versioned Interview Rescheduling (FR20) | Scheduling | **Domain unit test** | ✅ **Passed (Executable Assertions)** | Reschedule confirmed: v2 slot 2026-12-08T05:30:00.000Z |
 | **QA29** | Contextual Reminder Invalidation (FR21) | Communication | **Domain unit test** | ✅ **Passed (Executable Assertions)** | Reminder status moved from active to 'invalidated' on cancellation |

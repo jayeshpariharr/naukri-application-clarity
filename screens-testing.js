@@ -231,7 +231,7 @@ window.NaukriTesting = (function () {
         </div>
 
         <div class="testing-consent-box">
-          <label style="display:flex;align-items:flex-start;gap:10px;font-size:13.5px;cursor:pointer;">
+          <label style="display:flex;align-items:flex-start;gap:10px;font-size:13.5px;cursor:pointer;color:#f1f5f9;">
             <input type="checkbox" id="participant-consent-cb" style="margin-top:3px;" />
             <span>
               I agree to participate in this usability study. I understand that my task interactions and feedback will be anonymised and used solely for product research and portfolio evaluation.

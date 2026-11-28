@@ -766,7 +766,7 @@ function renderAppDetails(state) {
                 ${idx < app.timeline.length - 1 ? `<div class="v-line ${step.state === 'done' ? 'done' : ''}"></div>` : ""}
               </div>
               <div class="v-step-content">
-                <div class="v-step-title">${esc(step.stage)}</div>
+                <div class="v-step-title">${esc(step.stage || step.title || "Update")}</div>
                 <div class="v-step-date">${esc(step.date)}</div>
               </div>
             </div>

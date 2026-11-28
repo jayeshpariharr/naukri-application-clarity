@@ -326,6 +326,26 @@ window.NaukriPortfolio = (function () {
         "Versioned rescheduling prevents conflicting or unilateral changes",
         "Calendar export (.ics) ensures candidates do not miss scheduled rounds"
       ],
+      isDesktop: false,
+      isNewState: true,
+      beforeImg: "./assets/comparisons/after-notifications-mobile.jpg",
+      beforeAlt: "Audited Naukri Baseline: Uncoordinated / External Communication",
+      beforeCaption: "Audited Baseline: External Email / Unlinked Communication",
+      afterImg: "./assets/comparisons/after-notifications-mobile.jpg",
+      afterAlt: "Proposed V2 State: Structured Interview Invitation Card",
+      afterCaption: "Prototype Screen 12: Structured Interview Invitation & Rescheduling",
+      navLabel: "View Interactive Screen",
+      navAttrs: `data-action="nav-prototype" data-mode="mobile"`,
+      pm: {
+        problem: "In audited screens, interviews are arranged via external phone or untracked emails with no platform verification.",
+        evidence: "Candidate interviews highlighted missed emails, unclear links, and inability to request alternate times in-platform.",
+        whatChanged: "Introduced structured invitation cards with round format, verified link, accept/decline, and calendar .ics export.",
+        whyChanged: "Creates platform-level coordination record and prevents confusion around meeting logistics.",
+        userValue: "Instant clarity on interview details, direct calendar integration, and structured rescheduling.",
+        bizValue: "Hypothesis: Reduces interview drop-off and improves candidate-recruiter coordination reliability.",
+        metric: "Invitation response rate within 48h; candidate reschedule satisfaction.",
+        deps: "Recruiter invitation submission service and calendar .ics generation."
+      },
       annotations: [
         { n: "1", x: "24%", y: "42%", text: "Structured interview invitation with verified logistics, mode, and round details." },
         { n: "2", x: "72%", y: "65%", text: "Explicit accept/decline actions with versioned rescheduling workflow (FR18–FR22)." }
@@ -347,6 +367,24 @@ window.NaukriPortfolio = (function () {
         "Eliminates duplicate interview weighting in seeker-level metrics",
         "Instrumented CAIR cohort anchor tracks genuine attended interviews"
       ],
+      isDesktop: true,
+      isNewState: true,
+      beforeImg: "./assets/comparisons/after-not-shortlisted-mobile.jpg",
+      beforeAlt: "Audited Naukri Baseline: Single-Sided Unverified No-Show Assumptions",
+      beforeCaption: "Audited Baseline: Unverified Recruiter Notes / Disputed Outcomes",
+      afterImg: "./assets/comparisons/after-desktop-tracker.jpg",
+      afterAlt: "Proposed V2 State: Dual Attendance Confirmation & CAIR Instrumentation",
+      afterCaption: "Prototype Screen 13: Dual Confirmation & CAIR Measurement",
+      pm: {
+        problem: "Existing platforms record interview outcomes unilaterally, leading to false no-show penalties and fabricated metrics.",
+        evidence: "Recruiters reported ghosting while candidates claimed unrecorded attendance or recruiter no-shows.",
+        whatChanged: "Implemented independent post-interview candidate & recruiter confirmation with auditable conflict states.",
+        whyChanged: "Guarantees that metrics reflect verified completed interviews rather than unverified unilateral assertions.",
+        userValue: "Candidates cannot be falsely penalized as no-shows; clear dispute resolution path.",
+        bizValue: "Delivers verifiable Confirmed Application-to-Interview Rate (CAIR) to measure genuine marketplace liquidity.",
+        metric: "Dual confirmation rate; CAIR qualification rate across 14-day mature cohorts.",
+        deps: "Independent confirmation recording endpoints and deduplicated cohort aggregation engine."
+      },
       annotations: [
         { n: "1", x: "30%", y: "35%", text: "Independent candidate & recruiter attendance confirmations with dispute resolution." },
         { n: "2", x: "75%", y: "55%", text: "Instrumented CAIR measurement requiring distinct job qualification within 7 days (FR23–FR28)." }
@@ -518,35 +556,35 @@ window.NaukriPortfolio = (function () {
               <div class="pm-rationale-grid">
                 <div class="pm-rat-cell">
                   <div class="pm-rat-label">Existing Problem</div>
-                  <div class="pm-rat-text">${esc(sec.pm.problem)}</div>
+                  <div class="pm-rat-text">${esc(sec.pm ? sec.pm.problem : "In the audited baseline, no in-platform interview scheduling, versioned rescheduling, or mutual attendance verification existed.")}</div>
                 </div>
                 <div class="pm-rat-cell">
                   <div class="pm-rat-label">Research Evidence</div>
-                  <div class="pm-rat-text">${esc(sec.pm.evidence)}</div>
+                  <div class="pm-rat-text">${esc(sec.pm ? sec.pm.evidence : "User research indicated candidate confusion regarding off-platform interview logistics and recruiter unverified no-show claims.")}</div>
                 </div>
                 <div class="pm-rat-cell">
                   <div class="pm-rat-label">What Changed</div>
-                  <div class="pm-rat-text">${esc(sec.pm.whatChanged)}</div>
+                  <div class="pm-rat-text">${esc(sec.pm ? sec.pm.whatChanged : "Introduced structured invitation cards, versioned rescheduling workflows, and dual independent attendance confirmation.")}</div>
                 </div>
                 <div class="pm-rat-cell">
                   <div class="pm-rat-label">Why It Changed</div>
-                  <div class="pm-rat-text">${esc(sec.pm.whyChanged)}</div>
+                  <div class="pm-rat-text">${esc(sec.pm ? sec.pm.whyChanged : "Establishes a single source of truth for interview milestones and eliminates unverified single-sided no-show disputes.")}</div>
                 </div>
                 <div class="pm-rat-cell">
                   <div class="pm-rat-label">User Value</div>
-                  <div class="pm-rat-text">${esc(sec.pm.userValue)}</div>
+                  <div class="pm-rat-text">${esc(sec.pm ? sec.pm.userValue : "Candidates receive verified scheduling, calendar integration, and independent attendance confirmation.")}</div>
                 </div>
                 <div class="pm-rat-cell">
                   <div class="pm-rat-label">Potential Business Value</div>
-                  <div class="pm-rat-text">${esc(sec.pm.bizValue)}</div>
+                  <div class="pm-rat-text">${esc(sec.pm ? sec.pm.bizValue : "Enables reliable Confirmed Application-to-Interview Rate (CAIR) measurement and reduces interview drop-offs.")}</div>
                 </div>
                 <div class="pm-rat-cell">
                   <div class="pm-rat-label">Success Metric</div>
-                  <div class="pm-rat-text">${esc(sec.pm.metric)}</div>
+                  <div class="pm-rat-text">${esc(sec.pm ? sec.pm.metric : "CAIR (distinct 3-application anchor / 14-day cohort window); interview show-up rate.")}</div>
                 </div>
                 <div class="pm-rat-cell">
                   <div class="pm-rat-label">Dependencies</div>
-                  <div class="pm-rat-text">${esc(sec.pm.deps)}</div>
+                  <div class="pm-rat-text">${esc(sec.pm ? sec.pm.deps : "Recruiter interview scheduling API, candidate response endpoints, and dual confirmation logging service.")}</div>
                 </div>
               </div>
             </article>

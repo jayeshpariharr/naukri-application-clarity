@@ -1098,6 +1098,7 @@ window.NaukriCaseStudy = (function () {
   /* ---------------- SECTION 5: PRODUCT DOCUMENTATION & QA ---------------- */
   function renderDocumentation(state) {
     return `
+      <div class="portfolio-landing-wrap">
       <div class="portfolio-container" style="padding:32px 20px 60px;">
         <div class="testing-card-header" style="margin-bottom:24px;">
           <span class="port-pill port-pill-blue">PRODUCT DOCUMENTATION & SPECIFICATIONS</span>
@@ -1447,6 +1448,7 @@ window.NaukriCaseStudy = (function () {
             </div>
           </div>
         </div>
+      </div>
       </div>
     `;
   }

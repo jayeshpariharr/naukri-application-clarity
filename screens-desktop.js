@@ -955,7 +955,7 @@ function renderDesktopTracker(state) {
                         <div class="h-dot ${step.state}">
                           ${step.state === "done" ? "✓" : step.state === "rejected" ? "✕" : step.state === "hold" ? "II" : step.state === "closed" ? "—" : ""}
                         </div>
-                        <div style="font-size:12px;font-weight:600;color:#121224;">${esc(step.stage)}</div>
+                        <div style="font-size:12px;font-weight:600;color:#121224;">${esc(step.stage || step.title || "Update")}</div>
                         <div style="font-size:11px;color:#717b9e;margin-top:2px;">${esc(step.date)}</div>
                       </div>
                     `).join("")}

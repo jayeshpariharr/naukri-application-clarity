@@ -288,8 +288,9 @@
 
     if (!app.timeline) app.timeline = [];
     app.timeline.unshift({
-      date: 'Just now',
-      title: 'Interview Invitation Received',
+        date: "Just now",
+        stage: 'Interview Invitation Received',
+        title: 'Interview Invitation Received',
       description: `Invited for ${round_name} (${format}). Response required by ${formatDateDisplay(newInterview.expires_at)}.`,
       status: 'confirmed'
     });
@@ -352,8 +353,9 @@
       if (app) {
         app.lastUpdatedDate = 'Just now';
         app.timeline.unshift({
-          date: 'Just now',
-          title: 'Interview Invitation Accepted',
+        date: "Just now",
+        stage: 'Interview Invitation Accepted',
+        title: 'Interview Invitation Accepted',
           description: `Confirmed for ${formatDateDisplay(interview.starts_at)} (${interview.format}).`,
           status: 'confirmed'
         });
@@ -376,8 +378,9 @@
       if (app) {
         app.lastUpdatedDate = 'Just now';
         app.timeline.unshift({
-          date: 'Just now',
-          title: 'Interview Invitation Declined',
+        date: "Just now",
+        stage: 'Interview Invitation Declined',
+        title: 'Interview Invitation Declined',
           description: `Candidate declined invitation: ${interview.decline_reason}.`,
           status: 'confirmed'
         });
@@ -444,7 +447,8 @@
     if (app) {
       app.lastUpdatedDate = 'Just now';
       app.timeline.unshift({
-        date: 'Just now',
+        date: "Just now",
+        stage: 'Reschedule Requested',
         title: 'Reschedule Requested',
         description: `Alternative time proposed: ${formatDateDisplay(interview.proposed_slot.slot)}. Current slot retained until mutual confirmation.`,
         status: 'pending'
@@ -504,7 +508,8 @@
     if (app) {
       app.lastUpdatedDate = 'Just now';
       app.timeline.unshift({
-        date: 'Just now',
+        date: "Just now",
+        stage: `Rescheduled Interview Confirmed (v${interview.schedule_version})`,
         title: `Rescheduled Interview Confirmed (v${interview.schedule_version})`,
         description: `New confirmed interview time: ${formatDateDisplay(interview.starts_at)}.`,
         status: 'confirmed'
@@ -552,7 +557,8 @@
     if (app) {
       app.lastUpdatedDate = 'Just now';
       app.timeline.unshift({
-        date: 'Just now',
+        date: "Just now",
+        stage: 'Interview Cancelled',
         title: 'Interview Cancelled',
         description: `Interview cancelled by ${cancelled_by}: ${interview.cancellation.reason}.`,
         status: 'confirmed'
@@ -669,8 +675,9 @@
       interview.attendance_candidate = record;
       if (app) {
         app.timeline.unshift({
-          date: 'Just now',
-          title: result === 'positive' ? 'Candidate Confirmed Attendance' : 'Candidate Reported Non-Attendance',
+        date: "Just now",
+        stage: result === 'positive' ? 'Candidate Confirmed Attendance' : 'Candidate Reported Non-Attendance',
+        title: result === 'positive' ? 'Candidate Confirmed Attendance' : 'Candidate Reported Non-Attendance',
           description: result === 'positive'
             ? 'Candidate confirmed attending. Awaiting recruiter verification.'
             : 'Candidate reported did not attend.',
@@ -682,8 +689,9 @@
       interview.attendance_recruiter = record;
       if (app) {
         app.timeline.unshift({
-          date: 'Just now',
-          title: result === 'positive' ? 'Recruiter Confirmed Interview Conducted' : 'Recruiter Reported Candidate No-Show',
+        date: "Just now",
+        stage: result === 'positive' ? 'Recruiter Confirmed Interview Conducted' : 'Recruiter Reported Candidate No-Show',
+        title: result === 'positive' ? 'Recruiter Confirmed Interview Conducted' : 'Recruiter Reported Candidate No-Show',
           description: result === 'positive'
             ? 'Employer verified interview completion.'
             : 'Employer marked candidate did not attend.',
@@ -698,8 +706,9 @@
       interview.dual_confirmed_logged = true;
       if (app) {
         app.timeline.unshift({
-          date: 'Just now',
-          title: 'Interview Attendance Dual-Confirmed',
+        date: "Just now",
+        stage: 'Interview Attendance Dual-Confirmed',
+        title: 'Interview Attendance Dual-Confirmed',
           description: 'Both candidate and recruiter independently confirmed interview completion.',
           status: 'confirmed'
         });
@@ -744,8 +753,9 @@
 
     if (!app.timeline) app.timeline = [];
     app.timeline.unshift({
-      date: 'Just now',
-      title: 'Application Withdrawn',
+        date: "Just now",
+        stage: 'Application Withdrawn',
+        title: 'Application Withdrawn',
       description: `Candidate withdrew application: ${app.withdrawal_reason}. Prior completed interview milestones remain verified in audit history.`,
       status: 'confirmed'
     });
