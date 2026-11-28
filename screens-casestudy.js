@@ -1104,9 +1104,37 @@ window.NaukriCaseStudy = (function () {
           <h1 style="font-size:26px;font-weight:800;color:#f8fafc;margin:10px 0 6px;">
             Engineering & QA Documentation
           </h1>
-          <p style="font-size:14px;color:#94a3b8;margin:0;">
-            Acceptance criteria traceability, central business logic invariants, regression test suite (QA01–QA18), and known limitations.
+          <p style="font-size:14px;color:#94a3b8;margin:0 0 16px 0;">
+            Official project specifications, research synthesis workbooks, acceptance criteria traceability, central business logic invariants, regression test suite (QA01–QA18), and known limitations.
           </p>
+        </div>
+
+        <!-- Official Project Specifications & Downloads -->
+        <div class="testing-card" style="margin-bottom:24px;border:1px solid #3b82f6;background:linear-gradient(135deg, #1e293b 0%, #0f172a 100%);">
+          <div class="testing-card-header">
+            <span class="desk-pill dpill-blue">Official Deliverables</span>
+            <h3 style="font-size:18px;font-weight:700;color:#f8fafc;margin:6px 0;">Primary Specifications & Research Artifacts</h3>
+            <p style="font-size:13.5px;color:#cbd5e1;margin:4px 0 16px 0;line-height:1.5;">
+              Download or view the master product requirements documentation and underlying quantitative/qualitative user research analysis workbook:
+            </p>
+            <div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:10px;">
+              <a href="./assets/docs/Naukri_Master_PRD_V2.pdf" target="_blank" class="port-btn-ghost" style="display:inline-flex;align-items:center;text-decoration:none;border-color:#3b82f6;color:#60a5fa;font-weight:600;padding:8px 14px;border-radius:6px;background:rgba(59,130,246,0.1);">
+                📘 View Master PRD V2.0 (PDF)
+              </a>
+              <a href="./assets/docs/Naukri_Master_PRD_V2.pdf" download="Naukri_Master_PRD_V2.pdf" class="port-btn-ghost" style="display:inline-flex;align-items:center;text-decoration:none;border-color:#475569;color:#f8fafc;font-weight:500;padding:8px 14px;border-radius:6px;background:rgba(255,255,255,0.05);">
+                📥 Download PRD V2.0 (PDF)
+              </a>
+              <a href="./assets/docs/Naukri_Research_Analysis_Workbook.xlsx" download="Naukri_Research_Analysis_Workbook.xlsx" class="port-btn-ghost" style="display:inline-flex;align-items:center;text-decoration:none;border-color:#10b981;color:#34d399;font-weight:600;padding:8px 14px;border-radius:6px;background:rgba(16,185,129,0.1);">
+                📊 Research Workbook (.xlsx)
+              </a>
+              <a href="./assets/docs/Naukri_Application_Clarity_PRD.pdf" target="_blank" class="port-btn-ghost" style="display:inline-flex;align-items:center;text-decoration:none;border-color:#475569;color:#94a3b8;font-size:12.5px;padding:8px 12px;border-radius:6px;">
+                📜 Baseline PRD V1.0 (PDF)
+              </a>
+              <a href="./assets/docs/Naukri_Application_Clarity_PRD.docx" download="Naukri_Application_Clarity_PRD.docx" class="port-btn-ghost" style="display:inline-flex;align-items:center;text-decoration:none;border-color:#475569;color:#94a3b8;font-size:12.5px;padding:8px 12px;border-radius:6px;">
+                📄 Baseline PRD V1.0 (Editable Word)
+              </a>
+            </div>
+          </div>
         </div>
 
         <!-- Acceptance Criteria Traceability (FR01–FR14) -->

@@ -325,6 +325,10 @@ window.NaukriPortfolio = (function () {
         "Clear accept/decline actions with auditable timestamp records",
         "Versioned rescheduling prevents conflicting or unilateral changes",
         "Calendar export (.ics) ensures candidates do not miss scheduled rounds"
+      ],
+      annotations: [
+        { n: "1", x: "24%", y: "42%", text: "Structured interview invitation with verified logistics, mode, and round details." },
+        { n: "2", x: "72%", y: "65%", text: "Explicit accept/decline actions with versioned rescheduling workflow (FR18–FR22)." }
       ]
     },
     {
@@ -342,6 +346,10 @@ window.NaukriPortfolio = (function () {
         "Distinguishes reported no-show from pending confirmations",
         "Eliminates duplicate interview weighting in seeker-level metrics",
         "Instrumented CAIR cohort anchor tracks genuine attended interviews"
+      ],
+      annotations: [
+        { n: "1", x: "30%", y: "35%", text: "Independent candidate & recruiter attendance confirmations with dispute resolution." },
+        { n: "2", x: "75%", y: "55%", text: "Instrumented CAIR measurement requiring distinct job qualification within 7 days (FR23–FR28)." }
       ],
       navLabel: "View Interactive Screen",
       navAttrs: `data-action="nav-prototype" data-mode="recruiter"`
@@ -460,7 +468,7 @@ window.NaukriPortfolio = (function () {
                         data-caption="${esc(sec.afterCaption)}"
                         data-tag="AFTER · PROPOSED PROTOTYPE">
                         <img src="${esc(sec.afterImg)}" alt="${esc(sec.afterAlt)}" />
-                        ${showPins && sec.annotations[0] ? `<span class="comp-pin" style="left:${sec.annotations[0].x};top:${sec.annotations[0].y};">1</span>` : ""}
+                        ${showPins && sec.annotations && sec.annotations[0] ? `<span class="comp-pin" style="left:${sec.annotations[0].x};top:${sec.annotations[0].y};">1</span>` : ""}
                         <span class="comp-zoom-hint">Enlarge</span>
                       </div>
                       <div class="comp-img-stage" style="min-height:320px;"
@@ -470,7 +478,7 @@ window.NaukriPortfolio = (function () {
                         data-caption="${esc(sec.secondaryAfterCaption)}"
                         data-tag="AFTER · PROPOSED PROTOTYPE">
                         <img src="${esc(sec.secondaryAfterImg)}" alt="${esc(sec.secondaryAfterAlt)}" />
-                        ${showPins && sec.annotations[1] ? `<span class="comp-pin" style="left:${sec.annotations[1].x};top:${sec.annotations[1].y};">2</span>` : ""}
+                        ${showPins && sec.annotations && sec.annotations[1] ? `<span class="comp-pin" style="left:${sec.annotations[1].x};top:${sec.annotations[1].y};">2</span>` : ""}
                         <span class="comp-zoom-hint">Enlarge</span>
                       </div>
                     </div>
@@ -482,7 +490,7 @@ window.NaukriPortfolio = (function () {
                       data-caption="${esc(sec.afterCaption)}"
                       data-tag="AFTER · PROPOSED PROTOTYPE">
                       <img src="${esc(sec.afterImg)}" alt="${esc(sec.afterAlt)}" />
-                      ${showPins ? sec.annotations.map(a => `
+                      ${showPins && sec.annotations ? sec.annotations.map(a => `
                         <span class="comp-pin" style="left:${a.x};top:${a.y};" title="${esc(a.text)}">${a.n}</span>
                       `).join("") : ""}
                       <span class="comp-zoom-hint">Click to enlarge</span>
@@ -490,7 +498,7 @@ window.NaukriPortfolio = (function () {
                   `}
 
                   <ul class="comp-annotations-list">
-                    ${sec.annotations.map(a => `
+                    ${(sec.annotations || []).map(a => `
                       <li>
                         <span class="comp-anno-num">${a.n}</span>
                         <span>${esc(a.text)}</span>
