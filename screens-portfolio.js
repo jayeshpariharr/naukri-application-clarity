@@ -308,7 +308,8 @@ window.NaukriPortfolio = (function () {
         bizValue: "Hypothesis: Higher candidate update coverage with minimal added recruiter workload.",
         metric: "Recruiter time per response triage (guardrail) and % eligible applications updated.",
         deps: "Conceptual recruiter workflow, subject to feasibility validation against Naukri recruiter ATS/backend capabilities."
-      },
+      }
+    },
     {
       id: "11",
       title: "11 · Proposed New State · Structured Interview Invitation & Coordination",
@@ -341,8 +342,7 @@ window.NaukriPortfolio = (function () {
         "Distinguishes reported no-show from pending confirmations",
         "Eliminates duplicate interview weighting in seeker-level metrics",
         "Instrumented CAIR cohort anchor tracks genuine attended interviews"
-      ]
-    },
+      ],
       navLabel: "View Interactive Screen",
       navAttrs: `data-action="nav-prototype" data-mode="recruiter"`
     }

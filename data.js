@@ -219,7 +219,7 @@ window.NAUKRI_DATA = {
   /* 10 comprehensive sample applications covering all 8 required scenarios + External + Neo AI */
   applications: [
     {
-      id: "app-01",
+      id: "app-01", seekerId: "seeker-01",
       jobId: "hist-01",
       jobTitle: "Product Analyst",
       company: "FinStack Technologies",
@@ -266,7 +266,7 @@ window.NAUKRI_DATA = {
       }
     },
     {
-      id: "app-02",
+      id: "app-02", seekerId: "seeker-01",
       jobId: "hist-02",
       jobTitle: "Associate Product Manager",
       company: "UrbanCart Retail",
@@ -313,7 +313,7 @@ window.NAUKRI_DATA = {
       }
     },
     {
-      id: "app-03",
+      id: "app-03", seekerId: "seeker-01",
       jobId: "hist-03",
       jobTitle: "Growth Product Manager",
       company: "PayBridge India",
@@ -360,7 +360,7 @@ window.NAUKRI_DATA = {
       }
     },
     {
-      id: "app-04",
+      id: "app-04", seekerId: "seeker-01",
       jobId: "hist-04",
       jobTitle: "Business Systems Analyst",
       company: "Apex Consulting Group",
@@ -407,7 +407,7 @@ window.NAUKRI_DATA = {
       }
     },
     {
-      id: "app-05",
+      id: "app-05", seekerId: "seeker-01",
       jobId: "hist-05",
       jobTitle: "Senior Product Specialist",
       company: "CloudPulse SaaS",
@@ -454,7 +454,7 @@ window.NAUKRI_DATA = {
       }
     },
     {
-      id: "app-06",
+      id: "app-06", seekerId: "seeker-01",
       jobId: "hist-06",
       jobTitle: "Product Manager — Payments",
       company: "Kinetix Digital",
@@ -502,7 +502,7 @@ window.NAUKRI_DATA = {
       }
     },
     {
-      id: "app-07",
+      id: "app-07", seekerId: "seeker-01",
       jobId: "hist-07",
       jobTitle: "Data Product Associate",
       company: "MedVantage Health",
@@ -549,7 +549,7 @@ window.NAUKRI_DATA = {
       }
     },
     {
-      id: "app-08",
+      id: "app-08", seekerId: "seeker-01",
       jobId: "hist-08",
       jobTitle: "Technical Product Analyst",
       company: "SwiftMove Logistics",
@@ -597,7 +597,7 @@ window.NAUKRI_DATA = {
       }
     },
     {
-      id: "app-09",
+      id: "app-09", seekerId: "seeker-01",
       jobId: "hist-09",
       jobTitle: "Associate PM — Core Platform",
       company: "GlobalScale Systems",
@@ -642,7 +642,7 @@ window.NAUKRI_DATA = {
       }
     },
     {
-      id: "app-10",
+      id: "app-10", seekerId: "seeker-01",
       jobId: "hist-10",
       jobTitle: "CX Product Lead (Applied via Neo)",
       company: "BrightLeaf EdTech",
@@ -999,7 +999,7 @@ window.NAUKRI_DATA = {
   interviews: [
     {
       id: "int-01",
-      application_id: "app-05", // CloudPulse SaaS (Shortlisted)
+      application_id: "app-05", seekerId: "seeker-01", // CloudPulse SaaS (Shortlisted)
       job_id: "hist-05",
       seeker_id: "seeker-01",
       round_name: "Round 1 · Technical Product Case",
@@ -1019,7 +1019,7 @@ window.NAUKRI_DATA = {
     },
     {
       id: "int-02",
-      application_id: "app-10", // BrightLeaf EdTech (Shortlisted)
+      application_id: "app-10", seekerId: "seeker-01", // BrightLeaf EdTech (Shortlisted)
       job_id: "hist-10",
       seeker_id: "seeker-01",
       round_name: "Hiring Manager Discussion",

@@ -35,33 +35,82 @@ function clone(obj) {
 const testResults = [];
 let passedAssertions = 0;
 
+const SCENARIO_CLASSIFICATIONS = {
+  // Browser Functional Tests (Actual UI interaction tests)
+  "QA01": "Browser functional test",
+  "QA02": "Browser functional test",
+  "QA17": "Browser functional test",
+  "QA18": "Browser functional test",
+  "QA20": "Browser functional test",
+  "QA26": "Browser functional test",
+  "QA27": "Browser functional test",
+  "QA28": "Browser functional test",
+  "QA31": "Browser functional test",
+  "QA32": "Browser functional test",
+  "QA35": "Browser functional test",
+  // Fixture Validation
+  "QA03": "Fixture validation",
+  "QA04": "Fixture validation",
+  "QA06": "Fixture validation",
+  "QA09": "Fixture validation",
+  "QA10": "Fixture validation",
+  "QA11": "Fixture validation",
+  "QA12": "Fixture validation",
+  "QA14": "Fixture validation",
+  "QA19": "Fixture validation",
+  "QA21": "Fixture validation",
+  "QA23": "Fixture validation",
+  "QA25": "Fixture validation",
+  // Production Validation
+  "QA15": "Requires Production Validation",
+  // Domain Unit Tests
+  "QA05": "Domain unit test",
+  "QA07": "Domain unit test",
+  "QA08": "Domain unit test",
+  "QA13": "Domain unit test",
+  "QA16": "Domain unit test",
+  "QA22": "Domain unit test",
+  "QA24": "Domain unit test",
+  "QA29": "Domain unit test",
+  "QA30": "Domain unit test",
+  "QA33": "Domain unit test",
+  "QA34": "Domain unit test",
+  "QA36": "Domain unit test",
+  "QA37": "Domain unit test",
+  "QA38": "Domain unit test",
+  "QA39": "Domain unit test"
+};
+
 function runScenario(id, title, category, testFn) {
+  const classification = SCENARIO_CLASSIFICATIONS[id] || (id.startsWith("BUG") ? "Domain unit test" : "Domain unit test");
   try {
     const evidence = testFn();
     testResults.push({
       id,
       title,
       category,
-      status: 'Passed (Executable Verification)',
-      evidence: evidence || 'Assertions verified successfully.',
+      classification,
+      status: "Passed",
+      evidence: evidence || "Assertions verified successfully.",
       error: null
     });
-    console.log(`[PASS] ${id} - ${title}`);
+    console.log(`[PASS - ${classification}] ${id} - ${title}`);
   } catch (err) {
     testResults.push({
       id,
       title,
       category,
-      status: 'Failed',
+      classification,
+      status: "Failed",
       evidence: null,
       error: err.message
     });
-    console.error(`[FAIL] ${id} - ${title}: ${err.message}`);
+    console.error(`[FAIL - ${classification}] ${id} - ${title}: ${err.message}`);
   }
 }
 
 console.log('================================================================');
-console.log('   NAUKRI V2.1 AUDITED EXECUTABLE REGRESSION SUITE (QA01-QA39)');
+console.log('   NAUKRI V2.2 AUDITED EXECUTABLE REGRESSION SUITE (QA01-QA39 & BUG01-BUG17)');
 console.log('================================================================\n');
 
 // Reset clock to base test anchor: 2026-11-28T12:00:00+05:30
@@ -232,6 +281,7 @@ testResults.push({
   id: 'QA15',
   title: 'Production Backend Authorization Check',
   category: 'Platform Security',
+  classification: 'Requires Production Validation',
   status: 'Requires Production Validation',
   evidence: 'Static prototype cannot verify server-side JWT auth, distributed rate-limiting or multitenancy.',
   error: null
@@ -575,9 +625,9 @@ runScenario('QA36', 'Reported No-Show vs Missing Confirmation (FR27)', 'Terminal
 runScenario('QA37', 'Cohort Anchor at 3rd Application (FR28)', 'Analytics', () => {
   const state = {
     applications: [
-      { id: 'a1', seekerId: 'seeker-A', appliedDate: '2026-11-01T10:00:00Z' },
-      { id: 'a2', seekerId: 'seeker-A', appliedDate: '2026-11-04T10:00:00Z' },
-      { id: 'a3', seekerId: 'seeker-A', appliedDate: '2026-11-06T10:00:00Z' } // 3 in 5 days
+      { id: 'a1', seekerId: 'seeker-A', jobId: 'job-01', appliedDate: '2026-11-01T10:00:00Z' },
+      { id: 'a2', seekerId: 'seeker-A', jobId: 'job-02', appliedDate: '2026-11-04T10:00:00Z' },
+      { id: 'a3', seekerId: 'seeker-A', jobId: 'job-03', appliedDate: '2026-11-06T10:00:00Z' } // 3 distinct jobs in 5 days
     ],
     interviews: []
   };
@@ -593,9 +643,9 @@ runScenario('QA37', 'Cohort Anchor at 3rd Application (FR28)', 'Analytics', () =
 runScenario('QA38', 'Mature vs Immature Cohort 14-Day Boundary (FR28)', 'Analytics', () => {
   const state = {
     applications: [
-      { id: 'a1', seekerId: 'seeker-A', appliedDate: '2026-11-10T10:00:00Z' },
-      { id: 'a2', seekerId: 'seeker-A', appliedDate: '2026-11-12T10:00:00Z' },
-      { id: 'a3', seekerId: 'seeker-A', appliedDate: '2026-11-14T10:00:00Z' } // Anchor: Nov 14
+      { id: 'a1', seekerId: 'seeker-A', jobId: 'job-01', appliedDate: '2026-11-10T10:00:00Z' },
+      { id: 'a2', seekerId: 'seeker-A', jobId: 'job-02', appliedDate: '2026-11-12T10:00:00Z' },
+      { id: 'a3', seekerId: 'seeker-A', jobId: 'job-03', appliedDate: '2026-11-14T10:00:00Z' } // Anchor: Nov 14
     ],
     interviews: []
   };
@@ -616,20 +666,20 @@ runScenario('QA38', 'Mature vs Immature Cohort 14-Day Boundary (FR28)', 'Analyti
 runScenario('QA39', 'Seeker Numerator Deduplication (FR28)', 'Analytics', () => {
   const state = {
     applications: [
-      { id: 'a1', seekerId: 'seeker-A', appliedDate: '2026-11-01T10:00:00Z' },
-      { id: 'a2', seekerId: 'seeker-A', appliedDate: '2026-11-02T10:00:00Z' },
-      { id: 'a3', seekerId: 'seeker-A', appliedDate: '2026-11-03T10:00:00Z' }
+      { id: 'a1', seekerId: 'seeker-A', jobId: 'job-01', appliedDate: '2026-11-01T10:00:00Z' },
+      { id: 'a2', seekerId: 'seeker-A', jobId: 'job-02', appliedDate: '2026-11-02T10:00:00Z' },
+      { id: 'a3', seekerId: 'seeker-A', jobId: 'job-03', appliedDate: '2026-11-03T10:00:00Z' }
     ],
     interviews: [
       {
-        id: 'i1', seeker_id: 'seeker-A', starts_at: '2026-11-08T10:00:00Z',
-        attendance_candidate: { result: 'positive', occurred_at: '2026-11-08T10:00:00Z' },
-        attendance_recruiter: { result: 'positive', occurred_at: '2026-11-08T10:00:00Z' }
+        id: 'i1', seeker_id: 'seeker-A', schedule_version: 1, starts_at: '2026-11-08T10:00:00Z',
+        attendance_candidate: { result: 'positive', schedule_version: 1, occurred_at: '2026-11-08T10:00:00Z' },
+        attendance_recruiter: { result: 'positive', schedule_version: 1, occurred_at: '2026-11-08T10:00:00Z' }
       },
       {
-        id: 'i2', seeker_id: 'seeker-A', starts_at: '2026-11-12T10:00:00Z',
-        attendance_candidate: { result: 'positive', occurred_at: '2026-11-12T10:00:00Z' },
-        attendance_recruiter: { result: 'positive', occurred_at: '2026-11-12T10:00:00Z' }
+        id: 'i2', seeker_id: 'seeker-A', schedule_version: 1, starts_at: '2026-11-12T10:00:00Z',
+        attendance_candidate: { result: 'positive', schedule_version: 1, occurred_at: '2026-11-12T10:00:00Z' },
+        attendance_recruiter: { result: 'positive', schedule_version: 1, occurred_at: '2026-11-12T10:00:00Z' }
       }
     ]
   };
@@ -675,14 +725,14 @@ runScenario('BUG-02', 'Exact 14-Day CAIR Window Boundary (±1 ms)', 'Analytics',
 
   const stateInside = {
     applications: [
-      { id: 'a1', seekerId: 's1', appliedDate: '2026-10-28T10:00:00Z' },
-      { id: 'a2', seekerId: 's1', appliedDate: '2026-10-30T10:00:00Z' },
-      { id: 'a3', seekerId: 's1', appliedDate: new Date(anchorTime).toISOString() }
+      { id: 'a1', seekerId: 's1', jobId: 'job-01', appliedDate: '2026-10-28T10:00:00Z' },
+      { id: 'a2', seekerId: 's1', jobId: 'job-02', appliedDate: '2026-10-30T10:00:00Z' },
+      { id: 'a3', seekerId: 's1', jobId: 'job-03', appliedDate: new Date(anchorTime).toISOString() }
     ],
     interviews: [{
-      id: 'inv1', seeker_id: 's1', starts_at: new Date(exactEnd).toISOString(),
-      attendance_candidate: { result: 'positive', occurred_at: new Date(exactEnd).toISOString() },
-      attendance_recruiter: { result: 'positive', occurred_at: new Date(exactEnd).toISOString() }
+      id: 'inv1', seeker_id: 's1', schedule_version: 1, starts_at: new Date(exactEnd).toISOString(),
+      attendance_candidate: { result: 'positive', schedule_version: 1, occurred_at: new Date(exactEnd).toISOString() },
+      attendance_recruiter: { result: 'positive', schedule_version: 1, occurred_at: new Date(exactEnd).toISOString() }
     }]
   };
   const cairIn = Domain.calculateCAIR(stateInside, '2026-11-20T10:00:00Z');
@@ -690,14 +740,14 @@ runScenario('BUG-02', 'Exact 14-Day CAIR Window Boundary (±1 ms)', 'Analytics',
 
   const stateOutside = {
     applications: [
-      { id: 'a1', seekerId: 's2', appliedDate: '2026-10-28T10:00:00Z' },
-      { id: 'a2', seekerId: 's2', appliedDate: '2026-10-30T10:00:00Z' },
-      { id: 'a3', seekerId: 's2', appliedDate: new Date(anchorTime).toISOString() }
+      { id: 'a1', seekerId: 's2', jobId: 'job-01', appliedDate: '2026-10-28T10:00:00Z' },
+      { id: 'a2', seekerId: 's2', jobId: 'job-02', appliedDate: '2026-10-30T10:00:00Z' },
+      { id: 'a3', seekerId: 's2', jobId: 'job-03', appliedDate: new Date(anchorTime).toISOString() }
     ],
     interviews: [{
-      id: 'inv2', seeker_id: 's2', starts_at: new Date(outsideMs).toISOString(),
-      attendance_candidate: { result: 'positive', occurred_at: new Date(outsideMs).toISOString() },
-      attendance_recruiter: { result: 'positive', occurred_at: new Date(outsideMs).toISOString() }
+      id: 'inv2', seeker_id: 's2', schedule_version: 1, starts_at: new Date(outsideMs).toISOString(),
+      attendance_candidate: { result: 'positive', schedule_version: 1, occurred_at: new Date(outsideMs).toISOString() },
+      attendance_recruiter: { result: 'positive', schedule_version: 1, occurred_at: new Date(outsideMs).toISOString() }
     }]
   };
   const cairOut = Domain.calculateCAIR(stateOutside, '2026-11-20T10:00:00Z');
@@ -914,6 +964,109 @@ runScenario('BUG-12', 'Attendance Record Correction Audit', 'Audit', () => {
   return 'Correction logged in audit trail; previous positive record preserved';
 });
 
+
+/* BUG-13: Duplicate application records for same job cannot qualify seeker */
+runScenario('BUG-13', 'Identical Application Records Rejection (FR28)', 'Analytics', () => {
+  const state = {
+    applications: [
+      { id: 'app-01', seekerId: 'seeker-DUP', jobId: 'job-01', appliedDate: '2026-11-01T10:00:00Z' },
+      { id: 'app-01', seekerId: 'seeker-DUP', jobId: 'job-01', appliedDate: '2026-11-01T10:00:00Z' },
+      { id: 'app-01', seekerId: 'seeker-DUP', jobId: 'job-01', appliedDate: '2026-11-01T10:00:00Z' }
+    ],
+    interviews: []
+  };
+  const cair = Domain.calculateCAIR(state, '2026-11-20T10:00:00Z');
+  assert.strictEqual(cair.totalEligibleSeekers, 0, 'Identical application records must NOT establish a cohort');
+  passedAssertions += 1;
+  return 'Three identical application records deduplicated by application ID; 0 eligible seekers qualified';
+});
+
+/* BUG-14: Multiple application IDs for the same job ID cannot qualify seeker */
+runScenario('BUG-14', 'Same Job Multiple Applications Rejection (FR28)', 'Analytics', () => {
+  const state = {
+    applications: [
+      { id: 'app-01', seekerId: 'seeker-SAME', jobId: 'job-01', appliedDate: '2026-11-01T10:00:00Z' },
+      { id: 'app-02', seekerId: 'seeker-SAME', jobId: 'job-01', appliedDate: '2026-11-02T10:00:00Z' },
+      { id: 'app-03', seekerId: 'seeker-SAME', jobId: 'job-01', appliedDate: '2026-11-03T10:00:00Z' }
+    ],
+    interviews: []
+  };
+  const cair = Domain.calculateCAIR(state, '2026-11-20T10:00:00Z');
+  assert.strictEqual(cair.totalEligibleSeekers, 0, 'Applications to same job ID must NOT establish a cohort');
+  passedAssertions += 1;
+  return 'Three distinct application IDs with identical job ID rejected; 3 distinct job IDs strictly required';
+});
+
+/* BUG-15: Rescheduling rejected when attendance already recorded */
+runScenario('BUG-15', 'Reschedule Rejection Post Attendance Recording', 'Lifecycle', () => {
+  const state = { applications: clone(baseData.applications), interviews: [] };
+  const invRes = Domain.createInvitation(state, {
+    application_id: 'app-01',
+    starts_at: '2026-11-28T10:00:00+05:30'
+  });
+  Domain.respondToInvitation(state, { interview_id: invRes.interview.id, response: 'Accepted' });
+  Domain.recordAttendance(state, { interview_id: invRes.interview.id, actor_role: 'candidate', result: 'positive' });
+
+  // Attempt to propose reschedule without authorized correction workflow
+  const resRes = Domain.proposeReschedule(state, {
+    interview_id: invRes.interview.id,
+    proposed_slot: '2026-12-05T15:00:00+05:30'
+  });
+  assert.strictEqual(resRes.success, false);
+  assert.ok(resRes.error.includes('attendance has already been recorded'));
+  passedAssertions += 2;
+  return 'Reschedule rejected after attendance recorded without authorized correction workflow';
+});
+
+/* BUG-16: Recruiter slot confirmation must match candidate proposed slot */
+runScenario('BUG-16', 'Recruiter Slot Substitution Protection', 'Lifecycle', () => {
+  const state = { applications: clone(baseData.applications), interviews: [] };
+  const invRes = Domain.createInvitation(state, {
+    application_id: 'app-01',
+    starts_at: '2026-12-01T10:00:00+05:30'
+  });
+  Domain.respondToInvitation(state, { interview_id: invRes.interview.id, response: 'Accepted' });
+  Domain.proposeReschedule(state, {
+    interview_id: invRes.interview.id,
+    proposed_slot: '2026-12-05T14:00:00.000Z'
+  });
+
+  // Recruiter tries to confirm an arbitrary different slot
+  const confRes = Domain.confirmReschedule(state, {
+    interview_id: invRes.interview.id,
+    confirmed_slot: '2026-12-07T18:00:00.000Z'
+  });
+  assert.strictEqual(confRes.success, false);
+  assert.ok(confRes.error.includes('Confirmed slot must match the candidate proposed slot'));
+  passedAssertions += 2;
+  return 'Recruiter prevented from silently substituting an unrelated slot during reschedule confirmation';
+});
+
+/* BUG-17: Completed historical interview outcome preserved from cancellation */
+runScenario('BUG-17', 'Completed Historical Outcome Cancellation Protection', 'Lifecycle', () => {
+  const state = { applications: clone(baseData.applications), interviews: [] };
+  const invRes = Domain.createInvitation(state, {
+    application_id: 'app-01',
+    starts_at: '2026-11-28T10:00:00+05:30'
+  });
+  Domain.respondToInvitation(state, { interview_id: invRes.interview.id, response: 'Accepted' });
+  Domain.recordAttendance(state, { interview_id: invRes.interview.id, actor_role: 'candidate', result: 'positive' });
+  Domain.recordAttendance(state, { interview_id: invRes.interview.id, actor_role: 'recruiter', result: 'positive' });
+
+  assert.strictEqual(Domain.deriveOutcome(invRes.interview).status, 'Dual Confirmed');
+
+  // Attempt to cancel a completed interview
+  const cancelRes = Domain.cancelInterview(state, {
+    interview_id: invRes.interview.id,
+    reason: 'Role changed'
+  });
+  assert.strictEqual(cancelRes.success, false);
+  assert.ok(cancelRes.error.includes('Cannot cancel an already completed historical interview'));
+  assert.strictEqual(Domain.deriveOutcome(invRes.interview).status, 'Dual Confirmed');
+  passedAssertions += 3;
+  return 'Completed historical interview outcomes strictly preserved from retroactive cancellation';
+});
+
 console.log('\n================================================================');
 console.log('                 TEST EXECUTION SUMMARY');
 console.log('================================================================');
@@ -930,26 +1083,26 @@ console.log(`Total Verified Assertions: ${passedAssertions}`);
 console.log('================================================================\n');
 
 // Write out real, unhardcoded test report
-let report = `# Naukri Application Clarity V2.1 — Executable Functional Test Results (QA01–QA39 & BUG01–BUG12)\n\n`;
+let report = `# Naukri Application Clarity V2.2 — Executable Functional Test Results (QA01–QA39 & BUG01–BUG12)\n\n`;
 report += `**Execution Date:** 28 November 2026 | **Runtime:** Node.js v20.18.0 (Real Executable Assertions)\n`;
 report += `**Summary:** ${passedTests} Passed, ${reqProdTests} Requires Production Validation, ${failedTests} Failed.\n`;
 report += `**Total Verified Assertions:** ${passedAssertions} strict equality and precondition checks.\n\n`;
 report += `## 1. QA01–QA39 Core & Progression Regression Suite\n\n`;
-report += `| ID | Scenario | Category | Execution Status | Supporting Evidence / Assertion Outcome |\n`;
-report += `|---|---|---|---|---|\n`;
+report += `| ID | Scenario | Category | Coverage Classification | Execution Status | Supporting Evidence / Assertion Outcome |\n`;
+report += `|---|---|---|---|---|---|\n`;
 
 testResults.filter(t => t.id.startsWith('QA')).forEach(t => {
   const badge = t.status.startsWith('Passed') ? '✅ **Passed (Executable Assertions)**' : t.status.includes('Production') ? '⚠️ **Requires Production Validation**' : '❌ **Failed**';
-  report += `| **${t.id}** | ${t.title} | ${t.category} | ${badge} | ${t.evidence || t.error} |\n`;
+  report += `| **${t.id}** | ${t.title} | ${t.category} | **${t.classification}** | ${badge} | ${t.evidence || t.error} |\n`;
 });
 
 report += `\n## 2. Independent Audit Issue Matrix (BUG-01 through BUG-12)\n\n`;
 report += `| Bug ID | Audit Focus | Category | Execution Status | Actual Verified Behavior |\n`;
-report += `|---|---|---|---|---|\n`;
+report += `|---|---|---|---|---|---|\n`;
 
 testResults.filter(t => t.id.startsWith('BUG')).forEach(t => {
   const badge = t.status.startsWith('Passed') ? '✅ **Resolved & Verified**' : '❌ **Failed**';
-  report += `| **${t.id}** | ${t.title} | ${t.category} | ${badge} | ${t.evidence || t.error} |\n`;
+  report += `| **${t.id}** | ${t.title} | ${t.category} | **${t.classification}** | ${badge} | ${t.evidence || t.error} |\n`;
 });
 
 fs.writeFileSync(path.join(__dirname, 'FUNCTIONAL_TEST_RESULTS.md'), report, 'utf8');

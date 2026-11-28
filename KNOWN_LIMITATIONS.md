@@ -1,6 +1,6 @@
-# Known Limitations & Boundary Constraints — Naukri Application Clarity V2.1
+# Known Limitations & Boundary Constraints — Naukri Application Clarity V2.2
 
-**Release Version:** 2.1 (Audited Independent Release)  
+**Release Version:** 2.2 (Focused Final Audit Release)  
 **Target Environment:** Client-Side Single Page Prototype & Evaluator Demonstration Rig  
 **Development Branch:** `capstone-v2` (Live production deployment remains isolated on `main`)
 
@@ -12,12 +12,13 @@
 - **Production Requirement:** In production deployment across Info Edge (India) Ltd. infrastructure, this logic must reside behind authenticated REST/GraphQL API gateways backed by relational microservices (PostgreSQL/Aurora) and an event bus (Kafka/RabbitMQ).
 
 ### 2. Client-Side Clock & Time Boundaries
-- **Simulated Demo Clock:** Because all data executes locally, real wall-clock time does not advance automatically during a 5-minute evaluator review. To allow realistic evaluation of post-interview attendance recording without fabricating timestamps, the prototype includes an explicit deterministic **Demo Clock Simulator** (`NaukriInterviewDomain.DemoClock`) located in the top navigation bar.
-- **Occurrence Boundary:** Evaluators cannot confirm attendance for an interview scheduled in the future until they click `+2h`, `+1d`, or `+7d` on the Demo Clock to simulate passing the interview start time.
+- **Simulated Demo Clock:** Because all data executes locally, real wall-clock time does not advance automatically during an evaluator review. To allow realistic evaluation of post-interview attendance recording without fabricating timestamps, the prototype includes an explicit deterministic **Demo Clock Simulator** (`NaukriInterviewDomain.DemoClock`) located in the top navigation bar.
+- **Occurrence Boundary:** Evaluators cannot confirm attendance for an interview scheduled in the future until they click `+2h`, `+1d`, or `+7d` on the Demo Clock to simulate passing the interview occurrence.
 - **Persistence Boundary:** The Demo Clock state resides in session memory and resets to the live system clock upon clicking `Reset Demo` or refreshing the browser.
 
 ### 3. CAIR (Candidate Application-to-Interview Rate) Cohort Boundaries
-- **Exact Maturity Window:** In compliance with FR28 and audit corrections, CAIR strictly requires a mature 14-day observation window from the cohort anchor (the 3rd qualifying job application submitted within 7 days).
+- **Strict Deduplication & Distinct Jobs:** In compliance with V2.2 audit corrections, CAIR strictly enforces deduplication by stable application ID and requires 3 distinct job applications (`jobId`) within 7 days. Identical application submissions or multiple applications to the exact same job ID are rejected from establishing a cohort.
+- **Exact Maturity Window:** CAIR strictly requires a mature 14-day observation window from the cohort anchor (the 3rd distinct job application submitted within 7 days).
 - **Simulated Cohort Size:** The interactive prototype sandbox preloads sample applications across distinct companies to demonstrate the calculation engine. Full population statistical significance (e.g. tracking 500,000 monthly active job seekers) requires production data warehousing (BigQuery/Snowflake) and ETL pipelines.
 
 ### 4. Third-Party Integrations

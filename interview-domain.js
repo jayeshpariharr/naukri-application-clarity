@@ -91,16 +91,49 @@
       return this.currentIso;
     },
 
-    advanceDays: function (state, days) {
+    advanceDays: function (arg1, arg2) {
+      let state = null;
+      let days = 1;
+      if (typeof arg1 === 'number') {
+        days = arg1;
+      } else {
+        state = arg1;
+        days = typeof arg2 === 'number' ? arg2 : 1;
+      }
       const d = this.now(state);
       d.setTime(d.getTime() + days * 24 * 60 * 60 * 1000);
       return this.set(state, d.toISOString());
     },
 
-    advanceHours: function (state, hours) {
+    advanceHours: function (arg1, arg2) {
+      let state = null;
+      let hours = 1;
+      if (typeof arg1 === 'number') {
+        hours = arg1;
+      } else {
+        state = arg1;
+        hours = typeof arg2 === 'number' ? arg2 : 1;
+      }
       const d = this.now(state);
       d.setTime(d.getTime() + hours * 60 * 60 * 1000);
       return this.set(state, d.toISOString());
+    },
+
+    reset: function (state) {
+      this.currentIso = '2026-11-28T12:00:00+05:30';
+      if (state && typeof state === 'object') delete state.demoClockIso;
+      return this.currentIso;
+    },
+
+    format: function (state) {
+      const d = this.now(state);
+      const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+      const day = d.getDate();
+      const month = months[d.getMonth()];
+      const year = d.getFullYear();
+      const hours = String(d.getHours()).padStart(2, "0");
+      const mins = String(d.getMinutes()).padStart(2, "0");
+      return `${day} ${month} ${year} ${hours}:${mins} IST`;
     }
   };
 
@@ -372,7 +405,15 @@
       return { success: false, error: 'Cannot reschedule an unaccepted invitation' };
     }
 
-    // Check if interview already completed
+    // Check if interview already completed or attendance recorded by either participant
+    if (interview.attendance_candidate || interview.attendance_recruiter) {
+      if (!params.correction_authorized) {
+        return {
+          success: false,
+          error: 'Cannot reschedule interview after attendance has already been recorded by either participant unless an authorized correction workflow is used'
+        };
+      }
+    }
     const outcome = deriveOutcome(interview);
     if (outcome.status === 'Dual Confirmed' || outcome.status === 'Not Attended') {
       return { success: false, error: 'Cannot reschedule an already completed interview' };
@@ -423,9 +464,35 @@
       return { success: false, error: 'Interview does not have a pending reschedule request' };
     }
 
-    const slotToConfirm = confirmed_slot ? new Date(confirmed_slot) : new Date(interview.proposed_slot.slot);
-    if (isNaN(slotToConfirm.getTime())) {
-      return { success: false, error: 'Invalid confirmed slot date' };
+    if (!interview.proposed_slot || !interview.proposed_slot.slot) {
+      return { success: false, error: 'No proposed slot found on interview record' };
+    }
+
+    // Recruiter must confirm the candidate's proposed slot rather than silently substituting an unrelated slot
+    const proposedDate = new Date(interview.proposed_slot.slot);
+    if (isNaN(proposedDate.getTime())) {
+      return { success: false, error: 'Invalid proposed slot date on interview record' };
+    }
+
+    let slotToConfirm = proposedDate;
+    if (confirmed_slot) {
+      const explicitConfirmed = new Date(confirmed_slot);
+      if (isNaN(explicitConfirmed.getTime())) {
+        return { success: false, error: 'Invalid confirmed slot date' };
+      }
+      // If confirmed_slot provided, it must match candidate proposed slot
+      if (explicitConfirmed.getTime() !== proposedDate.getTime()) {
+        return {
+          success: false,
+          error: 'Confirmed slot must match the candidate proposed slot. Unrelated slot substitution is not permitted without explicit negotiation.'
+        };
+      }
+      slotToConfirm = explicitConfirmed;
+    }
+
+    // Reject confirmed slots in the past relative to DemoClock
+    if (slotToConfirm <= DemoClock.now(state)) {
+      return { success: false, error: 'Confirmed interview slot cannot be in the past' };
     }
 
     interview.starts_at = slotToConfirm.toISOString();
@@ -460,6 +527,15 @@
     const { interview_id, reason, cancelled_by = 'recruiter' } = params;
     const interview = (state.interviews || []).find(i => i.id === interview_id);
     if (!interview) return { success: false, error: 'Interview record not found' };
+
+    // Prevent cancellation from invalidating completed historical interview outcomes
+    const currentOutcome = deriveOutcome(interview);
+    if (currentOutcome.status === 'Dual Confirmed' || currentOutcome.status === 'Not Attended') {
+      return {
+        success: false,
+        error: 'Cannot cancel an already completed historical interview. Completed outcomes are preserved in audit history.'
+      };
+    }
 
     interview.cancellation = {
       cancelled: true,
@@ -536,10 +612,30 @@
       });
     }
 
+    // Clearly separate scheduled time, simulated actual occurrence time, and confirmation recording time
+    // If explicit simulated actual occurrence timestamp provided in params, validate and use it
+    let actualOccurrenceIso = params.simulated_occurrence_at || interview.simulated_actual_occurrence || null;
+    if (actualOccurrenceIso) {
+      const occDate = new Date(actualOccurrenceIso);
+      if (isNaN(occDate.getTime())) {
+        return { success: false, error: 'Invalid simulated occurrence timestamp format' };
+      }
+      actualOccurrenceIso = occDate.toISOString();
+    } else {
+      // Default to scheduled start time as the actual occurrence for simulation, but explicitly tagged
+      actualOccurrenceIso = interview.starts_at;
+    }
+
+    // Persist actual occurrence on interview so both candidate and recruiter confirmations align
+    if (!interview.simulated_actual_occurrence) {
+      interview.simulated_actual_occurrence = actualOccurrenceIso;
+    }
+
     const record = {
       result: result,
       recorded_at: DemoClock.nowIso(state),
-      occurred_at: interview.starts_at,
+      occurred_at: actualOccurrenceIso,
+      occurred_at_type: params.simulated_occurrence_at ? 'explicit_simulated_occurrence' : 'scheduled_aligned_simulated',
       actor_role: actor_role,
       actor_id: actor_role === 'candidate' ? (interview.seeker_id || 'seeker-01') : 'recruiter-01',
       schedule_version: interview.schedule_version || 1,
@@ -680,10 +776,20 @@
     const interviews = state.interviews || [];
 
     // Filter valid, verifiable applications
-    const validApps = applications.filter(a => {
-      if (!a.id || !a.seekerId) return false;
+    // Strict requirement: reject incomplete/invalid submission records
+    const validApps = [];
+    const seenAppIds = new Set();
+
+    applications.forEach(a => {
+      if (!a || !a.id || !a.seekerId || !a.jobId) return; // Reject missing id, seekerId, or jobId
+      // Deduplicate submissions by stable application ID
+      if (seenAppIds.has(a.id)) return;
+      seenAppIds.add(a.id);
+
       const appDate = new Date(a.appliedDate || a.submitted_at || 0);
-      return !isNaN(appDate.getTime()) && appDate.getTime() > 0;
+      if (isNaN(appDate.getTime()) || appDate.getTime() <= 0) return;
+
+      validApps.push(a);
     });
 
     // Group submissions by verified seekerId
@@ -704,21 +810,35 @@
         return new Date(a.appliedDate || a.submitted_at).getTime() - new Date(b.appliedDate || b.submitted_at).getTime();
       });
 
-      // Require 3 distinct qualifying job applications within 7 days
+      // Require 3 DISTINCT qualifying job IDs within 7 days
+      // Anchor the cohort strictly at the 3rd distinct-job application
       let anchorApp = null;
       let anchorDate = null;
+      const sevenDaysMs = 7 * 24 * 60 * 60 * 1000;
 
-      for (let i = 2; i < apps.length; i++) {
-        const d1 = new Date(apps[i - 2].appliedDate || apps[i - 2].submitted_at).getTime();
-        const d3 = new Date(apps[i].appliedDate || apps[i].submitted_at).getTime();
-        const diffMs = d3 - d1;
-        const sevenDaysMs = 7 * 24 * 60 * 60 * 1000;
+      // Sliding window over sorted submissions
+      for (let i = 0; i < apps.length; i++) {
+        const distinctJobsInWindow = new Map();
+        const startTime = new Date(apps[i].appliedDate || apps[i].submitted_at).getTime();
 
-        if (diffMs <= sevenDaysMs && diffMs >= 0) {
-          anchorApp = apps[i];
-          anchorDate = new Date(d3);
-          break; // First anchor anchor
+        for (let j = i; j < apps.length; j++) {
+          const appJ = apps[j];
+          const appJTime = new Date(appJ.appliedDate || appJ.submitted_at).getTime();
+          if (appJTime - startTime > sevenDaysMs) break;
+
+          if (!distinctJobsInWindow.has(appJ.jobId)) {
+            distinctJobsInWindow.set(appJ.jobId, appJ);
+          }
+
+          if (distinctJobsInWindow.size === 3) {
+            // Anchor is this 3rd distinct job application!
+            anchorApp = appJ;
+            anchorDate = new Date(appJTime);
+            break;
+          }
         }
+
+        if (anchorApp && anchorDate) break;
       }
 
       if (anchorApp && anchorDate) {
@@ -731,18 +851,40 @@
         }
 
         // Find qualifying dual-confirmed interview occurring strictly within the exact 14-day window
+        // Enforce valid schedule versions, matching interview identity and reporting cutoff rules
         const qualifyingInterviews = interviews.filter(inv => {
+          if (!inv || !inv.id) return false;
           if (inv.seeker_id !== sid) return false;
 
           // Must be Dual Confirmed
           const outcome = deriveOutcome(inv);
           if (!outcome.qualified) return false;
 
-          // Actual occurrence timestamp must be within anchorDate to anchorDate + 14 days (exact)
-          const actualOccurred = new Date(inv.attendance_candidate.occurred_at || inv.starts_at).getTime();
+          // Enforce matching interview identity and valid schedule version on confirmations
+          const candAtt = inv.attendance_candidate;
+          const recAtt = inv.attendance_recruiter;
+          if (!candAtt || !recAtt) return false;
+
+          // Both confirmations must be positive
+          if (candAtt.result !== 'positive' || recAtt.result !== 'positive') return false;
+
+          // Schedule version check: cannot be unversioned
+          if (!inv.schedule_version || inv.schedule_version < 1) return false;
+          if (candAtt.schedule_version !== inv.schedule_version || recAtt.schedule_version !== inv.schedule_version) {
+            return false;
+          }
+
+          // Do not silently substitute scheduled timestamp when actual occurrence timestamp is missing!
+          const actualOccurrenceStr = candAtt.occurred_at || inv.simulated_actual_occurrence;
+          if (!actualOccurrenceStr) return false;
+
+          const actualOccurred = new Date(actualOccurrenceStr).getTime();
+          if (isNaN(actualOccurred)) return false;
+
           const anchorTime = anchorDate.getTime();
           const windowEndTime = anchorTime + 14 * 24 * 60 * 60 * 1000;
 
+          // Enforce 14-day observation window from cohort anchor
           return actualOccurred >= anchorTime && actualOccurred <= windowEndTime;
         });
 
@@ -754,6 +896,7 @@
         cohortDetails.push({
           seekerId: sid,
           anchorAppId: anchorApp.id,
+          anchorJobId: anchorApp.jobId,
           anchorDate: anchorDate.toISOString(),
           maturityDate: maturityDate.toISOString(),
           isMature: isMature,
@@ -768,7 +911,7 @@
       : null;
 
     return {
-      cairRate: cairPercentage !== null ? `${cairPercentage}%` : 'N/A (Immature Cohort)',
+      cairRate: cairPercentage !== null ? (cairPercentage + '%') : 'N/A (Immature Cohort)',
       rawCair: cairPercentage !== null ? parseFloat(cairPercentage) : null,
       targetCair: '36.0%',
       baselineAssumption: '21.0%',
